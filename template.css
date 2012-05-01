@@ -228,7 +228,7 @@ height: 5px;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     height: 18px;
-    width: 120px;
+    width: 140px;
 }
 
 #controls {
@@ -238,9 +238,14 @@ height: 5px;
 
 #controls .button {
     cursor: pointer;
+    display: block;
+    float: left;
+    width: 16px;
 }
 
-#controls .button:hover {
+#ready { cursor: pointer; }
+
+.button:hover, #ready:hover {
     color: green;
 }
 

@@ -51,7 +51,7 @@ $(document).ready(function () {
 
 
     //as main timeline is "playing", move the position element
-    timeline.listen("timeupdate", function () {
+    timeline.on("timeupdate", function () {
         //var fulldur = Popcorn.util.toSeconds($('#primary').attr('data-duration'));
         var fulldur = timeline.endtime;
         var totalwidth = $("#maintimeline").width();

@@ -358,10 +358,15 @@ function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spac
     var spacingY = ySpacingCalc(spaceHeight, vidHeight, numberY);
     var lastRowStart = numberX*(numberY - 1);
     $.each(videoList, function(index, value) {
-    var current = $("<video>" +
+        var current = $("<video>" +
         "<source src="+value.file+ "type='video/mov'/>" +
         "<source src="+value.file+ "type='video/mp4'/>" 
         + "</video>");
+        /* should move to something like this where value.file is a base filename that we (hopefully) have assets derived for.  left old code b/c not sure if this is working/finished :D 
+        var mpath = "http://metaviddemo01.ucsc.edu/media/";
+        var current = $("<video/>", {id: value.id});
+        var webm = $("<source/>", { src: mpath + value.file + ".webm", type: 'video/webm'}).appendTo(current);
+        var mp4 = $("<source/>", { src: mpath + value.file + ".mp4", type: 'video/mp4'}).appendTo(current); */
     /*Set the width of this video*/
     /*Set the height of this video*/
     $(current).css("width", vidWidth + "px");
