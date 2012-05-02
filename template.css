@@ -165,9 +165,18 @@ body {
 #videos {
     position: relative;
     width: 100%;
-    height: 100%;
     background: black;
+    font-size: 9pt;
+    color: #aaa;
+    height: 800px;
+
 }
+
+.vidcontainer { margin-top: 15px; float: left; margin-left: 30px; display: none; border: 1px solid gray;
+}
+
+.hor { width: 200px;  }
+.vert { height: 200px; } 
 
 #tlcontainer {
     position: relative;
@@ -199,13 +208,14 @@ body {
     left: 147px;
     right: 0px;
     font-size: 18pt;
-    height: 25px;
 }
 
 #maintimeline {
     background: #666;
+    height: 25px;
 }
 
+#navtl { height: 5px; }
 
 #timepos { 
     position: absolute;
@@ -266,6 +276,7 @@ height: 5px;
 }
 
 #videoTweets {
+    display: none;
     position: relative;
     float: right;
     width: 25%;

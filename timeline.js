@@ -1,32 +1,13 @@
-$(document).ready(function () {
+
     //Construct a timeline with an endtime at 45 minutes
     //todo: maybe have it take in two timestamps (or human readable date-times)
     //and derive duration from that, some sort of gradation ticks
-    Popcorn.player("baseplayer");
-    var timeline = Popcorn.baseplayer("#base");
+
     //timeline.endtime = Popcorn.util.toSeconds($('#primary').attr('data-duration')); //45 minutes
-    timeline.endtime = 300; // 6 minutes
-    $("#maintimeline").attr("data-duration", timeline.endtime);
-    timeline.cue(timeline.endtime, function () {
-        this.pause();
-        console.log("pausing");
-    });
+   
 
     //as videos become ready, produce timelines for them
-    $('video').bind('loadedmetadata', function () {
-
-        var pop = Popcorn('#' + $(this).attr('id'));
-
-        var totalwidth = $("#primary").width();
-        var offset = getOffset($(this).attr('data-offset'));
-        //console.log("timeline should trigger at " + $(this).attr('data-offset'));
-        timeline.exec($(this).attr('data-offset'), function () {
-            console.log("trigger");
-            if (!timeline.media.paused) {
-                console.log("playing");
-                pop.play();
-            }
-        });
+    
         /*
         var dataid = $(this).attr('data-id');
         var newtimeline = $("<div/>", {
@@ -45,7 +26,7 @@ $(document).ready(function () {
             height: $('#timelineframe').height(),
             display: "block"
         });
-        */
+       
 
     });
 
@@ -62,7 +43,10 @@ $(document).ready(function () {
         
 
     });
+*/
 
+$(document).ready(function () {
+    var timeline = Popcorn.baseplayer("#base");
     $("#play").click(function () {
         $("#play").toggle();
         $("#stop").toggle();
@@ -129,8 +113,5 @@ $(document).ready(function () {
 });
 
 
-function getOffset(time) {
-    return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#primary').attr('data-duration'));
-}
 
 
