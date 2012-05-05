@@ -42,7 +42,7 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
 }
 
 $(document).ready(function () {
-
+    
     var isLocked = false;
 
     $("#feedControl").click(function() {
@@ -88,7 +88,7 @@ $(document).ready(function () {
     /* Initially fill the activeFiles with the first NUMVIDEOSTODISPLAY videos */
     
     /* This can be changed if more videos want to be displayed before paging */
-    var numVideosToDisplay = 5;
+    var numVideosToDisplay = 5; // note css is kind of hardwired for height of 5 videos
     
     var colorList = ["AliceBlue", "Aqua", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"];
 
@@ -544,7 +544,7 @@ function setupTl(duration){
         //var pct = this.currentTime() / fulldur * 100; // for when we switch to % for window size adjustments
         var newoffset = totalwidth * this.currentTime() / fulldur;
         $(".timeloc").text( sec2hms(this.currentTime() ) );
-        $("#timepos").css('left', newoffset);
+        $("#timepos").css('left', newoffset + $("#maintimeline").offset().left);
         
 
     });
