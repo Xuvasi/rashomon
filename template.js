@@ -152,8 +152,8 @@ $(document).ready(function () {
     testVids.push (new video(174, 189, 6, "v6", "UC_Davis_Protestors_Pepper_Sprayed-6AdDLhPwpp4", "hor"));
     var fulldur = 0;
     $.each(testVids, function(){
-        if (this.length + this.offset > fulldur){
-            fulldur = this.length + this.offset + 15;
+        if (this.duration + this.offset > fulldur){
+            fulldur = this.duration + this.offset + 15;
         }
     });
     console.log("Full timeline duration is " + sec2hms(fulldur));
@@ -175,7 +175,7 @@ $(document).ready(function () {
     testActive = [];
     transferElements(testVids, testActive, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
      $.each(testActive, function(key, val) {
-            displayVideo(val.id, val.offset, val.length, val.name);
+            displayVideo(val.id, val.offset, val.duration, val.name);
     });
     
     /*If there are five or less videos, then don't display the pagers*/
@@ -224,7 +224,7 @@ $(document).ready(function () {
             $.each(testActive, function(key, val) {
             //alert($("div#vid"+val.id+".vidline").is(":visible"));
                 if (!$("div#vid"+val.id+".vidline").is(":hidden")) {
-                    displayVideo(val.id, val.offset, val.length, val.name);
+                    displayVideo(val.id, val.offset, val.duration, val.name);
                     $(".vidnum"+"#vid"+val.id).click(function() {
                         var num = $(this).html();
         if ($.inArray(num, testVidsToDisplay) != -1) {
@@ -566,14 +566,14 @@ function setupTl(duration){
             } else if (timediff > this.offset + this.duration) {
                 this.pp.pause();
                 this.pp.currentTime(pp.duration());
-                console.log("setting " + this.id + " to " + dur);
+                console.log("setting " + this.id + " to " + this.duration);
 
-            } else if (timeline.currentTime() > of && timeline.currentTime() < of + dur ) {
-                pp.currentTime(timediff);
-                if (!timeline.media.paused && !$("#vcontain" + $(this).attr('data-id')).is(":hidden")){
+            } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration ) {
+                this.pp.currentTime(timediff);
+                if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")){
                     pp.play();
                 }              
-                console.log("setting " + ppid + " to " + timediff);
+                console.log("setting " + this.id + " to " + timediff);
             }
         }); // end rashomon each
 
