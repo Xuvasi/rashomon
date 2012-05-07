@@ -125,7 +125,7 @@ body {
     line-height: 0.4em;
     text-align: center;
     float: left;
-    width: 103px;
+    width: 100px;
     -o-transition: opacity 0.1s linear;
     -moz-transition: opacity 0.1s linear;
     -webkit-transition: opacity 0.1s linear;
@@ -219,11 +219,13 @@ body {
 
 #timepos { 
     position: absolute;
-    height: 30px;
+    height: 202px;
     width: 1px;
-    background: #eee;
+    background: #0c0;
     z-index: 999;
     font-size: 5px;
+    left: 147px;
+    margin-top: 17px;
 }
 
 
