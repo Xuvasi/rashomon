@@ -571,7 +571,7 @@ function setupTl(duration){
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration ) {
                 this.pp.currentTime(timediff);
                 if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")){
-                    pp.play();
+                    this.pp.play();
                 }              
                 console.log("setting " + this.id + " to " + timediff);
             }
