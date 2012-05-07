@@ -1,12 +1,12 @@
 /* A video object - holds all of the information to display this video's footprint on the timeline.
 @param offset is the offset relative to the beginning of the time frame
-@param length is the length of the video
+@param duration is the duration of the video
 @param is this video's identification number - to be able to link to the actual video
 @param name is the name of this video
 */
-function video(offset, length, id, name, file, align) {
+function video(offset, duration, id, name, file, align) {
     this.offset = offset;
-    this.length = length;
+    this.duration = duration;
     this.id = id;
     this.name = name;
     this.file = file;
@@ -21,6 +21,7 @@ function video(offset, length, id, name, file, align) {
     container.appendTo($("#videos"));
     vid.appendTo(container);
     tools.appendTo(container);
+    this.pp = Popcorn("#video" + id);
 
     
 }
@@ -35,8 +36,8 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
             var length = data.Temporal.Length;
             var id = data.ID.VideoID;
             var name = data.ID.Name;
-            vid = new video(offset, length, id, name);
-            displayVideo(id, offset, length, name);
+            vid = new video(offset, duration, id, name);
+            displayVideo(id, offset, duration, name);
         });
     });
 }
@@ -151,8 +152,8 @@ $(document).ready(function () {
     testVids.push (new video(174, 189, 6, "v6", "UC_Davis_Protestors_Pepper_Sprayed-6AdDLhPwpp4", "hor"));
     var fulldur = 0;
     $.each(testVids, function(){
-        if (this.length + this.offset > fulldur){
-            fulldur = this.length + this.offset + 15;
+        if (this.duration + this.offset > fulldur){
+            fulldur = this.duration + this.offset + 15;
         }
     });
     console.log("Full timeline duration is " + sec2hms(fulldur));
@@ -174,7 +175,7 @@ $(document).ready(function () {
     testActive = [];
     transferElements(testVids, testActive, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
      $.each(testActive, function(key, val) {
-            displayVideo(val.id, val.offset, val.length, val.name);
+            displayVideo(val.id, val.offset, val.duration, val.name);
     });
     
     /*If there are five or less videos, then don't display the pagers*/
@@ -223,7 +224,7 @@ $(document).ready(function () {
             $.each(testActive, function(key, val) {
             //alert($("div#vid"+val.id+".vidline").is(":visible"));
                 if (!$("div#vid"+val.id+".vidline").is(":hidden")) {
-                    displayVideo(val.id, val.offset, val.length, val.name);
+                    displayVideo(val.id, val.offset, val.duration, val.name);
                     $(".vidnum"+"#vid"+val.id).click(function() {
                         var num = $(this).html();
         if ($.inArray(num, testVidsToDisplay) != -1) {
@@ -520,11 +521,12 @@ function setupTl(duration){
             console.log("Playing timeline");
             timeline.play();
         }
-        $('.rashomon').each(function () {
-            var offset = parseFloat($(this).attr('data-offset'));
-            var duration = $(this).attr('data-duration');
-            if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + $(this).attr('data-id')).is(":hidden")){
-                 Popcorn("#" + $(this).attr('id')).play();
+        $(testVids).each(function () {
+            
+            var offset = this.offset;
+            var duration = this.pp.duration();
+            if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")){
+                 this.pp.play();
             }
         });
     });
@@ -533,8 +535,8 @@ function setupTl(duration){
         timeline.pause();
         $("#play").toggle();
         $("#stop").toggle();
-        $('.rashomon').each(function () {
-            Popcorn("#" + $(this).attr('id')).pause();
+        $(testVids).each(function () {
+            this.pp.pause();
         }); 
     });
     //adjust playhead when main timeline moves
@@ -555,27 +557,23 @@ function setupTl(duration){
         var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
         timeline.currentTime(tldur * pct);
 
-        $('.rashomon').each(function () {
-            var pp = Popcorn("#" + $(this).attr('id'));
-            var of = $(this).attr('data-offset');
-            var dur = pp.duration();
-            var ppid = $(this).attr('id');
-            var timediff = timeline.currentTime() - of;
+        $(testVids).each(function () {
+            var timediff = timeline.currentTime() - this.offset;
             if (timediff < 0) {
-                pp.pause();
-                pp.currentTime(0);
-                console.log("setting " + ppid + " to 0");
-            } else if (timediff > of + dur) {
-                pp.pause();
-                pp.currentTime(pp.duration());
-                console.log("setting " + ppid + " to " + dur);
+                this.pp.pause();
+                this.pp.currentTime(0);
+                console.log("setting " + this.id + " to 0");
+            } else if (timediff > this.offset + this.duration) {
+                this.pp.pause();
+                this.pp.currentTime(pp.duration());
+                console.log("setting " + this.id + " to " + this.duration);
 
-            } else if (timeline.currentTime() > of && timeline.currentTime() < of + dur ) {
-                pp.currentTime(timediff);
-                if (!timeline.media.paused && !$("#vcontain" + $(this).attr('data-id')).is(":hidden")){
-                    pp.play();
+            } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration ) {
+                this.pp.currentTime(timediff);
+                if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")){
+                    this.pp.play();
                 }              
-                console.log("setting " + ppid + " to " + timediff);
+                console.log("setting " + this.id + " to " + timediff);
             }
         }); // end rashomon each
 
