@@ -185,7 +185,7 @@ $(document).ready(function () {
         downPagerActive = false;
     }
     /*If this is the first page, down display the up pager*/
-    if (pageNumber == 1) {
+    if (pageNumber === 1) {
         upPagerActive = false;
         pagerDisappear(".pager.#up");
     }
@@ -194,12 +194,12 @@ $(document).ready(function () {
     or making the up pager disappear if the first page becomes active.*/
     $(".pager").click(function() {
         var pageNumberPrevious = pageNumber;
-        if ($(this).attr('id') == "up" && upPagerActive) {
+        if ($(this).attr('id') === "up" && upPagerActive) {
             pageNumber -= 1;
-        } else if (downPagerActive && $(this).attr('id') == "down") {
+        } else if (downPagerActive && $(this).attr('id') === "down") {
             pageNumber += 1;
         }
-        if (pageNumber == maxPageNumber) {
+        if (pageNumber === maxPageNumber) {
             pagerDisappear(".pager.#down");
             pagerAppear(".pager.#up");
             downPagerActive = false;
@@ -207,7 +207,7 @@ $(document).ready(function () {
             downPagerActive = true;
             pagerAppear(".pager.#down");
         }
-        if (pageNumber == 1) {
+        if (pageNumber === 1) {
             pagerDisappear(".pager.#up");
             upPagerActive = false;
         } else {
@@ -565,7 +565,7 @@ function setupTl(duration){
                 console.log("setting " + this.id + " to 0");
             } else if (timediff > this.offset + this.duration) {
                 this.pp.pause();
-                this.pp.currentTime(pp.duration());
+                this.pp.currentTime(this.pp.duration());
                 console.log("setting " + this.id + " to " + this.duration);
 
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration ) {
