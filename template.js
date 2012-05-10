@@ -12,34 +12,35 @@ function video(offset, duration, id, name, file, align) {
     this.file = file;
     this.align = align;
     var mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
-    var container = $("<div/>", { id: "vcontain" + id, 'class': 'vidcontainer'});
-    var tools = $("<h4/>", { 'class': 'vidtools', text: '(I) (F) (TBI)' });
-    var vid = $("<video/>", {id: "video" + id, "class": 'rashomon', "data-offset": offset, "data-id": id });
+    var container = $("<div/>", {
+        id: "vcontain" + id,
+        'class': 'vidcontainer'
+    });
+    var tools = $("<h4/>", {
+        'class': 'vidtools',
+        text: '(I) (F) (TBI)'
+    });
+    var vid = $("<video/>", {
+        id: "video" + id,
+        "class": 'rashomon',
+        "data-offset": offset,
+        "data-id": id
+    });
     vid.addClass(align);
-    var webm = $("<source/>", { src: mpath + file + ".webm", type: 'video/webm'}).appendTo(vid);
-    var mp4 = $("<source/>", { src: mpath + file + ".mp4", type: 'video/mp4'}).appendTo(vid);
+    var webm = $("<source/>", {
+        src: mpath + file + ".webm",
+        type: 'video/webm'
+    }).appendTo(vid);
+    var mp4 = $("<source/>", {
+        src: mpath + file + ".mp4",
+        type: 'video/mp4'
+    }).appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
     tools.appendTo(container);
     this.pp = Popcorn("#video" + id);
 
-    
-}
 
-function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
-    activeFiles = [];
-    transferElements(files, activeFiles, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
-        $.each(activeFiles, function(key, val) {
-        var vid;
-        $.getJSON(val, function(data) {
-            var offset = data.Timeline.Offset;
-            var length = data.Temporal.Length;
-            var id = data.ID.VideoID;
-            var name = data.ID.Name;
-            vid = new video(offset, duration, id, name);
-            displayVideo(id, offset, duration, name);
-        });
-    });
 }
 
 $(document).ready(function () {
@@ -48,15 +49,15 @@ $(document).ready(function () {
     var collection = [];
 
     //loads filenames from manifest.json in local folder
-    $.getJSON('manifest.json', function(collecdata) {
+    $.getJSON('manifest.json', function (collecdata) {
         var collection = {};
         collection.title = collecdata.event;
         collection.filenames = collecdata.files;
         collection.videos = [];
-        $.each(collection.filenames, function(){
+        $.each(collection.filenames, function () {
             var item = {};
             item.filename = '' + this;
-            $.getJSON("metadata/" + this + ".json", function(itemdata) {
+            $.getJSON("metadata/" + this + ".json", function (itemdata) {
                 item.tcDate = itemdata[0]["TrackCreateDate"];
                 item.tmDate = itemdata[0]["TrackModifyDate"];
                 item.fmDate = itemdata[0]["FileModifyDate"];
@@ -65,17 +66,15 @@ $(document).ready(function () {
                 item.duration = itemdata[0]["Duration"];
                 //get other tags like geo coords here
             }); //end getJSON (per item)
-        collection.videos.push(item);           
+            collection.videos.push(item);
         }); //end each
-    console.log(collection);
-    //Create video items/elements here due to async requests.
-
+        console.log(collection);
+        //Create video items/elements here due to async requests.
     }); //end manifest getJSON
-
 
     var isLocked = false;
 
-    $("#feedControl").click(function() {
+    $("#feedControl").click(function () {
         if (!isLocked) {
             $("#feedControl").text("Unfreeze Twitter Feed");
         } else {
@@ -104,20 +103,18 @@ $(document).ready(function () {
     */
     /*clicking the pager will change this pageNumber either up or down*/
     var pageNumber = 1; //start on page 1
-
     /* Temporary list of JSON filenames - will come from elsewhere */
-    var fileNames = [/*"vid2.json", "vid1.json", "vid3.json"*/];
-    
+    var fileNames = [ /*"vid2.json", "vid1.json", "vid3.json"*/ ];
+
 
     /*These are the active videos being displayed right now it has
     length NUMVIDEOSTODISPLAY*/
     var activeFiles = [];
-    
+
     /* Initially fill the activeFiles with the first NUMVIDEOSTODISPLAY videos */
-    
+
     /* This can be changed if more videos want to be displayed before paging */
     var numVideosToDisplay = 5; // note css is kind of hardwired for height of 5 videos
-    
     var colorList = ["AliceBlue", "Aqua", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"];
 
     /* Populate the events for ALL videos. */
@@ -144,9 +141,9 @@ $(document).ready(function () {
     var dotCoords = [];
     /* focusRegion holds the current region of interest specified by the user.  This will be used to play videos from a specific point in time.*/
     var focusRegion = [];
-    
+
     /* This handles the focus region when the user clicks the MAINTIMELINE*/
-    $("#maintimeline").click(function(mouse) {
+    $("#maintimeline").click(function (mouse) {
         var offset = $("#maintimeline").offset();
         var fixedX = mouse.pageX - offset.left;
         if (!focusDistance) {
@@ -168,43 +165,44 @@ $(document).ready(function () {
     var downPagerActive = true;
 
     /* This is the maximum number of pages to display*/
-    var maxPageNumber = 2/* = Math.floor(videoList.length / numVideosToDisplay) + 1 */;
+    var maxPageNumber = 2 /* = Math.floor(videoList.length / numVideosToDisplay) + 1 */
+    ;
 
     var testVids = [];
-    testVids.push (new video(151, 432, 1, "v1", "Vid2", "vert"));
-    testVids.push (new video(374, 321, 2, "v2", "Vid3", "hor"));
-    testVids.push (new video(35, 236, 3, "v3", "Vid4", "vert"));
-    testVids.push (new video(143, 673, 4, "v4", "UC_Davis_Students_Protest_Pepper_Spraying-FYYpFcwkJz0", "hor"));
-    testVids.push (new video(251, 421, 5, "v5", "UC_Davis_chancellor_sorry_for_pepper_spray_incident-hvnWShJp_2A", "hor"));
-    testVids.push (new video(174, 189, 6, "v6", "UC_Davis_Protestors_Pepper_Sprayed-6AdDLhPwpp4", "hor"));
+    testVids.push(new video(151, 432, 1, "v1", "Vid2", "vert"));
+    testVids.push(new video(374, 321, 2, "v2", "Vid3", "hor"));
+    testVids.push(new video(35, 236, 3, "v3", "Vid4", "vert"));
+    testVids.push(new video(143, 673, 4, "v4", "UC_Davis_Students_Protest_Pepper_Spraying-FYYpFcwkJz0", "hor"));
+    testVids.push(new video(251, 421, 5, "v5", "UC_Davis_chancellor_sorry_for_pepper_spray_incident-hvnWShJp_2A", "hor"));
+    testVids.push(new video(174, 189, 6, "v6", "UC_Davis_Protestors_Pepper_Sprayed-6AdDLhPwpp4", "hor"));
     var fulldur = 0;
-    $.each(testVids, function(){
-        if (this.duration + this.offset > fulldur){
+    $.each(testVids, function () {
+        if (this.duration + this.offset > fulldur) {
             fulldur = this.duration + this.offset + 15;
         }
     });
     console.log("Full timeline duration is " + sec2hms(fulldur));
     $('#maintimeline').attr('data-duration', fulldur);
-    setupTl(fulldur);    
+    setupTl(fulldur);
     /* This variable should be set to the length of the video list to be displayed*/
     var numVideos = testVids.length;
 
 
-    
+
     displayEvent(1, "something happened right then", "orange", 15);
     displayEvent(2, "something else happened here", "aqua", 40);
     displayEvent(3, "another something", "BlueViolet", 212);
     displayEvent(4, "yet another", "Khaki", 512);
     displayEvent(5, "wwwhwat?", "Green", 432);
     displayEvent(6, "crazy", "Olive", 79);
-   
-    
+
+
     var testActive = [];
-    transferElements(testVids, testActive, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
-     $.each(testActive, function(key, val) {
-            displayVideo(val.id, val.offset, val.duration, val.name);
+    transferElements(testVids, testActive, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
+    $.each(testActive, function (key, val) {
+        displayVideo(val.id, val.offset, val.duration, val.name);
     });
-    
+
     /*If there are five or less videos, then don't display the pagers*/
     if (numVideos <= numVideosToDisplay) {
         $(".pager").toggleClass("pagerDisappear");
@@ -219,7 +217,7 @@ $(document).ready(function () {
     /*If a pager is clicked, this handles changing the page number and
     making the down pager disappear if the last page becomes active
     or making the up pager disappear if the first page becomes active.*/
-    $(".pager").click(function() {
+    $(".pager").click(function () {
         var pageNumberPrevious = pageNumber;
         if ($(this).attr('id') === "up" && upPagerActive) {
             pageNumber -= 1;
@@ -243,75 +241,75 @@ $(document).ready(function () {
         }
         if (pageNumberPrevious !== pageNumber) {
             /*change the videos in the active video list*/
-            $.each(testActive, function(key, val) {
-                $("div#vid"+val.id+".vidline").hide();
+            $.each(testActive, function (key, val) {
+                $("div#vid" + val.id + ".vidline").hide();
             });
             testActive = [];
-            transferElements(testVids, testActive, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
-            $.each(testActive, function(key, val) {
-            //alert($("div#vid"+val.id+".vidline").is(":visible"));
-                if (!$("div#vid"+val.id+".vidline").is(":hidden")) {
+            transferElements(testVids, testActive, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
+            $.each(testActive, function (key, val) {
+                //alert($("div#vid"+val.id+".vidline").is(":visible"));
+                if (!$("div#vid" + val.id + ".vidline").is(":hidden")) {
                     displayVideo(val.id, val.offset, val.duration, val.name);
-                    $(".vidnum"+"#vid"+val.id).click(function() {
+                    $(".vidnum" + "#vid" + val.id).click(function () {
                         var num = $(this).html();
-        if ($.inArray(num, testVidsToDisplay) !== -1) {
-        temp = [];
-            $.each(testVidsToDisplay, function(k, v) {
-                if (v !== num) {
-                    temp.push(v);
-                }
-            });
-        testVidsToDisplay = [];
-        $.each(temp, function(key, val) {
-            testVidsToDisplay.push(val);
-        });
-    } else {
-        testVidsToDisplay.push(num);
-    }
-        $(this).toggleClass("vidactive");
-        toggleVid($(this).text());
+                        if ($.inArray(num, testVidsToDisplay) !== -1) {
+                            temp = [];
+                            $.each(testVidsToDisplay, function (k, v) {
+                                if (v !== num) {
+                                    temp.push(v);
+                                }
+                            });
+                            testVidsToDisplay = [];
+                            $.each(temp, function (key, val) {
+                                testVidsToDisplay.push(val);
+                            });
+                        } else {
+                            testVidsToDisplay.push(num);
+                        }
+                        $(this).toggleClass("vidactive");
+                        toggleVid($(this).text());
                     });
                 } else {
-                    $("div#vid"+val.id+".vidline").show();
+                    $("div#vid" + val.id + ".vidline").show();
                 }
             });
         }
     });
-        
+
     var testVidsToDisplay = [];
     var temp = [];
     // behavior for toggling ID buttons and videos below
-    $(".vidnum").click(function() {
-        
+    $(".vidnum").click(function () {
+
         var thisvid = $("#vcontain" + $(this).text());
         thisvid.toggle();
-        if (thisvid.is(":hidden")){
+        if (thisvid.is(":hidden")) {
             Popcorn("#video" + $(this).text()).pause();
         } else {
-        //todo: if playhead is in its duration when toggled on, it should play
+            //todo: if playhead is in its duration when toggled on, it should play
         }
-        
-            
+
+
         var num = $(this).html();
         if ($.inArray(num, testVidsToDisplay) !== -1) {
-        temp = [];
-            $.each(testVidsToDisplay, function(k, v) {
+            temp = [];
+            $.each(testVidsToDisplay, function (k, v) {
                 if (v !== num) {
                     temp.push(v);
                 }
             });
-        testVidsToDisplay = [];
-        $.each(temp, function(key, val) {
-            testVidsToDisplay.push(val);
-        });
-    } else {
-        testVidsToDisplay.push(num);
-    }
+            testVidsToDisplay = [];
+            $.each(temp, function (key, val) {
+                testVidsToDisplay.push(val);
+            });
+        } else {
+            testVidsToDisplay.push(num);
+        }
         $(this).toggleClass("vidactive");
         toggleVid($(this).text());
     });
-    
-    $("#ready").click(function() {
+
+    $("#ready").click(function () {
         var coords = $("#videos").offset();
         var spaceY = 0.7 * coords.top;
         var spaceX = 0;
@@ -334,7 +332,13 @@ Note : the order of these bounds does not matter
 */
 function placeBeam(where, x, y, coords) {
     $(".dot").css("visibility", "hidden");
-    $("<div/>", {"class": 'beam'}).css({'width': Math.abs(coords[0] - x) + "px", 'left': Math.min(coords[0], x), 'background': "yellow"}).appendTo(where);
+    $("<div/>", {
+        "class": 'beam'
+    }).css({
+        'width': Math.abs(coords[0] - x) + "px",
+        'left': Math.min(coords[0], x),
+        'background': "yellow"
+    }).appendTo(where);
 }
 
 /*Place a dot to show the user they specified one of the bounds of a region they are interested in
@@ -343,11 +347,24 @@ function placeBeam(where, x, y, coords) {
 */
 function placeDot(where, x, y) {
     $(".beam").css("visibility", "hidden");
-    $("<div/>", { "class": 'dot'}).css({'left': x, 'background': "yellow"}).appendTo(where);
+    $("<div/>", {
+        "class": 'dot'
+    }).css({
+        'left': x,
+        'background': "yellow"
+    }).appendTo(where);
 }
-function displayEvent(id, title, color, time){
+
+function displayEvent(id, title, color, time) {
     //todo need to figure out how to distribute colors, convert time to space
-    $("<div/>", { "class": 'event', "id": "event_" + id, "title": title}).css({'left': 143 + time, 'background': color}).appendTo("#maintimeline"); 
+    $("<div/>", {
+        "class": 'event',
+        "id": "event_" + id,
+        "title": title
+    }).css({
+        'left': 143 + time,
+        'background': color
+    }).appendTo("#maintimeline");
 }
 
 /*Fills an array with the elements from another array within specified bounds.
@@ -361,7 +378,8 @@ all of the elements.
 
 function transferElements(from, to, start, end) {
     var lastIndex = Math.min(end + 1, from.length);
-    for (var i = start, var j = 0; i < lastIndex; i += 1, j += 1) {
+    for (var i = start,
+    var j = 0; i < lastIndex; i += 1, j += 1) {
         to.push(from[i]);
     }
 }
@@ -380,16 +398,37 @@ function pagerAppear(name) {
     $(name).css("color", "#333");
 }
 
-function displayVideo(id, start, duration, meta){
+function displayVideo(id, start, duration, meta) {
     //todo duration->space, match meta to real meta
     var offset = $("#maintimeline").offset().left;
-    var vidline = $("<div/>", { "class": "vidline", "id": "vidline"+id});
-    var vidnum = $("<div/>", { "class": "vidnum", "id": "vid"+id, text: id, title: "Click to show video"}).appendTo(vidline);
-    var vidmeta = $("<div/>", { "class": "vidmeta"}).appendTo(vidline);
-    $("<p/>", {text: meta}).appendTo(vidmeta);
-    $("<p/>", {text: "start: " + sec2hms(start)}).appendTo(vidmeta);
-    $("<p/>", {text: "duration: " + sec2hms(duration)}).appendTo(vidmeta);
-    var vidtime = $("<div/>", { "class": "vidtime"}).css({"left": offset + getOffset(start), "width": getOffset(duration)}).appendTo(vidline);
+    var vidline = $("<div/>", {
+        "class": "vidline",
+        "id": "vidline" + id
+    });
+    var vidnum = $("<div/>", {
+        "class": "vidnum",
+        "id": "vid" + id,
+        text: id,
+        title: "Click to show video"
+    }).appendTo(vidline);
+    var vidmeta = $("<div/>", {
+        "class": "vidmeta"
+    }).appendTo(vidline);
+    $("<p/>", {
+        text: meta
+    }).appendTo(vidmeta);
+    $("<p/>", {
+        text: "start: " + sec2hms(start)
+    }).appendTo(vidmeta);
+    $("<p/>", {
+        text: "duration: " + sec2hms(duration)
+    }).appendTo(vidmeta);
+    var vidtime = $("<div/>", {
+        "class": "vidtime"
+    }).css({
+        "left": offset + getOffset(start),
+        "width": getOffset(duration)
+    }).appendTo(vidline);
     vidline.appendTo("#vidlines");
 }
 
@@ -413,35 +452,32 @@ function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spac
     var vidHeight = vidWidth;
     var spacingX = spacing;
     var spacingY = ySpacingCalc(spaceHeight, vidHeight, numberY);
-    var lastRowStart = numberX*(numberY - 1);
-    $.each(videoList, function(index, value) {
-        var current = $("<video>" +
-        "<source src="+value.file+ "type='video/mov'/>" +
-        "<source src="+value.file+ "type='video/mp4'/>" 
-        + "</video>");
+    var lastRowStart = numberX * (numberY - 1);
+    $.each(videoList, function (index, value) {
+        var current = $("<video>" + "<source src=" + value.file + "type='video/mov'/>" + "<source src=" + value.file + "type='video/mp4'/>" + "</video>");
         /* should move to something like this where value.file is a base filename that we (hopefully) have assets derived for.  left old code b/c not sure if this is working/finished :D 
         var mpath = "http://metaviddemo01.ucsc.edu/media/";
         var current = $("<video/>", {id: value.id});
         var webm = $("<source/>", { src: mpath + value.file + ".webm", type: 'video/webm'}).appendTo(current);
         var mp4 = $("<source/>", { src: mpath + value.file + ".mp4", type: 'video/mp4'}).appendTo(current); */
-    /*Set the width of this video*/
-    /*Set the height of this video*/
-    $(current).css("width", vidWidth + "px");
-    $(current).css("height", vidHeight + "px");
-    if (index >= lastRowStart) {
-        /*if is last row, special calculation*/
-        var specialPos = lastRowPositioning(index % numberX, numberOfVideos - lastRowStart, index % numberY, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight);
-        $(current).css("left", specialPos[0]);
-        $(current).css("top", specialPos[1]);
-        /* Set the x and y positions of this video using specialPos */
-    } else {
-        /*if not last row, find position regularly*/
-        var pos = regularPositioning(index % numberX, index % numberY, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
-        /* Set the x and y positions of this video using pos */
-        $(current).css("left", pos[0]);
-        $(current).css("top", pos[1]);
-    }
-    $(current).appendTo("#videos");
+        /*Set the width of this video*/
+        /*Set the height of this video*/
+        $(current).css("width", vidWidth + "px");
+        $(current).css("height", vidHeight + "px");
+        if (index >= lastRowStart) {
+            /*if is last row, special calculation*/
+            var specialPos = lastRowPositioning(index % numberX, numberOfVideos - lastRowStart, index % numberY, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight);
+            $(current).css("left", specialPos[0]);
+            $(current).css("top", specialPos[1]);
+            /* Set the x and y positions of this video using specialPos */
+        } else {
+            /*if not last row, find position regularly*/
+            var pos = regularPositioning(index % numberX, index % numberY, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
+            /* Set the x and y positions of this video using pos */
+            $(current).css("left", pos[0]);
+            $(current).css("top", pos[1]);
+        }
+        $(current).appendTo("#videos");
     });
 }
 
@@ -451,7 +487,7 @@ function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spac
 @param numberY is the number of videos being positioned in the y direction.
 */
 function ySpacingCalc(spaceHeight, vidHeight, numberY) {
-    var fringeLeftover = spaceHeight - vidHeight*numberY;
+    var fringeLeftover = spaceHeight - vidHeight * numberY;
     return (fringeLeftover / numberY);
 }
 
@@ -461,7 +497,7 @@ function ySpacingCalc(spaceHeight, vidHeight, numberY) {
 @param spacing is the amount of space between two videos in this dimension as well as the amount of space between the edges of the space and the videos
 */
 function vidDimCalc(number, spaceDim, spacing) {
-    var totalFringeSpace = (number + 1)*spacing;
+    var totalFringeSpace = (number + 1) * spacing;
     var remainingSpace = spaceDim - totalFringeSpace;
     var vidDim = remainingSpace / number;
     return vidDim;
@@ -474,7 +510,7 @@ do the positioning with this modified x-direction spacing.
 See regularPositioning params list for the other parameters
 */
 function lastRowPositioning(positionInRow, totalInRow, positionInCol, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight) {
-    var xFringeTotal = (totalInRow+1)*(vidWidth);
+    var xFringeTotal = (totalInRow + 1) * (vidWidth);
     var spacingX = spaceWidth - xFringeTotal;
     return regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
 }
@@ -490,28 +526,28 @@ function lastRowPositioning(positionInRow, totalInRow, positionInCol, spaceWidth
 @param vidHeight is the height of a video
 */
 function regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight) {
-    var xPos = (positionInRow)*(vidWidth) + (positionInRow + 1)*(spacingX) + spaceX;
-    var yPos = (positionInCol)*(vidHeight) + (positionInCol + 1)*(spacingY) + spaceY;
+    var xPos = (positionInRow) * (vidWidth) + (positionInRow + 1) * (spacingX) + spaceX;
+    var yPos = (positionInCol) * (vidHeight) + (positionInCol + 1) * (spacingY) + spaceY;
     var pos = [xPos, yPos];
     return pos;
 }
 
 //converts secs to hh:mm:ss with leading zeros
-function sec2hms(time){
+function sec2hms(time) {
     var totalSec = parseInt(time, 10);
-    var hours = parseInt( totalSec / 3600, 10 ) % 24;
-    var minutes = parseInt( totalSec / 60, 10 ) % 60;
+    var hours = parseInt(totalSec / 3600, 10) % 24;
+    var minutes = parseInt(totalSec / 60, 10) % 60;
     var seconds = parseInt(totalSec % 60, 10);
-    return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+    return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 }
 
-function toggleVid(id){
+function toggleVid(id) {
     console.log("toggling " + id);
 
 }
 
 //sets up timelines once total duration has been set
-function setupTl(duration){
+function setupTl(duration) {
 
     Popcorn.player("baseplayer");
     var timeline = Popcorn.baseplayer("#base");
@@ -544,16 +580,16 @@ function setupTl(duration){
         $("#play").toggle();
         $("#stop").toggle();
         console.log(timeline.currentTime() + "of " + timeline.endtime);
-        if (timeline.currentTime() < timeline.endtime) {  
+        if (timeline.currentTime() < timeline.endtime) {
             console.log("Playing timeline");
             timeline.play();
         }
         $(testVids).each(function () {
-            
+
             var offset = this.offset;
             var duration = this.pp.duration();
-            if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")){
-                 this.pp.play();
+            if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")) {
+                this.pp.play();
             }
         });
     });
@@ -564,7 +600,7 @@ function setupTl(duration){
         $("#stop").toggle();
         $(testVids).each(function () {
             this.pp.pause();
-        }); 
+        });
     });
     //adjust playhead when main timeline moves
     timeline.on("timeupdate", function () {
@@ -572,9 +608,9 @@ function setupTl(duration){
         var totalwidth = $("#maintimeline").width();
         //var pct = this.currentTime() / fulldur * 100; // for when we switch to % for window size adjustments
         var newoffset = totalwidth * this.currentTime() / fulldur;
-        $(".timeloc").text( sec2hms(this.currentTime() ) );
+        $(".timeloc").text(sec2hms(this.currentTime()));
         $("#timepos").css('left', newoffset + $("#maintimeline").offset().left);
-        
+
 
     });
     //on navtl click, adjust video positions appropriately, obeying play conditions and such
@@ -595,32 +631,43 @@ function setupTl(duration){
                 this.pp.currentTime(this.pp.duration());
                 console.log("setting " + this.id + " to " + this.duration);
 
-            } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration ) {
+            } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration) {
                 this.pp.currentTime(timediff);
-                if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")){
+                if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")) {
                     this.pp.play();
-                }              
+                }
                 console.log("setting " + this.id + " to " + timediff);
             }
         }); // end rashomon each
-
     }); //end nav click
 
 
 
-
 }
 
 
-function checkVis(id)
-    {
-    return($("#vcontain" + id).is(":visible"));
-    }
+function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
+    activeFiles = [];
+    transferElements(files, activeFiles, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
+    $.each(activeFiles, function (key, val) {
+        var vid;
+        $.getJSON(val, function (data) {
+            var offset = data.Timeline.Offset;
+            var length = data.Temporal.Length;
+            var id = data.ID.VideoID;
+            var name = data.ID.Name;
+            vid = new video(offset, duration, id, name);
+            displayVideo(id, offset, duration, name);
+        });
+    });
+}
+
+
+
+function checkVis(id) {
+    return ($("#vcontain" + id).is(":visible"));
+}
 
 function getOffset(time) {
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
 }
-
-
-
-   
