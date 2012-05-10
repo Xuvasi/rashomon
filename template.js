@@ -62,17 +62,15 @@ $(document).ready(function () {
                 item.fmDate = itemdata[0]["FileModifyDate"];
                 item.mcDate = itemdata[0]["MediaCreateDate"];
                 item.mDate = itemdata[0]["MediaModifyDate"];
-                item.duration = itemdata[0]["Duration"]
-                //if we wanted to pull stuff like geo coords, do it here
-          
-            });
-            collection.videos.push(item);           
-
-        });
+                item.duration = itemdata[0]["Duration"];
+                //get other tags like geo coords here
+            }); //end getJSON (per item)
+        collection.videos.push(item);           
+        }); //end each
     console.log(collection);
-    //here is where we create the video items (due to asychronous stuff)
+    //Create video items/elements here due to async requests.
 
-    });
+    }); //end manifest getJSON
 
 
     var isLocked = false;
@@ -172,7 +170,7 @@ $(document).ready(function () {
     /* This is the maximum number of pages to display*/
     var maxPageNumber = 2/* = Math.floor(videoList.length / numVideosToDisplay) + 1 */;
 
-    testVids = [];
+    var testVids = [];
     testVids.push (new video(151, 432, 1, "v1", "Vid2", "vert"));
     testVids.push (new video(374, 321, 2, "v2", "Vid3", "hor"));
     testVids.push (new video(35, 236, 3, "v3", "Vid4", "vert"));
@@ -201,7 +199,7 @@ $(document).ready(function () {
     displayEvent(6, "crazy", "Olive", 79);
    
     
-    testActive = [];
+    var testActive = [];
     transferElements(testVids, testActive, (pageNumber - 1)*numVideosToDisplay, pageNumber*numVideosToDisplay - 1);
      $.each(testActive, function(key, val) {
             displayVideo(val.id, val.offset, val.duration, val.name);
@@ -243,7 +241,7 @@ $(document).ready(function () {
             pagerAppear(".pager.#up");
             upPagerActive = true;
         }
-        if (pageNumberPrevious != pageNumber) {
+        if (pageNumberPrevious !== pageNumber) {
             /*change the videos in the active video list*/
             $.each(testActive, function(key, val) {
                 $("div#vid"+val.id+".vidline").hide();
@@ -256,10 +254,10 @@ $(document).ready(function () {
                     displayVideo(val.id, val.offset, val.duration, val.name);
                     $(".vidnum"+"#vid"+val.id).click(function() {
                         var num = $(this).html();
-        if ($.inArray(num, testVidsToDisplay) != -1) {
+        if ($.inArray(num, testVidsToDisplay) !== -1) {
         temp = [];
             $.each(testVidsToDisplay, function(k, v) {
-                if (v != num) {
+                if (v !== num) {
                     temp.push(v);
                 }
             });
@@ -295,10 +293,10 @@ $(document).ready(function () {
         
             
         var num = $(this).html();
-        if ($.inArray(num, testVidsToDisplay) != -1) {
+        if ($.inArray(num, testVidsToDisplay) !== -1) {
         temp = [];
             $.each(testVidsToDisplay, function(k, v) {
-                if (v != num) {
+                if (v !== num) {
                     temp.push(v);
                 }
             });
@@ -315,11 +313,11 @@ $(document).ready(function () {
     
     $("#ready").click(function() {
         var coords = $("#videos").offset();
-       var spaceY = .7*coords.top;
-       var spaceX = 0;
-       var spaceWidth = $("body").width();
-       var spaceHeight = screen.height - spaceY;
-       positionVideos(testVidsToDisplay, spaceX, spaceY, spaceWidth, spaceHeight, 10);
+        var spaceY = 0.7 * coords.top;
+        var spaceX = 0;
+        var spaceWidth = $("body").width();
+        var spaceHeight = screen.height - spaceY;
+        positionVideos(testVidsToDisplay, spaceX, spaceY, spaceWidth, spaceHeight, 10);
     });
 
 
@@ -363,7 +361,7 @@ all of the elements.
 
 function transferElements(from, to, start, end) {
     var lastIndex = Math.min(end + 1, from.length);
-    for (i = start, j = 0; i < lastIndex; i += 1, j += 1) {
+    for (var i = start, var j = 0; i < lastIndex; i += 1, j += 1) {
         to.push(from[i]);
     }
 }
@@ -412,7 +410,7 @@ function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spac
     var numberX = Math.ceil(numberOfVideos / numberY);
     var vidWidth = vidDimCalc(numberX, spaceSquareDim, spacing);
     //var vidHeight = vidDimCalc(numberY, spaceHeight, spacing);
-    vidHeight = vidWidth;
+    var vidHeight = vidWidth;
     var spacingX = spacing;
     var spacingY = ySpacingCalc(spaceHeight, vidHeight, numberY);
     var lastRowStart = numberX*(numberY - 1);
@@ -476,7 +474,7 @@ do the positioning with this modified x-direction spacing.
 See regularPositioning params list for the other parameters
 */
 function lastRowPositioning(positionInRow, totalInRow, positionInCol, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight) {
-    var xFringeTotal = (totalInRow+1)*(vidWidth)
+    var xFringeTotal = (totalInRow+1)*(vidWidth);
     var spacingX = spaceWidth - xFringeTotal;
     return regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
 }
@@ -500,9 +498,9 @@ function regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacin
 
 //converts secs to hh:mm:ss with leading zeros
 function sec2hms(time){
-    var totalSec = parseInt(time);
-    var hours = parseInt( totalSec / 3600 ) % 24;
-    var minutes = parseInt( totalSec / 60 ) % 60;
+    var totalSec = parseInt(time, 10);
+    var hours = parseInt( totalSec / 3600, 10 ) % 24;
+    var minutes = parseInt( totalSec / 60, 10 ) % 60;
     var seconds = parseInt(totalSec % 60, 10);
     return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
 }
