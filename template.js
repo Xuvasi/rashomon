@@ -43,7 +43,38 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
 }
 
 $(document).ready(function () {
-    
+    /* Temporary list of video locations that match up in order with the JSON files in FILENAMES */
+    var vidList = [];
+    var collection = [];
+
+    //loads filenames from manifest.json in local folder
+    $.getJSON('manifest.json', function(collecdata) {
+        var collection = {};
+        collection.title = collecdata.event;
+        collection.filenames = collecdata.files;
+        collection.videos = [];
+        $.each(collection.filenames, function(){
+            var item = {};
+            item.filename = '' + this;
+            $.getJSON("metadata/" + this + ".json", function(itemdata) {
+                item.tcDate = itemdata[0]["TrackCreateDate"];
+                item.tmDate = itemdata[0]["TrackModifyDate"];
+                item.fmDate = itemdata[0]["FileModifyDate"];
+                item.mcDate = itemdata[0]["MediaCreateDate"];
+                item.mDate = itemdata[0]["MediaModifyDate"];
+                item.duration = itemdata[0]["Duration"]
+                //if we wanted to pull stuff like geo coords, do it here
+          
+            });
+            collection.videos.push(item);           
+
+        });
+    console.log(collection);
+    //here is where we create the video items (due to asychronous stuff)
+
+    });
+
+
     var isLocked = false;
 
     $("#feedControl").click(function() {
@@ -79,8 +110,6 @@ $(document).ready(function () {
     /* Temporary list of JSON filenames - will come from elsewhere */
     var fileNames = [/*"vid2.json", "vid1.json", "vid3.json"*/];
     
-    /* Temporary list of video locations that match up in order with the JSON files in FILENAMES */
-    var vidList = [];
 
     /*These are the active videos being displayed right now it has
     length NUMVIDEOSTODISPLAY*/
@@ -593,5 +622,7 @@ function checkVis(id)
 function getOffset(time) {
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
 }
+
+
 
    
