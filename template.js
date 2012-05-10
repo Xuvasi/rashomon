@@ -19,7 +19,7 @@ function video(offset, duration, id, name, file, align) {
     var tools = $("<h4/>", {
         'class': 'vidtools',
         text: '(I) (F) (TBI)'
-    });
+    }); // i is for info, f is fullscreen, TBI means to be implemented.  and icons would rock, too
     var vid = $("<video/>", {
         id: "video" + id,
         "class": 'rashomon',
@@ -58,12 +58,12 @@ $(document).ready(function () {
             var item = {};
             item.filename = '' + this;
             $.getJSON("metadata/" + this + ".json", function (itemdata) {
-                item.tcDate = itemdata[0]["TrackCreateDate"];
-                item.tmDate = itemdata[0]["TrackModifyDate"];
-                item.fmDate = itemdata[0]["FileModifyDate"];
-                item.mcDate = itemdata[0]["MediaCreateDate"];
-                item.mDate = itemdata[0]["MediaModifyDate"];
-                item.duration = itemdata[0]["Duration"];
+                item.tcDate = itemdata[0].TrackCreateDate;
+                item.tmDate = itemdata[0].TrackModifyDate;
+                item.fmDate = itemdata[0].FileModifyDate;
+                item.mcDate = itemdata[0].MediaCreateDate;
+                item.mDate = itemdata[0].MediaModifyDate;
+                item.duration = itemdata[0].Duration;
                 //get other tags like geo coords here
             }); //end getJSON (per item)
             collection.videos.push(item);
