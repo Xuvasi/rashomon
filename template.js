@@ -55,18 +55,21 @@ $(document).ready(function () {
         collection.filenames = collecdata.files;
         collection.videos = [];
         $.each(collection.filenames, function () {
-            var item = {};
+            var item = [];
+            item.dates = [];
             item.filename = '' + this;
             $.getJSON("metadata/" + this + ".json", function (itemdata) {
-                item.tcDate = itemdata[0].TrackCreateDate;
-                item.tmDate = itemdata[0].TrackModifyDate;
-                item.fmDate = itemdata[0].FileModifyDate;
-                item.mcDate = itemdata[0].MediaCreateDate;
-                item.mDate = itemdata[0].MediaModifyDate;
-                item.duration = itemdata[0].Duration;
+                item.dates.tcDate = formatDate(itemdata[0].TrackCreateDate);
+                item.dates.tmDate = formatDate(itemdata[0].TrackModifyDate);
+                item.dates.fmDate = formatDate(itemdata[0].FileModifyDate);
+                item.dates.mcDate = formatDate(itemdata[0].MediaCreateDate);
+                item.dates.mDate = formatDate(itemdata[0].MediaModifyDate);
+                item.duration = formatDate(itemdata[0].Duration);
                 //get other tags like geo coords here
             }); //end getJSON (per item)
+
             collection.videos.push(item);
+            validDate(item);
         }); //end each
         console.log(collection);
         //Create video items/elements here due to async requests.
@@ -83,7 +86,8 @@ $(document).ready(function () {
         isLocked = !isLocked;
     });
 
-    /*
+    /*  Commenting this out for now, including tweets in timeline will be awesome but we 
+        need to think hard about how we filter to the time period reprented, relevant hashtags/participants, etc.
     $("#tweetPart").tweetable({username: 'UCBerkeley'});
     
     var twitterList = ['UCBerkeley', 'ucdavis', 'ucsc'];
@@ -568,7 +572,7 @@ function setupTl(duration) {
         console.log($(this).attr('data-id') + " should trigger at " + $(this).attr('data-offset'));
         timeline.cue($(this).attr('data-offset'), function () {
             //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
-            if (!(timeline.media.paused) && checkVis(id)) {
+            if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
                 console.log("playing" + id);
                 pop.play();
             }
@@ -663,9 +667,49 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
 
 
 
-function checkVis(id) {
-    return ($("#vcontain" + id).is(":visible"));
+
+function validDate(item) {
+    //given item, looksin item.dates and finds the best guess at when the video begins
+    //$.each(item.dates, function(key, val)
+    //var foo = bar;
 }
+
+function formatDate(exifDate){
+    //console.log("weee");
+    //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
+    var date = exifDate.toString();
+    console.log(date);
+    var str = date.split(" "); //sep date from time
+    
+    
+    var datesplit = str[0].split(":");
+    var year = datesplit[0];
+    var month = datesplit[1];
+    var day = datesplit[2];    
+    var timesplit = str[1].split(":");
+    var hour = timesplit[0];
+    var minute = timesplit[1];
+    var second = timesplit[2];
+    if (timesplit[2].indexOf("-") != -1) {
+        //HUGE BUG this does not correct if you're in a time zone with a "+" of gmt. FIX LATER THANKS
+        var zone = timesplit[2].split("-");
+        second = zone[0];
+        zone = zone[1].split(":");
+        zone = zone[0];
+        hour -= zone;
+        hour = hour < 10 ? "0" + hour : hour;
+        
+    }
+
+    var d = new Date(year, month, day, hour, minute, second, 0);
+    console.log(d);
+    console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
+    return d;
+    
+}
+
+
+
 
 function getOffset(time) {
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
