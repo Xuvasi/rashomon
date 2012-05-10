@@ -378,8 +378,7 @@ all of the elements.
 
 function transferElements(from, to, start, end) {
     var lastIndex = Math.min(end + 1, from.length);
-    for (var i = start,
-    var j = 0; i < lastIndex; i += 1, j += 1) {
+    for (i = start, j = 0; i < lastIndex; i += 1, j += 1) {
         to.push(from[i]);
     }
 }
