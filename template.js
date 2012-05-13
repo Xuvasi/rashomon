@@ -6,12 +6,13 @@
 */
 var videos = [];
 var fulldur = 0;
-var earliest = new Date(); 
+var earliest = new Date();
 var timeline;
 var videosToDisplay;
+
 function video(offset, duration, id, file) {
     this.offset = offset.getTime() / 1000;
-    this.duration = + duration;
+    this.duration = +duration;
     this.id = id;
     this.name = file;
     this.file = file;
@@ -61,9 +62,9 @@ $(document).ready(function () {
     //loads filenames from manifest.json in local folder
     setupVideos('manifest.json'); // could point to one from a different event or something
     console.log(videos.length);
-        
-    
-    
+
+
+
 
     /*  Commenting this out for now, including tweets in timeline will be awesome but we 
         need to think hard about how we filter to the time period reprented, relevant hashtags/participants, etc.
@@ -95,7 +96,7 @@ $(document).ready(function () {
         }, 3000);
     }
     */
-    
+
     /*clicking the pager will change this pageNumber either up or down*/
     var pageNumber = 1; //start on page 1
     /* Temporary list of JSON filenames - will come from elsewhere */
@@ -143,9 +144,9 @@ $(document).ready(function () {
 
     /* This is the maximum number of pages to display*/
     var maxPageNumber = 2; /* = Math.floor(videoList.length / numVideosToDisplay) + 1 */
-    
 
-    
+
+
 
 
     /* This variable should be set to the length of the video list to be displayed*/
@@ -243,7 +244,6 @@ $(document).ready(function () {
     var videosToDisplay = [];
     var temp = [];
     // behavior for toggling ID buttons and videos below
-
 
 
 });
@@ -355,8 +355,8 @@ function displayVideo(id, start, duration, meta) {
     }).appendTo(vidline);
     console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
- 
- $("#navtl, .vidtime").click(function (e) {
+
+    $("#navtl, .vidtime").click(function (e) {
         console.log("clickity clack");
         var clickleft = e.pageX - $('#maintimeline').offset().left;
         var pct = clickleft / $('#maintimeline').width();
@@ -383,9 +383,8 @@ function displayVideo(id, start, duration, meta) {
             }
         }); // end rashomon each
     }); //end nav click
-
     $(".vidnum").click(function () {
-        
+
         $(this).toggleClass("vidactive");
         var thisvid = $("#vcontain" + $(this).text());
         thisvid.fadeToggle("fast", "linear");
@@ -414,8 +413,7 @@ function displayVideo(id, start, duration, meta) {
         $(this).toggleClass("vidactive");
         toggleVid($(this).text());
     }); // end vidnum click
- 
-    
+
 }
 
 /** Function to position videos in the space (the space is the area in
@@ -546,13 +544,13 @@ function setupTl(duration) {
     //as each video loads up, set up cues
     //todo - move video timeline drawing to this section
     $('video').bind('loadedmetadata', function () {
- 
+
         var pid = $(this).attr('id');
         var pop = Popcorn('#' + pid);
         var id = $(this).attr('data-id');
-        
+
         var duration = pop.duration();
-        
+
         $(this).attr('data-duration', pop.duration());
         var totalwidth = $("#maintimeline").width();
         var offset = getOffset($(this).attr('data-offset'));
@@ -605,7 +603,6 @@ function setupTl(duration) {
 
     });
     //on navtl click, adjust video positions appropriately, obeying play conditions and such
-    
 
 }
 
@@ -630,7 +627,7 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
 
 
 function validDate(item) {
-    //given item, looksin item.dates and finds the best guess at when the video begins
+    //makes sure date isn't from 1904 or 1946 or sometime way before videos existed
     if (item.mcDate > 2000) {
         return item.mcDate;
     } else {
@@ -638,11 +635,10 @@ function validDate(item) {
     }
 }
 
-function formatDate(exifDate){
+function formatDate(exifDate) {
     //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
     var date = exifDate.toString();
     var str = date.split(" "); //sep date from time
-    
     var datesplit = str[0].split(":");
     var year = datesplit[0];
     var month = datesplit[1] - 1;
@@ -659,14 +655,14 @@ function formatDate(exifDate){
         zone = zone[0];
         hour -= zone;
         hour = hour < 10 ? "0" + hour : hour;
-        
+
     }
 
     var d = new Date(year, month, day, hour, minute, second, 0);
     //console.log(d);
     //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
     return d;
-    
+
 }
 
 function getOffset(time) {
@@ -675,28 +671,28 @@ function getOffset(time) {
 }
 
 
-function formatDuration(duration){
-//because having different cameras output duration in the same format would be crazy!
+function formatDuration(duration) {
+    //because having different cameras output duration in the same format would be crazy!
     if (duration.indexOf(":") != -1) {
         //return Popcorn.util.toSeconds(duration)
         var split = duration.split(":");
         var hr = split[0];
         var min = split[1];
-        var sec = + split[2];
-        var dur =  (hr * 60 * 60) + (min * 60) + sec;
-	return dur;
+        var sec = +split[2];
+        var dur = (hr * 60 * 60) + (min * 60) + sec;
+        return dur;
     } else if (duration.indexOf("s") != -1) {
         var seconds = duration.split(".");
-        var dur =  seconds[0];
-	return dur;
+        var dur = seconds[0];
+        return dur;
     } else {
-    console.log("Some weird duration, couldn't format");
-    
+        console.log("Some weird duration, couldn't format");
+
     }
 
 }
 
-function setupVideos(json){
+function setupVideos(json) {
 
     $.getJSON(json, function (collecdata) {
 
@@ -706,7 +702,7 @@ function setupVideos(json){
             var item = {};
             item.filename = '' + this;
             $.getJSON("metadata/" + this + ".json", function (itemdata) {
-            
+
                 item.tcDate = formatDate(itemdata[0].TrackCreateDate);
                 item.tmDate = formatDate(itemdata[0].TrackModifyDate);
                 item.fmDate = formatDate(itemdata[0].FileModifyDate);
@@ -716,40 +712,37 @@ function setupVideos(json){
                 //get other tags like geo coords here
                 item.validDate = validDate(item);
                 if (item.validDate.getTime() < earliest.getTime()) {
-                    console.log (item.validDate + "is earlier than " + earliest);
+                    console.log(item.validDate + "is earlier than " + earliest);
                     earliest = item.validDate;
                 }
-            //console.log(videos.length);
-            console.log("pushing " + item.filename);
-            videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));  
-       
-            l--;
-            console.log(l);
-            if (l == 0){
-                $.each(videos, function () {
-                    this.offset-= earliest.getTime() / 1000 - 3;
-                    $('#video' + this.id).attr('data-offset', this.offset);
-		    console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
-                    
-                    if (this.duration + this.offset > fulldur) {
-                        console.log("tweeeeet");
-                        fulldur = this.duration + this.offset + 15;
-                        console.log("fulldur " + fulldur);
-                    }
-                }); 
-            
-                console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
-                $('#maintimeline').attr('data-duration', fulldur);
-                setupTl(fulldur);
-            
-            }
-                      
+                //console.log(videos.length);
+                console.log("pushing " + item.filename);
+                videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));
+
+                l--;
+                console.log(l);
+                if (l == 0) {
+                    $.each(videos, function () {
+                        this.offset -= earliest.getTime() / 1000 - 3;
+                        $('#video' + this.id).attr('data-offset', this.offset);
+                        console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
+
+                        if (this.duration + this.offset > fulldur) {
+                            console.log("tweeeeet");
+                            fulldur = this.duration + this.offset + 15;
+                            console.log("fulldur " + fulldur);
+                        }
+                    });
+
+                    console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
+                    $('#maintimeline').attr('data-duration', fulldur);
+                    setupTl(fulldur);
+
+                }
+
             }); //end getJSON (per item)
 
-       
         }); //end each
-
     }); //end manifest getJSON
-
 
 }
