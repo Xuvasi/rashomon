@@ -148,6 +148,8 @@ body {
     width: 30px;
     height: 100%;
     background: #ececec;
+    cursor: crosshair;
+
 }
 
 #vselector {
