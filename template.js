@@ -4,7 +4,6 @@
 @param is this video's identification number - to be able to link to the actual video
 @param name is the name of this video
 */
-
 var videos = [];
 var fulldur = 0;
 var earliest = new Date(); 
