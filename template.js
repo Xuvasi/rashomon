@@ -1,129 +1,57 @@
-/* A video object - holds all of the information to display this video's footprint on the timeline.
-@param offset is the offset relative to the beginning of the time frame
-@param duration is the duration of the video
-@param is this video's identification number - to be able to link to the actual video
-@param name is the name of this video
-*/
+var timeline, videosToDisplay, videos = [], fulldur = 0, earliest = new Date;
 
-var videos = [];
-var fulldur = 0;
-var earliest = new Date(); 
-var timeline;
-var videosToDisplay;
 function video(offset, duration, id, file) {
-    this.offset = offset.getTime() / 1000;
-    this.duration = + duration;
+    var mpath, container, tools, vid, webm, mp4;
+    this.offset = offset.getTime() / 1e3;
+    this.duration = +duration;
     this.id = id;
     this.name = file;
     this.file = file;
-    //console.log(this);
     this.align = "hor";
-    var mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
-    var container = $("<div/>", {
+    mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
+    container = $("<div/>", {
         id: "vcontain" + this.id,
-        'class': 'vidcontainer'
+        "class": "vidcontainer"
     });
-    var tools = $("<h4/>", {
-        'class': 'vidtools',
-        text: '(I) (F) (TBI)'
-    }); // i is for info, f is fullscreen, TBI means to be implemented.  and icons would rock, too
-    var vid = $("<video/>", {
+    tools = $("<h4/>", {
+        "class": "vidtools",
+        text: "(I) (F) (TBI)"
+    });
+    vid = $("<video/>", {
         id: "video" + this.id,
-        "class": 'rashomon',
+        "class": "rashomon",
         "data-offset": this.offset,
         "data-id": this.id
     });
     vid.addClass(this.align);
-    var webm = $("<source/>", {
+    webm = $("<source/>", {
         src: mpath + file + ".webm",
-        type: 'video/webm'
+        type: "video/webm"
     }).appendTo(vid);
-    var mp4 = $("<source/>", {
+    mp4 = $("<source/>", {
         src: mpath + file + ".mp4",
-        type: 'video/mp4'
+        type: "video/mp4"
     }).appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
     tools.appendTo(container);
     this.pp = Popcorn("#video" + this.id);
-
-
 }
 
-
-
-
-
-$(document).ready(function () {
-    /* Temporary list of video locations that match up in order with the JSON files in FILENAMES */
-    var videos = [];
-    var collection = {};
-
-    //loads filenames from manifest.json in local folder
-    setupVideos('manifest.json'); // could point to one from a different event or something
+$(document).ready(function() {
+    var pageNumber, fileNames, activeFiles, numVideosToDisplay, colorList, focusDistance, dotCoords, focusRegion, upPagerActive, downPagerActive, maxPageNumber, numVideos, testActive, videosToDisplay, temp, videos = [], collection = {};
+    setupVideos("manifest.json");
     console.log(videos.length);
-        
-    
-    
-
-    /*  Commenting this out for now, including tweets in timeline will be awesome but we 
-        need to think hard about how we filter to the time period reprented, relevant hashtags/participants, etc.
-        
-    var isLocked = false;
-    $("#feedControl").click(function () {
-        if (!isLocked) {
-            $("#feedControl").text("Unfreeze Twitter Feed");
-        } else {
-            $("#feedControl").text("Freeze Twitter Feed");
-        }
-        isLocked = !isLocked;
-    });
-
-    $("#tweetPart").tweetable({username: 'UCBerkeley'});
-    
-    var twitterList = ['UCBerkeley', 'ucdavis', 'ucsc'];
-    var i = 1;
-    
-    if (twitterList.length != 0) {
-        var twitterInterval = setInterval(function() {
-            if (!isLocked) {
-                $("#tweetPart").empty();
-                $("#tweetPart").tweetable({username: twitterList[i % twitterList.length]});
-                //var lostButton = $("<span class='button' id='feedControl'>Freeze Twitter Feed</span>");
-                //lostButton.appendTo("#videoTweets");
-                i += 1;
-            }
-        }, 3000);
-    }
-    */
-    
-    /*clicking the pager will change this pageNumber either up or down*/
-    var pageNumber = 1; //start on page 1
-    /* Temporary list of JSON filenames - will come from elsewhere */
-    var fileNames = [ /*"vid2.json", "vid1.json", "vid3.json"*/ ];
-
-
-    /*These are the active videos being displayed right now it has
-    length NUMVIDEOSTODISPLAY*/
-    var activeFiles = [];
-
-    /* Initially fill the activeFiles with the first NUMVIDEOSTODISPLAY videos */
-
-    /* This can be changed if more videos want to be displayed before paging */
-    var numVideosToDisplay = 5; // note css is kind of hardwired for height of 5 videos
-    var colorList = ["AliceBlue", "Aqua", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"];
-
-    /* focusDistance is a flag that says if a point has been specified to place a region of interest*/
-    var focusDistance = false;
-    /* dotCoords holds the first point specified by the user on the page*/
-    var dotCoords = [];
-    /* focusRegion holds the current region of interest specified by the user.  This will be used to play videos from a specific point in time.*/
-    var focusRegion = [];
-
-    /* This handles the focus region when the user clicks the MAINTIMELINE*/
-    $("#maintimeline").click(function (mouse) {
-        var offset = $("#maintimeline").offset();
-        var fixedX = mouse.pageX - offset.left;
+    pageNumber = 1;
+    fileNames = [];
+    activeFiles = [];
+    numVideosToDisplay = 5;
+    colorList = [ "AliceBlue", "Aqua", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo" ];
+    focusDistance = false;
+    dotCoords = [];
+    focusRegion = [];
+    $("#maintimeline").click(function(mouse) {
+        var offset = $("#maintimeline").offset(), fixedX = mouse.pageX - offset.left;
         if (!focusDistance) {
             focusDistance = true;
             placeDot("#maintimeline", fixedX, mouse.pageY);
@@ -136,57 +64,35 @@ $(document).ready(function () {
             focusRegion.push(Math.min(fixedX, dotCoords[0]), Math.max(mouse.pageX, dotCoords[0]));
         }
     });
-
-    /*A flag specifying if it is ok to click the up paging arrow*/
-    var upPagerActive = true;
-    /*A flag specifying if it is ok to click the down paging arrow*/
-    var downPagerActive = true;
-
-    /* This is the maximum number of pages to display*/
-    var maxPageNumber = 2; /* = Math.floor(videoList.length / numVideosToDisplay) + 1 */
-    
-
-    
-
-
-    /* This variable should be set to the length of the video list to be displayed*/
-    var numVideos = videos.length;
-
-
-
+    upPagerActive = true;
+    downPagerActive = true;
+    maxPageNumber = 2;
+    numVideos = videos.length;
     displayEvent(1, "something happened right then", "orange", 15);
     displayEvent(2, "something else happened here", "aqua", 40);
     displayEvent(3, "another something", "BlueViolet", 212);
     displayEvent(4, "yet another", "Khaki", 512);
     displayEvent(5, "wwwhwat?", "Green", 432);
     displayEvent(6, "crazy", "Olive", 79);
-
-
-    var testActive = [];
+    testActive = [];
     transferElements(videos, testActive, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
-    $.each(testActive, function (key, val) {
+    $.each(testActive, function(key, val) {
         displayVideo(val.id, val.offset, val.duration, val.name);
     });
-
-    /*If there are five or less videos, then don't display the pagers*/
     if (numVideos <= numVideosToDisplay) {
         $(".pager").toggleClass("pagerDisappear");
         upPagerActive = false;
         downPagerActive = false;
     }
-    /*If this is the first page, down display the up pager*/
     if (pageNumber === 1) {
         upPagerActive = false;
         pagerDisappear(".pager.#up");
     }
-    /*If a pager is clicked, this handles changing the page number and
-    making the down pager disappear if the last page becomes active
-    or making the up pager disappear if the first page becomes active.*/
-    $(".pager").click(function () {
+    $(".pager").click(function() {
         var pageNumberPrevious = pageNumber;
-        if ($(this).attr('id') === "up" && upPagerActive) {
+        if ($(this).attr("id") === "up" && upPagerActive) {
             pageNumber -= 1;
-        } else if (downPagerActive && $(this).attr('id') === "down") {
+        } else if (downPagerActive && $(this).attr("id") === "down") {
             pageNumber += 1;
         }
         if (pageNumber === maxPageNumber) {
@@ -205,27 +111,25 @@ $(document).ready(function () {
             upPagerActive = true;
         }
         if (pageNumberPrevious !== pageNumber) {
-            /*change the videos in the active video list*/
-            $.each(testActive, function (key, val) {
+            $.each(testActive, function(key, val) {
                 $("div#vid" + val.id + ".vidline").hide();
             });
             testActive = [];
             transferElements(videos, testActive, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
-            $.each(testActive, function (key, val) {
-                //alert($("div#vid"+val.id+".vidline").is(":visible"));
+            $.each(testActive, function(key, val) {
                 if (!$("div#vid" + val.id + ".vidline").is(":hidden")) {
                     displayVideo(val.id, val.offset, val.duration, val.name);
-                    $(".vidnum" + "#vid" + val.id).click(function () {
+                    $(".vidnum" + "#vid" + val.id).click(function() {
                         var num = $(this).html();
                         if ($.inArray(num, videosToDisplay) !== -1) {
                             temp = [];
-                            $.each(videosToDisplay, function (k, v) {
+                            $.each(videosToDisplay, function(k, v) {
                                 if (v !== num) {
                                     temp.push(v);
                                 }
                             });
                             videosToDisplay = [];
-                            $.each(temp, function (key, val) {
+                            $.each(temp, function(key, val) {
                                 videosToDisplay.push(val);
                             });
                         } else {
@@ -240,66 +144,41 @@ $(document).ready(function () {
             });
         }
     });
-
-    var videosToDisplay = [];
-    var temp = [];
-    // behavior for toggling ID buttons and videos below
-
-
-
+    videosToDisplay = [];
+    temp = [];
 });
 
-/*Place box around region of interest specified by the user
-@param where is the place on the page to put this box
-@param coords is [xcoord, ycoord] of one bound
-@param  x, y is the [xcoord, ycoord] of the other bound
-Note : the order of these bounds does not matter
-*/
 function placeBeam(where, x, y, coords) {
     $(".dot").css("visibility", "hidden");
     $("<div/>", {
-        "class": 'beam'
+        "class": "beam"
     }).css({
-        'width': Math.abs(coords[0] - x) + "px",
-        'left': Math.min(coords[0], x),
-        'background': "yellow"
+        width: Math.abs(coords[0] - x) + "px",
+        left: Math.min(coords[0], x),
+        background: "yellow"
     }).appendTo(where);
 }
 
-/*Place a dot to show the user they specified one of the bounds of a region they are interested in
-@param where is the place on the page to put this dot
-@param x, y is the [xcoord, ycoord] of this dot
-*/
-function placeDot(where, x, y) {
+function placeDot(where, x) {
     $(".beam").css("visibility", "hidden");
     $("<div/>", {
-        "class": 'dot'
+        "class": "dot"
     }).css({
-        'left': x,
-        'background': "yellow"
+        left: x,
+        background: "yellow"
     }).appendTo(where);
 }
 
 function displayEvent(id, title, color, time) {
-    //todo need to figure out how to distribute colors, convert time to space
     $("<div/>", {
-        "class": 'event',
-        "id": "event_" + id,
-        "title": title
+        "class": "event",
+        id: "event_" + id,
+        title: title
     }).css({
-        'left': 143 + time,
-        'background': color
+        left: 143 + time,
+        background: color
     }).appendTo("#maintimeline");
 }
-
-/*Fills an array with the elements from another array within specified bounds.
-This function does bound checking on FROM.  The function assumes TO is big enough to hold
-all of the elements.
-@param from is the array transferring from
-@param to is the array transferrring to
-@param start is the starting index in FROM
-@param end is the ending index in FROM
-*/
 
 function transferElements(from, to, start, end) {
     var lastIndex = Math.min(end + 1, from.length);
@@ -308,35 +187,26 @@ function transferElements(from, to, start, end) {
     }
 }
 
-/*Changed the css of the pager to make it disappear
-@param name is which pager it is - .pager.#up or .pager.#down */
 function pagerDisappear(name) {
     $(name).css("background", "#aaa");
     $(name).css("color", "#aaa");
 }
 
-/*Changed the css of the pager to make it appear
-@param name is which pager it is - .pager.#up or .pager.#down */
 function pagerAppear(name) {
     $(name).css("background", "#c8c8c8");
     $(name).css("color", "#333");
 }
 
 function displayVideo(id, start, duration, meta) {
-    //todo duration->space, match meta to real meta
-    var offset = $("#maintimeline").offset().left;
-    var leftpos = offset + start;
-    var vidline = $("<div/>", {
+    var vidtime, offset = $("#maintimeline").offset().left, leftpos = offset + start, vidline = $("<div/>", {
         "class": "vidline",
-        "id": "vidline" + id
-    });
-    var vidnum = $("<div/>", {
+        id: "vidline" + id
+    }), vidnum = $("<div/>", {
         "class": "vidnum",
-        "id": "vid" + id,
+        id: "vid" + id,
         text: id,
         title: "Click to show video"
-    }).appendTo(vidline);
-    var vidmeta = $("<div/>", {
+    }).appendTo(vidline), vidmeta = $("<div/>", {
         "class": "vidmeta"
     }).appendTo(vidline);
     $("<p/>", {
@@ -348,23 +218,23 @@ function displayVideo(id, start, duration, meta) {
     $("<p/>", {
         text: "duration: " + sec2hms(duration)
     }).appendTo(vidmeta);
-    var vidtime = $("<div/>", {
+    vidtime = $("<div/>", {
         "class": "vidtime"
     }).css({
-        "left": leftpos,
-        "width": getOffset(duration)
+        left: leftpos,
+        width: getOffset(duration)
     }).appendTo(vidline);
     console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
- 
- $("#navtl, .vidtime").click(function (e) {
+    $("#navtl, .vidtime").click(function(e) {
+        var clickleft, pct, tldur;
         console.log("clickity clack");
-        var clickleft = e.pageX - $('#maintimeline').offset().left;
-        var pct = clickleft / $('#maintimeline').width();
-        var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+        clickleft = e.pageX - $("#maintimeline").offset().left;
+        pct = clickleft / $("#maintimeline").width();
+        tldur = Popcorn.util.toSeconds($("#maintimeline").attr("data-duration"));
         timeline.currentTime(tldur * pct);
         console.log("moving timer to " + tldur * pct);
-        $(videos).each(function () {
+        $(videos).each(function() {
             var timediff = timeline.currentTime() - this.offset;
             if (timediff < 0) {
                 this.pp.pause();
@@ -374,7 +244,6 @@ function displayVideo(id, start, duration, meta) {
                 this.pp.pause();
                 this.pp.currentTime(this.pp.duration());
                 console.log("setting " + this.id + " to " + this.duration);
-
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration) {
                 this.pp.currentTime(timediff);
                 if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")) {
@@ -382,31 +251,26 @@ function displayVideo(id, start, duration, meta) {
                 }
                 console.log("setting " + this.id + " to " + timediff);
             }
-        }); // end rashomon each
-    }); //end nav click
-
-    $(".vidnum").click(function () {
-        
+        });
+    });
+    $(".vidnum").click(function() {
+        var thisvid, num;
         $(this).toggleClass("vidactive");
-        var thisvid = $("#vcontain" + $(this).text());
+        thisvid = $("#vcontain" + $(this).text());
         thisvid.fadeToggle("fast", "linear");
         if (thisvid.is(":hidden")) {
             Popcorn("#video" + $(this).text()).pause();
-        } else {
-            //todo: if playhead is in its duration when toggled on, it should play
-        }
-
-
-        var num = $(this).html();
+        } else {}
+        num = $(this).html();
         if ($.inArray(num, videosToDisplay) !== -1) {
             temp = [];
-            $.each(videosToDisplay, function (k, v) {
+            $.each(videosToDisplay, function(k, v) {
                 if (v !== num) {
                     temp.push(v);
                 }
             });
             videosToDisplay = [];
-            $.each(temp, function (key, val) {
+            $.each(temp, function(key, val) {
                 videosToDisplay.push(val);
             });
         } else {
@@ -414,53 +278,21 @@ function displayVideo(id, start, duration, meta) {
         }
         $(this).toggleClass("vidactive");
         toggleVid($(this).text());
-    }); // end vidnum click
- 
-    
+    });
 }
 
-/** Function to position videos in the space (the space is the area in
-the page where the videos should be positioned).  It enforces square video dimensions.
-@param VideoList is the Javascript Array of video names to position in the space - these should only be videos that have
-been selected to be viewed.  
-@param spaceX is the x dimension of the space in the page
-@param spaceY is the y dimension of the space in the page
-@param spaceWidth is the total width of the space
-@param spaceHeight is the total height of the space
-@param spacing is a parameter to customize how far the gap is between videos and between the border of the space in the x-direction
-*/
 function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spacing) {
-    var spaceSquareDim = Math.min(spaceHeight, spaceWidth);
-    var numberOfVideos = videoList.length;
-    var numberY = Math.sqrt(numberOfVideos);
-    var numberX = Math.ceil(numberOfVideos / numberY);
-    var vidWidth = vidDimCalc(numberX, spaceSquareDim, spacing);
-    //var vidHeight = vidDimCalc(numberY, spaceHeight, spacing);
-    var vidHeight = vidWidth;
-    var spacingX = spacing;
-    var spacingY = ySpacingCalc(spaceHeight, vidHeight, numberY);
-    var lastRowStart = numberX * (numberY - 1);
-    $.each(videoList, function (index, value) {
-        var current = $("<video>" + "<source src=" + value.file + "type='video/mov'/>" + "<source src=" + value.file + "type='video/mp4'/>" + "</video>");
-        /* should move to something like this where value.file is a base filename that we (hopefully) have assets derived for.  left old code b/c not sure if this is working/finished :D 
-        var mpath = "http://metaviddemo01.ucsc.edu/media/";
-        var current = $("<video/>", {id: value.id});
-        var webm = $("<source/>", { src: mpath + value.file + ".webm", type: 'video/webm'}).appendTo(current);
-        var mp4 = $("<source/>", { src: mpath + value.file + ".mp4", type: 'video/mp4'}).appendTo(current); */
-        /*Set the width of this video*/
-        /*Set the height of this video*/
+    var spaceSquareDim = Math.min(spaceHeight, spaceWidth), numberOfVideos = videoList.length, numberY = Math.sqrt(numberOfVideos), numberX = Math.ceil(numberOfVideos / numberY), vidWidth = vidDimCalc(numberX, spaceSquareDim, spacing), vidHeight = vidWidth, spacingX = spacing, spacingY = ySpacingCalc(spaceHeight, vidHeight, numberY), lastRowStart = numberX * (numberY - 1);
+    $.each(videoList, function(index, value) {
+        var specialPos, pos, current = $("<video>" + "<source src=" + value.file + "type='video/mov'/>" + "<source src=" + value.file + "type='video/mp4'/>" + "</video>");
         $(current).css("width", vidWidth + "px");
         $(current).css("height", vidHeight + "px");
         if (index >= lastRowStart) {
-            /*if is last row, special calculation*/
-            var specialPos = lastRowPositioning(index % numberX, numberOfVideos - lastRowStart, index % numberY, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight);
+            specialPos = lastRowPositioning(index % numberX, numberOfVideos - lastRowStart, index % numberY, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight);
             $(current).css("left", specialPos[0]);
             $(current).css("top", specialPos[1]);
-            /* Set the x and y positions of this video using specialPos */
         } else {
-            /*if not last row, find position regularly*/
-            var pos = regularPositioning(index % numberX, index % numberY, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
-            /* Set the x and y positions of this video using pos */
+            pos = regularPositioning(index % numberX, index % numberY, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
             $(current).css("left", pos[0]);
             $(current).css("top", pos[1]);
         }
@@ -468,107 +300,59 @@ function positionVideos(videoList, spaceX, spaceY, spaceWidth, spaceHeight, spac
     });
 }
 
-/** Function to calculate how much spacing there should be in the y direction given that the videos have same height and width dimensions.
-@param spaceHeight is the height of the space being positioned in
-@param vidHeight is the height of each video
-@param numberY is the number of videos being positioned in the y direction.
-*/
 function ySpacingCalc(spaceHeight, vidHeight, numberY) {
     var fringeLeftover = spaceHeight - vidHeight * numberY;
-    return (fringeLeftover / numberY);
+    return fringeLeftover / numberY;
 }
 
-/** Function to calculate a given dimension of a video.  This has been generalized to calculate either the video height or the video width.
-@param number is the number of videos that will be in this dimension of the space
-@param spaceDim is the dimension of the space being placed into
-@param spacing is the amount of space between two videos in this dimension as well as the amount of space between the edges of the space and the videos
-*/
 function vidDimCalc(number, spaceDim, spacing) {
-    var totalFringeSpace = (number + 1) * spacing;
-    var remainingSpace = spaceDim - totalFringeSpace;
-    var vidDim = remainingSpace / number;
+    var totalFringeSpace = (number + 1) * spacing, remainingSpace = spaceDim - totalFringeSpace, vidDim = remainingSpace / number;
     return vidDim;
 }
 
-/** Function to do special positioning for the last row.  It simply recalculates the spacing in the x direction and then lets regular positioning
-do the positioning with this modified x-direction spacing.
-@param totalInRow is the total amount of videos in the last row
-@param spaceWidth is the width of the space being positioned in
-See regularPositioning params list for the other parameters
-*/
 function lastRowPositioning(positionInRow, totalInRow, positionInCol, spaceWidth, spaceX, spaceY, spacingY, vidWidth, vidHeight) {
-    var xFringeTotal = (totalInRow + 1) * (vidWidth);
-    var spacingX = spaceWidth - xFringeTotal;
+    var xFringeTotal = (totalInRow + 1) * vidWidth, spacingX = spaceWidth - xFringeTotal;
     return regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight);
 }
 
-/** Function to find the positioning of a video given it is not in the last row.  It returns the position as an array [x position, y position].
-@param positionInRow is the index of this video in its given row starting from index 0
-@param positionInCol is the index of this video in its given column starting from index 0
-@param spaceX is the x-coordinate of the space being positioned in
-@param spaceY is the y-coordinate of the space being positioned in
-@param spacingX is the space between each video in the x-direction
-@param spacingY is the space between each video in the y-direction
-@param vidWidth is the width of a video
-@param vidHeight is the height of a video
-*/
 function regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacingX, spacingY, vidWidth, vidHeight) {
-    var xPos = (positionInRow) * (vidWidth) + (positionInRow + 1) * (spacingX) + spaceX;
-    var yPos = (positionInCol) * (vidHeight) + (positionInCol + 1) * (spacingY) + spaceY;
-    var pos = [xPos, yPos];
+    var xPos = positionInRow * vidWidth + (positionInRow + 1) * spacingX + spaceX, yPos = positionInCol * vidHeight + (positionInCol + 1) * spacingY + spaceY, pos = [ xPos, yPos ];
     return pos;
 }
 
-//converts secs to hh:mm:ss with leading zeros
 function sec2hms(time) {
-    var totalSec = parseInt(time, 10);
-    var hours = parseInt(totalSec / 3600, 10) % 24;
-    var minutes = parseInt(totalSec / 60, 10) % 60;
-    var seconds = parseInt(totalSec % 60, 10);
+    var totalSec = parseInt(time, 10), hours = parseInt(totalSec / 3600, 10) % 24, minutes = parseInt(totalSec / 60, 10) % 60, seconds = parseInt(totalSec % 60, 10);
     return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 }
 
 function toggleVid(id) {
     console.log("toggling " + id);
-
 }
 
-//sets up timelines once total duration has been set
 function setupTl(duration) {
-
     Popcorn.player("baseplayer");
     timeline = Popcorn.baseplayer("#base");
-    timeline.endtime = duration; // 6 minutes
+    timeline.endtime = duration;
     $("#maintimeline").attr("data-duration", timeline.endtime);
-    timeline.cue(timeline.endtime, function () {
+    timeline.cue(timeline.endtime, function() {
         this.pause();
         console.log("pausing");
     });
-    //as each video loads up, set up cues
-    //todo - move video timeline drawing to this section
-    $('video').bind('loadedmetadata', function () {
- 
-        var pid = $(this).attr('id');
-        var pop = Popcorn('#' + pid);
-        var id = $(this).attr('data-id');
-        
-        var duration = pop.duration();
-        
-        $(this).attr('data-duration', pop.duration());
-        var totalwidth = $("#maintimeline").width();
-        var offset = getOffset($(this).attr('data-offset'));
-        console.log($(this).attr('data-id') + " should trigger at " + $(this).attr('data-offset'));
+    $("video").bind("loadedmetadata", function() {
+        var totalwidth, offset, pid = $(this).attr("id"), pop = Popcorn("#" + pid), id = $(this).attr("data-id"), duration = pop.duration();
+        $(this).attr("data-duration", pop.duration());
+        totalwidth = $("#maintimeline").width();
+        offset = getOffset($(this).attr("data-offset"));
+        console.log($(this).attr("data-id") + " should trigger at " + $(this).attr("data-offset"));
         displayVideo(id, offset, duration, name);
-        timeline.cue($(this).attr('data-offset'), function () {
-            //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
-            if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
+        timeline.cue($(this).attr("data-offset"), function() {
+            if (!timeline.media.paused && $("#vcontain" + id).is(":visible")) {
                 console.log("playing" + id);
                 pop.play();
             }
         });
     });
-    //play button behavior
-    $("#play").click(function () {
+    $("#play").click(function() {
         $("#play").toggle();
         $("#stop").toggle();
         console.log(timeline.currentTime() + "of " + timeline.endtime);
@@ -576,181 +360,124 @@ function setupTl(duration) {
             console.log("Playing timeline");
             timeline.play();
         }
-        $(videos).each(function () {
-
-            var offset = this.offset;
-            var duration = this.pp.duration();
+        $(videos).each(function() {
+            var offset = this.offset, duration = this.pp.duration();
             if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")) {
                 this.pp.play();
             }
         });
     });
-    //pause media when stop button is pressed
-    $("#stop").click(function () {
+    $("#stop").click(function() {
         timeline.pause();
         $("#play").toggle();
         $("#stop").toggle();
-        $(videos).each(function () {
+        $(videos).each(function() {
             this.pp.pause();
         });
     });
-    //adjust playhead when main timeline moves
-    timeline.on("timeupdate", function () {
-        var fulldur = timeline.endtime;
-        var totalwidth = $("#maintimeline").width();
-        var pct = this.currentTime() / fulldur * 100; // for when we switch to % for window size adjustments
-        var newoffset = totalwidth * this.currentTime() / fulldur;
+    timeline.on("timeupdate", function() {
+        var fulldur = timeline.endtime, totalwidth = $("#maintimeline").width(), pct = this.currentTime() / fulldur * 100, newoffset = totalwidth * this.currentTime() / fulldur;
         $(".timeloc").text(sec2hms(this.currentTime()));
-        $("#timepos").css('left', newoffset + $("#maintimeline").offset().left);
-
-
+        $("#timepos").css("left", newoffset + $("#maintimeline").offset().left);
     });
-    //on navtl click, adjust video positions appropriately, obeying play conditions and such
-    
-
 }
-
 
 function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
     activeFiles = [];
     transferElements(files, activeFiles, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
-    $.each(activeFiles, function (key, val) {
+    $.each(activeFiles, function(key, val) {
         var vid;
-        $.getJSON(val, function (data) {
-            var offset = data.Timeline.Offset;
-            var length = data.Temporal.Length;
-            var id = data.ID.VideoID;
-            var name = data.ID.Name;
+        $.getJSON(val, function(data) {
+            var offset = data.Timeline.Offset, length = data.Temporal.Length, id = data.ID.VideoID, name = data.ID.Name;
             vid = new video(offset, duration, id, name);
             displayVideo(id, offset, duration, name);
         });
     });
 }
 
-
-
-
 function validDate(item) {
-    //given item, looksin item.dates and finds the best guess at when the video begins
-    if (item.mcDate > 2000) {
+    if (item.mcDate > 2e3) {
         return item.mcDate;
     } else {
         return item.fmDate;
     }
 }
 
-function formatDate(exifDate){
-    //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
-    var date = exifDate.toString();
-    var str = date.split(" "); //sep date from time
-    
-    var datesplit = str[0].split(":");
-    var year = datesplit[0];
-    var month = datesplit[1] - 1;
-    var day = datesplit[2];
-    var timesplit = str[1].split(":");
-    var hour = timesplit[0];
-    var minute = timesplit[1];
-    var second = timesplit[2];
+function formatDate(exifDate) {
+    var zone, d, date = exifDate.toString(), str = date.split(" "), datesplit = str[0].split(":"), year = datesplit[0], month = datesplit[1] - 1, day = datesplit[2], timesplit = str[1].split(":"), hour = timesplit[0], minute = timesplit[1], second = timesplit[2];
     if (timesplit[2].indexOf("-") != -1) {
-        //HUGE BUG this does not correct if you're in a time zone with a "+" of gmt. FIX LATER THANKS
-        var zone = timesplit[2].split("-");
+        zone = timesplit[2].split("-");
         second = zone[0];
         zone = zone[1].split(":");
         zone = zone[0];
         hour -= zone;
         hour = hour < 10 ? "0" + hour : hour;
-        
     }
-
-    var d = new Date(year, month, day, hour, minute, second, 0);
-    //console.log(d);
-    //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
+    d = new Date(year, month, day, hour, minute, second, 0);
     return d;
-    
 }
 
 function getOffset(time) {
     console.log("offset of " + time);
-    return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+    return $("#maintimeline").width() * time / Popcorn.util.toSeconds($("#maintimeline").attr("data-duration"));
 }
 
-
-function formatDuration(duration){
-//because having different cameras output duration in the same format would be crazy!
+function formatDuration(duration) {
+    var split, hr, min, sec, dur, seconds;
     if (duration.indexOf(":") != -1) {
-        //return Popcorn.util.toSeconds(duration)
-        var split = duration.split(":");
-        var hr = split[0];
-        var min = split[1];
-        var sec = + split[2];
-        var dur =  (hr * 60 * 60) + (min * 60) + sec;
-	return dur;
+        split = duration.split(":");
+        hr = split[0];
+        min = split[1];
+        sec = +split[2];
+        dur = hr * 60 * 60 + min * 60 + sec;
+        return dur;
     } else if (duration.indexOf("s") != -1) {
-        var seconds = duration.split(".");
-        var dur =  seconds[0];
-	return dur;
+        seconds = duration.split(".");
+        dur = seconds[0];
+        return dur;
     } else {
-    console.log("Some weird duration, couldn't format");
-    
+        console.log("Some weird duration, couldn't format");
     }
-
 }
 
-function setupVideos(json){
-
-    $.getJSON(json, function (collecdata) {
-
-        var filenames = collecdata.files;
-        var l = filenames.length;
-        $.each(filenames, function () {
+function setupVideos(json) {
+    $.getJSON(json, function(collecdata) {
+        var filenames = collecdata.files, l = filenames.length;
+        $.each(filenames, function() {
             var item = {};
-            item.filename = '' + this;
-            $.getJSON("metadata/" + this + ".json", function (itemdata) {
-            
+            item.filename = "" + this;
+            $.getJSON("metadata/" + this + ".json", function(itemdata) {
                 item.tcDate = formatDate(itemdata[0].TrackCreateDate);
                 item.tmDate = formatDate(itemdata[0].TrackModifyDate);
                 item.fmDate = formatDate(itemdata[0].FileModifyDate);
                 item.mcDate = formatDate(itemdata[0].MediaCreateDate);
                 item.mDate = formatDate(itemdata[0].MediaModifyDate);
                 item.duration = formatDuration(itemdata[0].Duration);
-                //get other tags like geo coords here
                 item.validDate = validDate(item);
                 if (item.validDate.getTime() < earliest.getTime()) {
-                    console.log (item.validDate + "is earlier than " + earliest);
+                    console.log(item.validDate + "is earlier than " + earliest);
                     earliest = item.validDate;
                 }
-            //console.log(videos.length);
-            console.log("pushing " + item.filename);
-            videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));  
-       
-            l--;
-            console.log(l);
-            if (l == 0){
-                $.each(videos, function () {
-                    this.offset-= earliest.getTime() / 1000 - 3;
-                    $('#video' + this.id).attr('data-offset', this.offset);
-		    console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
-                    
-                    if (this.duration + this.offset > fulldur) {
-                        console.log("tweeeeet");
-                        fulldur = this.duration + this.offset + 15;
-                        console.log("fulldur " + fulldur);
-                    }
-                }); 
-            
-                console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
-                $('#maintimeline').attr('data-duration', fulldur);
-                setupTl(fulldur);
-            
-            }
-                      
-            }); //end getJSON (per item)
-
-       
-        }); //end each
-
-    }); //end manifest getJSON
-
-
+                console.log("pushing " + item.filename);
+                videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));
+                l--;
+                console.log(l);
+                if (l == 0) {
+                    $.each(videos, function() {
+                        this.offset -= earliest.getTime() / 1e3 - 3;
+                        $("#video" + this.id).attr("data-offset", this.offset);
+                        console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
+                        if (this.duration + this.offset > fulldur) {
+                            console.log("tweeeeet");
+                            fulldur = this.duration + this.offset + 15;
+                            console.log("fulldur " + fulldur);
+                        }
+                    });
+                    console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
+                    $("#maintimeline").attr("data-duration", fulldur);
+                    setupTl(fulldur);
+                }
+            });
+        });
+    });
 }
