@@ -4,18 +4,21 @@
 @param is this video's identification number - to be able to link to the actual video
 @param name is the name of this video
 */
+
 var videos = [];
 var fulldur = 0;
 var earliest = new Date();
 var timeline;
 var videosToDisplay;
+var filenames = [];
 
 function video(offset, duration, id, file) {
     this.offset = offset.getTime() / 1000;
     this.duration = +duration;
-    this.id = id;
     this.name = file;
     this.file = file;
+    this.id = filenames.indexOf(file) + 1;  
+
     if (this.file.indexOf("2012") != -1){
         this.align = "vert";
     } else {
@@ -559,6 +562,7 @@ function setupTl(duration) {
         var offset = getOffset($(this).attr('data-offset'));
         console.log($(this).attr('data-id') + " should trigger at " + $(this).attr('data-offset'));
         displayVideo(id, offset, duration, name);
+        $('.vidnum').tsort({attr: id});
         timeline.cue($(this).attr('data-offset'), function () {
             //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
             if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
@@ -699,7 +703,7 @@ function setupVideos(json) {
 
     $.getJSON(json, function (collecdata) {
 
-        var filenames = collecdata.files;
+        filenames = collecdata.files;
         var l = filenames.length;
         $.each(filenames, function () {
             var item = {};
