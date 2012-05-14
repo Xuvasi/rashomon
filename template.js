@@ -16,7 +16,7 @@ function video(offset, duration, id, file) {
     this.id = id;
     this.name = file;
     this.file = file;
-    if (timesplit[2].indexOf("2012") != -1){
+    if (this.file.indexOf("2012") != -1){
         this.align = "vert";
     } else {
         this.align = "hor";
