@@ -16,8 +16,11 @@ function video(offset, duration, id, file) {
     this.id = id;
     this.name = file;
     this.file = file;
-    //console.log(this);
-    this.align = "hor";
+    if (timesplit[2].indexOf("2012") != -1){
+        this.align = "vert";
+    } else {
+        this.align = "hor";
+    }
     var mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
     var container = $("<div/>", {
         id: "vcontain" + this.id,
