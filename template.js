@@ -67,7 +67,7 @@ $(document).ready(function () {
 
     //loads filenames from manifest.json in local folder
     setupVideos('manifest.json'); // could point to one from a different event or something
-    console.log(videos.length);
+    //console.log(videos.length);
 
 
 
@@ -359,33 +359,31 @@ function displayVideo(id, start, duration, meta) {
         "left": leftpos,
         "width": getOffset(duration)
     }).appendTo(vidline);
-    console.log("Offset for duration " + duration + " is " + getOffset(duration));
+    //console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
     $('.vidline').tsort({attr: 'id'});
     $("#navtl, .vidtime").click(function (e) {
-        console.log("clickity clack");
         var clickleft = e.pageX - $('#maintimeline').offset().left;
         var pct = clickleft / $('#maintimeline').width();
         var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
         timeline.currentTime(tldur * pct);
-        console.log("moving timer to " + tldur * pct);
         $(videos).each(function () {
             var timediff = timeline.currentTime() - this.offset;
             if (timediff < 0) {
                 this.pp.pause();
                 this.pp.currentTime(0);
-                console.log("setting " + this.id + " to 0");
+                //console.log("setting " + this.id + " to 0");
             } else if (timediff > this.offset + this.duration) {
                 this.pp.pause();
                 this.pp.currentTime(this.pp.duration());
-                console.log("setting " + this.id + " to " + this.duration);
+                //console.log("setting " + this.id + " to " + this.duration);
 
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration) {
                 this.pp.currentTime(timediff);
                 if (!timeline.media.paused && !$("#vcontain" + this.id).is(":hidden")) {
                     this.pp.play();
                 }
-                console.log("setting " + this.id + " to " + timediff);
+                //console.log("setting " + this.id + " to " + timediff);
             }
         }); // end rashomon each
     }); //end nav click
@@ -395,7 +393,7 @@ function displayVideo(id, start, duration, meta) {
         toggleVid($(this).text());
     }); // end vidnum click
     if ( $('.vidcontainer:hidden').length > 2){
-            console.log("togglin'");
+            //console.log("togglin'");
             toggleVid(id);
         }
 }
@@ -534,10 +532,10 @@ function toggleVid(id) {
         videosToDisplay.push(val);
     });
     } else {
-    videosToDisplay.push(id);
+    //videosToDisplay.push(id);
     }
-    $("#vid" + id).toggleClass("vidactive");
-    console.log("toggling " + id);
+
+
 
 }
 
@@ -559,17 +557,17 @@ function setupTl(duration) {
         var pid = $(this).attr('id');
         var pop = Popcorn('#' + pid);
         var id = $(this).attr('data-id');
-
+        var of = $(this).attr('data-offset');
         var duration = pop.duration();
 
         $(this).attr('data-duration', pop.duration());
         var totalwidth = $("#maintimeline").width();
         var offset = getOffset($(this).attr('data-offset'));
-        console.log($(this).attr('data-id') + " should trigger at " + $(this).attr('data-offset'));
+        console.log(id + " should trigger at " + of);
         displayVideo(id, offset, duration, name);
-        
-        timeline.cue($(this).attr('data-offset'), function () {
-            //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
+        console.log("test");
+        timeline.cue(of, function () {
+            console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
             if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
                 console.log("playing" + id);
                 pop.play();
@@ -580,7 +578,7 @@ function setupTl(duration) {
     $("#play").click(function () {
         $("#play").toggle();
         $("#stop").toggle();
-        console.log(timeline.currentTime() + "of " + timeline.endtime);
+        //console.log(timeline.currentTime() + "of " + timeline.endtime);
         if (timeline.currentTime() < timeline.endtime) {
             console.log("Playing timeline");
             timeline.play();
@@ -678,7 +676,6 @@ function formatDate(exifDate) {
 }
 
 function getOffset(time) {
-    console.log("offset of " + time);
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
 }
 
@@ -724,29 +721,24 @@ function setupVideos(json) {
                 //get other tags like geo coords here
                 item.validDate = validDate(item);
                 if (item.validDate.getTime() < earliest.getTime()) {
-                    console.log(item.validDate + "is earlier than " + earliest);
+                    
                     earliest = item.validDate;
                 }
-                //console.log(videos.length);
-                console.log("pushing " + item.filename);
                 videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));
 
                 l--;
-                console.log(l);
                 if (l == 0) {
                     $.each(videos, function () {
                         this.offset -= earliest.getTime() / 1000 - 3;
                         $('#video' + this.id).attr('data-offset', this.offset);
-                        console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
+                        //console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
 
                         if (this.duration + this.offset > fulldur) {
-                            console.log("tweeeeet");
                             fulldur = this.duration + this.offset + 15;
-                            console.log("fulldur " + fulldur);
                         }
                     });
 
-                    console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
+                    //console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
                     $('#maintimeline').attr('data-duration', fulldur);
                     setupTl(fulldur);
 
