@@ -361,7 +361,7 @@ function displayVideo(id, start, duration, meta) {
     }).appendTo(vidline);
     console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
-
+    $('.vidline').tsort({attr: 'id'});
     $("#navtl, .vidtime").click(function (e) {
         console.log("clickity clack");
         var clickleft = e.pageX - $('#maintimeline').offset().left;
@@ -390,36 +390,14 @@ function displayVideo(id, start, duration, meta) {
         }); // end rashomon each
     }); //end nav click
     $(".vidnum").click(function () {
-
-        $(this).toggleClass("vidactive");
-        var thisvid = $("#vcontain" + $(this).text());
-        thisvid.fadeToggle("fast", "linear");
-        if (thisvid.is(":hidden")) {
-            Popcorn("#video" + $(this).text()).pause();
-        } else {
-            //todo: if playhead is in its duration when toggled on, it should play
-        }
-
-
-        var num = $(this).html();
-        if ($.inArray(num, videosToDisplay) !== -1) {
-            temp = [];
-            $.each(videosToDisplay, function (k, v) {
-                if (v !== num) {
-                    temp.push(v);
-                }
-            });
-            videosToDisplay = [];
-            $.each(temp, function (key, val) {
-                videosToDisplay.push(val);
-            });
-        } else {
-            videosToDisplay.push(num);
-        }
-        $(this).toggleClass("vidactive");
+        var vid_id = $(this).text();
+        
         toggleVid($(this).text());
     }); // end vidnum click
-
+    if ( $('.vidcontainer:hidden').length > 2){
+            console.log("togglin'");
+            toggleVid(id);
+        }
 }
 
 /** Function to position videos in the space (the space is the area in
@@ -532,6 +510,33 @@ function sec2hms(time) {
 }
 
 function toggleVid(id) {
+
+    $("#vid" + id).toggleClass("vidactive");
+    pp = Popcorn("#video" + id);
+    of = $("#video" + id).attr("data-offset");
+        $("#vidnum" + id).toggleClass("vidactive");
+    var thisvid = $("#vcontain" + id);
+    thisvid.fadeToggle("fast", "linear");
+    if (thisvid.is(":hidden")) {
+        pp.pause();
+    } else {
+    //deal with case where if video doesn't play if toggled on during period when it should
+    }
+    if ($.inArray(id, videosToDisplay) !== -1) {
+    temp = [];
+    $.each(videosToDisplay, function (k, v) {
+        if (v !== id) {
+            temp.push(v);
+        }
+    });
+    videosToDisplay = [];
+    $.each(temp, function (key, val) {
+        videosToDisplay.push(val);
+    });
+    } else {
+    videosToDisplay.push(id);
+    }
+    $("#vid" + id).toggleClass("vidactive");
     console.log("toggling " + id);
 
 }
@@ -562,7 +567,7 @@ function setupTl(duration) {
         var offset = getOffset($(this).attr('data-offset'));
         console.log($(this).attr('data-id') + " should trigger at " + $(this).attr('data-offset'));
         displayVideo(id, offset, duration, name);
-        $('.vidnum').tsort({attr: id});
+        
         timeline.cue($(this).attr('data-offset'), function () {
             //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
             if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
