@@ -167,7 +167,7 @@ $(document).ready(function () {
     displayEvent(5, "wwwhwat?", "Green", 432);
     displayEvent(6, "crazy", "Olive", 79);
 
-
+    
     var testActive = [];
     transferElements(videos, testActive, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
     $.each(testActive, function (key, val) {
@@ -237,8 +237,8 @@ $(document).ready(function () {
                         } else {
                             videosToDisplay.push(num);
                         }
-                        $(this).toggleClass("vidactive");
-                        toggleVid($(this).text());
+                        //$(this).toggleClass("vidactive");
+                        //($(this).text());
                     });
                 } else {
                     $("div#vid" + val.id + ".vidline").show();
@@ -387,15 +387,18 @@ function displayVideo(id, start, duration, meta) {
             }
         }); // end rashomon each
     }); //end nav click
-    $(".vidnum").click(function () {
-        var vid_id = $(this).text();
+    $("#vid" + id).click(function () {
+        var vid_id = id;
         
-        toggleVid($(this).text());
+        toggleVid(id);
     }); // end vidnum click
-    if ( $('.vidcontainer:hidden').length > 2){
+
+if ( $('.vidcontainer:hidden').length > 2){
             //console.log("togglin'");
             toggleVid(id);
         }
+
+    
 }
 
 /** Function to position videos in the space (the space is the area in
@@ -508,7 +511,7 @@ function sec2hms(time) {
 }
 
 function toggleVid(id) {
-
+    console.log("toggling " + id);
     $("#vid" + id).toggleClass("vidactive");
     pp = Popcorn("#video" + id);
     of = $("#video" + id).attr("data-offset");
@@ -518,8 +521,9 @@ function toggleVid(id) {
     if (thisvid.is(":hidden")) {
         pp.pause();
     } else {
-    //deal with case where if video doesn't play if toggled on during period when it should
+        //deal with case where if video doesn't play if toggled on during period when it should
     }
+    /*
     if ($.inArray(id, videosToDisplay) !== -1) {
     temp = [];
     $.each(videosToDisplay, function (k, v) {
@@ -532,10 +536,11 @@ function toggleVid(id) {
         videosToDisplay.push(val);
     });
     } else {
+
     //videosToDisplay.push(id);
     }
 
-
+    */
 
 }
 
