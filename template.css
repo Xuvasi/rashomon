@@ -180,6 +180,8 @@ body {
 .hor { width: 320px;  }
 .vert { height: 320px; } 
 
+.vidtools { padding: 25px 5px 25px 5px; text-align: center; }
+
 #tlcontainer {
     position: relative;
     width: 100%;

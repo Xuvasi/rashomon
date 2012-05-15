@@ -29,9 +29,9 @@ function video(offset, duration, id, file) {
         id: "vcontain" + this.id,
         'class': 'vidcontainer'
     });
-    var tools = $("<h4/>", {
+    var tools = $("<div/>", {
         'class': 'vidtools',
-        text: '(I) (F) (TBI)'
+        text: this.id + ' '
     }); // i is for info, f is fullscreen, TBI means to be implemented.  and icons would rock, too
     var vid = $("<video/>", {
         id: "video" + this.id,
