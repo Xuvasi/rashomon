@@ -393,7 +393,7 @@ function displayVideo(id, start, duration, meta) {
         toggleVid(id);
     }); // end vidnum click
 
-if ( $('.vidcontainer:hidden').length > 2){
+if ( $('.vidcontainer:hidden').length > 0){
             //console.log("togglin'");
             toggleVid(id);
         }
@@ -549,6 +549,8 @@ function setupTl(duration) {
 
     Popcorn.player("baseplayer");
     timeline = Popcorn.baseplayer("#base");
+    timeline.currentTime(70);
+    timeline.play();
     timeline.endtime = duration; // 6 minutes
     $("#maintimeline").attr("data-duration", timeline.endtime);
     timeline.cue(timeline.endtime, function () {
