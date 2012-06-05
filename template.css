@@ -266,7 +266,7 @@ cursor: crosshair;
     color: green;
 }
 
-.button#stop { display: none; }
+.button#play { display: none; }
 
 #videos {
     position: relative;
