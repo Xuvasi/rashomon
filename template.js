@@ -332,7 +332,7 @@ function displayVideo(id, start, duration, meta) {
     var offset = $("#maintimeline").offset().left;
     var leftpos = start;
        var vidline = $("<div/>", {
-        "class": "vidline",
+        "class": "vidline " + isEven(id),
         "id": "vidline" + id
     });
     var vidnum = $("<div/>", {
@@ -773,3 +773,7 @@ function setupVideos(json) {
     }); //end manifest getJSON
 
 }
+
+var isEven = function(someNumber){
+return (someNumber%2 == 0) ? "even" : "odd";
+};
