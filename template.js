@@ -251,6 +251,7 @@ $(document).ready(function () {
     var temp = [];
     // behavior for toggling ID buttons and videos below
 
+ 
 
 });
 
@@ -369,7 +370,16 @@ function displayVideo(id, start, duration, meta) {
     //console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
     $('.vidline').tsort({attr: 'id'});
-    
+       
+       
+    /*  block to show relative time, calculation is wrong to show time 
+    $('.vidtl').mousemove(function(e){
+        var mouseleft = e.pageX - $('#maintimeline').offset().left;
+        var pct = mouseleft / $('#maintimeline').width();
+        var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+        $('#mouseloc').html(sec2hms(tldur * pct));
+    });
+    */   
     
     $("#navtl, .vidtl").click(function (e) {
         var clickleft = e.pageX - $('#maintimeline').offset().left;
