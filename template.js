@@ -382,7 +382,7 @@ function displayVideo(id, start, duration, meta) {
                 this.pp.pause();
                 this.pp.currentTime(0);
                 console.log("setting " + this.id + " to 0");
-            } else if (timeline.currentTime() > this.offset) {
+            } else if (timeline.currentTime() > this.offset + this.duration) {
                 this.pp.pause();
                 this.pp.currentTime(this.pp.duration());
                 console.log("setting " + this.id + " to " + this.duration);
