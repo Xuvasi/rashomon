@@ -292,7 +292,7 @@ function displayEvent(id, title, color, time) {
         "id": "event_" + id,
         "title": title
     }).css({
-        'left': 143 + time,
+        'left': time / $("#maintimeline").width() * 100 + "%",
         'background': color
     }).appendTo("#maintimeline");
 }
@@ -330,8 +330,8 @@ function pagerAppear(name) {
 function displayVideo(id, start, duration, meta) {
     //todo duration->space, match meta to real meta
     var offset = $("#maintimeline").offset().left;
-    var leftpos = offset + start;
-    var vidline = $("<div/>", {
+    var leftpos = start;
+       var vidline = $("<div/>", {
         "class": "vidline",
         "id": "vidline" + id
     });
@@ -353,16 +353,25 @@ function displayVideo(id, start, duration, meta) {
     $("<p/>", {
         text: "duration: " + sec2hms(duration)
     }).appendTo(vidmeta);
-    var vidtime = $("<div/>", {
-        "class": "vidtime"
-    }).css({
-        "left": leftpos,
-        "width": getOffset(duration)
+    
+    var vidtl = $("<div/>", {
+        "class": "vidtl",
+        "id": "tl" + id
     }).appendTo(vidline);
+    
+    var vidtime = $("<div/>", {
+        "class": "vidtime",
+        "id": "vidtime" + id
+    }).css({
+        "left": leftpos / $("#maintimeline").width() * 100 + "%",
+        "width": getOffset(duration) / $("#maintimeline").width() * 100 + "%"
+    }).appendTo(vidtl);
     //console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
     $('.vidline').tsort({attr: 'id'});
-    $("#navtl, .vidtime").click(function (e) {
+    
+    
+    $("#navtl, .vidtl").click(function (e) {
         var clickleft = e.pageX - $('#maintimeline').offset().left;
         var pct = clickleft / $('#maintimeline').width();
         var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
@@ -372,11 +381,11 @@ function displayVideo(id, start, duration, meta) {
             if (timediff < 0) {
                 this.pp.pause();
                 this.pp.currentTime(0);
-                //console.log("setting " + this.id + " to 0");
-            } else if (timediff > this.offset + this.duration) {
+                console.log("setting " + this.id + " to 0");
+            } else if (timeline.currentTime() > this.offset) {
                 this.pp.pause();
                 this.pp.currentTime(this.pp.duration());
-                //console.log("setting " + this.id + " to " + this.duration);
+                console.log("setting " + this.id + " to " + this.duration);
 
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration) {
                 this.pp.currentTime(timediff);
@@ -384,7 +393,11 @@ function displayVideo(id, start, duration, meta) {
                     this.pp.play();
                 }
                 //console.log("setting " + this.id + " to " + timediff);
+            } else {
+                console.log("id " + this.id + " tdiff " + timediff);
+            
             }
+        
         }); // end rashomon each
     }); //end nav click
     $("#vid" + id).click(function () {
@@ -553,8 +566,8 @@ function setupTl(duration) {
     timeline.play();
     timeline.endtime = duration; // 6 minutes
     $("#maintimeline").attr("data-duration", timeline.endtime);
-    timeline.cue(timeline.endtime, function () {
-        this.pause();
+    timeline.cue(timeline.endtime - .01, function () {
+        timeline.pause();
         console.log("pausing");
     });
     //as each video loads up, set up cues
@@ -574,7 +587,7 @@ function setupTl(duration) {
         displayVideo(id, offset, duration, name);
         console.log("test");
         timeline.cue(of, function () {
-            console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
+            //console.log("trigger on " + $("#vcontain" + $(this).attr('data-id')));
             if (!(timeline.media.paused) && ($("#vcontain" + id).is(":visible"))) {
                 console.log("playing" + id);
                 pop.play();
@@ -610,12 +623,15 @@ function setupTl(duration) {
     });
     //adjust playhead when main timeline moves
     timeline.on("timeupdate", function () {
+        if (this.currentTime() > this.endtime - .5) {
+            this.pause(this.endtime - .5);
+        }
         var fulldur = timeline.endtime;
         var totalwidth = $("#maintimeline").width();
         var pct = this.currentTime() / fulldur * 100; // for when we switch to % for window size adjustments
         var newoffset = totalwidth * this.currentTime() / fulldur;
         $(".timeloc").text(sec2hms(this.currentTime()));
-        $("#timepos").css('left', newoffset + $("#maintimeline").offset().left);
+        $("#timepos").css('left', pct + "%");
 
 
     });
