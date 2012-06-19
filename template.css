@@ -6,18 +6,40 @@ body {
     background: #000;
 }
 
-#hdwrapper {
+header {
+    position: relative;
     background: #666;
-    margin: 0;
     height: 85px;
-}
-
-#header {
-    padding-top: 15px;
+        padding-top: 15px;
     padding-left: 140px;
     height: auto;
         overflow: hidden;
+
 }
+
+#signin {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    font-size: 9pt;
+    color: #aaa;
+    cursor: pointer;
+}
+
+footer {
+border-top: 1px solid #666;
+clear: both;
+position: relative;
+background: #666;
+font-size: 8pt;
+text-align: right;
+padding-right: 10px;
+}
+
+footer a:link, footer a:visited { color: white; text-decoration: none;}
+footer a:hover { color: orange; }
 
 #project {
     color: white;
@@ -202,11 +224,11 @@ background: #b0b0b0;
     background: black;
     font-size: 9pt;
     color: #aaa;
-    height: 800px;
+    min-height: 600px;
 
 }
 
-.vidcontainer { margin-top: 15px; float: left; margin-left: 30px; display: none; border: 1px solid #333;
+.vidcontainer { margin-top: 15px; float: left; margin-left: 30px; margin-bottom: 15px; display: none; border: 1px solid #333;
 }
 
 .hor { width: 320px;  }
@@ -344,5 +366,7 @@ cursor: crosshair;
     color: #551033;
 }
 
+#about{
 
+}
  
