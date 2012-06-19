@@ -1,7 +1,7 @@
 <?
 
 $url = 'https://browserid.org/verify';
-$data = http_build_query(array('assertion' => $_POST['assertion'], 'audience' => urlencode('mysite.com')));
+$data = http_build_query(array('assertion' => $_POST['assertion'], 'audience' => urlencode('metaviddemo01.ucsc.edu')));
 
 $params = array(
     'http' => array(
