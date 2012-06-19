@@ -290,9 +290,9 @@ function gotAssertion(assertion) {
 
 
 function loggedIn(res){
-
-    $("#signin").html("Signed in as " + res.email);
-
+    var sign = $("#signin")
+    sign.html("Signed in as " res);
+    sign.unbind("click");
 }
 
 /*Place box around region of interest specified by the user
