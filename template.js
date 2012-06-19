@@ -289,7 +289,11 @@ function gotAssertion(assertion) {
 }  
 
 
+function loggedIn(res){
 
+    $("#signin").html("Signed in as " + res.email);
+
+}
 
 /*Place box around region of interest specified by the user
 @param where is the place on the page to put this box
