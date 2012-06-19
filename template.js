@@ -288,10 +288,16 @@ function gotAssertion(assertion) {
       }  
 }  
 
+function setSessions(val) {
+  if (navigator.id) {
+    navigator.id.sessions = val ? val : [ ];
+  }
+}
 
 function loggedIn(res){
-    var sign = $("#signin")
-    sign.html("Signed in as " res);
+    setSessions([ { email: email } ]);
+    var sign = $("#signin");
+    sign.text("Signed in as " + res);
     sign.unbind("click");
 }
 

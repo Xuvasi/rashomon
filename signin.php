@@ -25,9 +25,10 @@ else {
 $json = json_decode($result);
 
 if ($json->status == 'okay') {
-  // the user logged in successfully.
-}
-else {
+   echo json_encode($json->email, TRUE);
+   exit;
+
+} else {
   // log in failed.
 }
 
