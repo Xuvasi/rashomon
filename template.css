@@ -9,12 +9,10 @@ body {
 header {
     position: relative;
     background: #666;
-    height: 85px;
-        padding-top: 15px;
+    padding-top: 15px;
     padding-left: 140px;
     height: auto;
-        overflow: hidden;
-
+    overflow: hidden;
 }
 
 #signin {
@@ -28,17 +26,23 @@ header {
 }
 
 footer {
-border-top: 1px solid #666;
-clear: both;
-position: relative;
-background: #666;
-font-size: 8pt;
-text-align: right;
-padding-right: 10px;
+    border-top: 1px solid #666;
+    clear: both;
+    position: relative;
+    background: #666;
+    font-size: 8pt;
+    text-align: right;
+    padding-right: 10px;
 }
 
-footer a:link, footer a:visited { color: white; text-decoration: none;}
-footer a:hover { color: orange; }
+footer a:link, footer a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: orange;
+}
 
 #project {
     color: white;
@@ -46,7 +50,6 @@ footer a:hover { color: orange; }
     font-size: 48pt;
     font-weight: bold;
     text-shadow: 0 -1px 1px #000;
-
 }
 
 #tlinfo {
@@ -117,23 +120,18 @@ footer a:hover { color: orange; }
     position: relative;
     height: 20px;
     width: 100%;
-
 }
 
 .odd {
-background: #bbb;
+    background: #bbb;
 }
 
 .even {
-background: #b0b0b0;
-
+    background: #b0b0b0;
 }
-
-
 
 .vidnum {
     position: absolute;
-
     background: #c8c8c8;
     color: black;
     font-size: 20px;
@@ -163,14 +161,15 @@ background: #b0b0b0;
     -o-transition: opacity 0.1s linear;
     -moz-transition: opacity 0.1s linear;
     -webkit-transition: opacity 0.1s linear;
-    -ms-transition: opacity 0.1s linear;    
+    -ms-transition: opacity 0.1s linear;
     transition: opacity 0.1s linear;
     cursor: default;
 }
+
 .timeline {
     position: absolute;
     left: 147px;
-    right: 0px;
+    right: 0;
     font-size: 18pt;
     height: 100%;
 }
@@ -178,10 +177,9 @@ background: #b0b0b0;
 .vidtl {
     position: absolute;
     left: 147px;
-    right: 0px;
+    right: 0;
     font-size: 18pt;
     height: 100%;
-    
     cursor: crosshair;
 }
 
@@ -193,8 +191,6 @@ background: #b0b0b0;
     background: #0c0;
 }
 
-
-
 .vidtime {
     position: relative;
     left: 450px;
@@ -202,7 +198,6 @@ background: #b0b0b0;
     height: 100%;
     background: #ececec;
     z-index: 99;
-
 }
 
 #vselector {
@@ -224,16 +219,29 @@ background: #b0b0b0;
     font-size: 9pt;
     color: #aaa;
     min-height: 600px;
-
 }
 
-.vidcontainer { margin-top: 15px; float: left; margin-left: 30px; margin-bottom: 15px; display: none; border: 1px solid #333;
+.vidcontainer {
+    margin-top: 15px;
+    float: left;
+    margin-left: 30px;
+    margin-bottom: 15px;
+    display: none;
+    border: 1px solid #333;
 }
 
-.hor { width: 320px;  }
-.vert { height: 320px; } 
+.hor {
+    width: 320px;
+}
 
-.vidtools { padding: 25px 5px 25px 5px; text-align: center; }
+.vert {
+    height: 320px;
+}
+
+.vidtools {
+    padding: 25px 5px 25px 5px;
+    text-align: center;
+}
 
 #tlcontainer {
     position: relative;
@@ -263,7 +271,7 @@ background: #b0b0b0;
 .timeline {
     position: absolute;
     left: 147px;
-    right: 0px;
+    right: 0;
     font-size: 18pt;
     height: 100%;
 }
@@ -273,12 +281,11 @@ background: #b0b0b0;
     height: 25px;
 }
 
-#navtl { height: 5px; }
+#navtl {
+    height: 5px;
+}
 
-
-
-
-#timepos { 
+#timepos {
     position: absolute;
     height: 202px;
     width: 3px;
@@ -288,11 +295,10 @@ background: #b0b0b0;
     margin-top: 17px;
 }
 
-
 #navbar {
-background: #eee;
-height: 5px;
-cursor: crosshair;
+    background: #eee;
+    height: 5px;
+    cursor: crosshair;
 }
 
 .controlbox {
@@ -316,20 +322,24 @@ cursor: crosshair;
     width: 16px;
 }
 
-#ready { cursor: pointer; }
+#ready {
+    cursor: pointer;
+}
 
 .button:hover, #ready:hover {
     color: green;
 }
 
-.button#play { display: none; }
+.button#play {
+    display: none;
+}
 
 #videos {
     position: relative;
     width: 100%;
     margin-top: 30px;
     height: 100%;
-    border-bottom 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
 }
 
 #tweetPart {
@@ -348,13 +358,13 @@ cursor: crosshair;
     border: 10px solid;
     border-radius: 30px;
     -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
     border-color: #00B2EE;
     font-family: 'Fredoka One', cursive;
 }
-   
 
 #videoTweets .button {
-    position:relative;
+    position: relative;
     width: 25%;
     height: 100%;
     font-family: 'Fredoka One', cursive;
@@ -365,7 +375,4 @@ cursor: crosshair;
     color: #551033;
 }
 
-#about{
-
-}
  
