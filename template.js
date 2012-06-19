@@ -61,6 +61,14 @@ function video(offset, duration, id, file) {
 
 
 $(document).ready(function () {
+
+
+    $('#signin').click(function() {
+        console.log("click!");  
+        navigator.id.get(gotAssertion);  
+        return false;  
+    });  
+
     /* Temporary list of video locations that match up in order with the JSON files in FILENAMES */
     var videos = [];
     var collection = {};
@@ -253,7 +261,35 @@ $(document).ready(function () {
 
  
 
-});
+
+}); //end docReady
+
+
+
+//browserID assertion
+
+function gotAssertion(assertion) {  
+      // got an assertion, now send it up to the server for verification  
+      if (assertion !== null) {  
+        $.ajax({  
+          type: 'POST',  
+          url: 'signin.php',  
+          data: { assertion: assertion },  
+          success: function(res, status, xhr) {  
+            if (res === null) {}//loggedOut();  
+              else loggedIn(res);  
+            },  
+          error: function(res, status, xhr) {  
+            alert("login failure" + res);  
+          }  
+        });  
+      } else {  
+        //loggedOut();  
+      }  
+}  
+
+
+
 
 /*Place box around region of interest specified by the user
 @param where is the place on the page to put this box
