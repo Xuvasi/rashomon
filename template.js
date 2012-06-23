@@ -62,12 +62,6 @@ function video(offset, duration, id, file) {
 $(document).ready(function () {
 
 
-    $('#signin').click(function () {
-        console.log("click!");
-        navigator.id.get(gotAssertion);
-        return false;
-    });
-
     /* Temporary list of video locations that match up in order with the JSON files in FILENAMES */
     var videos = [];
     var collection = {};
@@ -263,50 +257,8 @@ $(document).ready(function () {
 
 
 
-//browserID assertion
-function gotAssertion(assertion) {
-    // got an assertion, now send it up to the server for verification  
-    if (assertion !== null) {
-        $.ajax({
-            type: 'POST',
-            url: 'signin.php',
-            data: {
-                assertion: assertion
-            },
-            success: function (res, status, xhr) {
-                if (res === null) {
-                    loggedOut();
-                } else {
-                    loggedIn(res);
-                }
-            },
-            error: function (res, status, xhr) {
-                alert("login failure" + res);
-            }
-        });
-    } else {
-        loggedOut();
-    }
-}
 
-function setSessions(val) {
-    if (navigator.id) {
-        navigator.id.sessions = val ? val : [];
-    }
-}
 
-function loggedOut() {
-    console.log("logged out");
-}
-
-function loggedIn(email) {
-    setSessions([{
-        email: email
-    }]);
-    var sign = $("#signin");
-    sign.text("Signed in as " + email);
-    sign.unbind("click");
-}
 
 /*Place box around region of interest specified by the user
 @param where is the place on the page to put this box
