@@ -3,7 +3,6 @@ $(document).ready(function () {
 
 
     $('#signin').click(function () {
-        console.log("click!");
         navigator.id.get(gotAssertion);
         return false;
     });

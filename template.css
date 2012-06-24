@@ -90,6 +90,7 @@ footer a:hover {
 }
 
 .pager {
+    display: none;
     position: relative;
     background: #c8c8c8;
     width: 40px;
@@ -119,16 +120,16 @@ footer a:hover {
 
 .vidline {
     position: relative;
+    margin-bottom: 2px;
     height: 20px;
     width: 100%;
-}
-
-.odd {
     background: #bbb;
 }
 
+.odd {
+}
+
 .even {
-    background: #b0b0b0;
 }
 
 .vidnum {
@@ -193,6 +194,11 @@ footer a:hover {
 }
 
 .vidtime {
+    -webkit-transition: width 555ms linear;
+    -moz-transition: width 555ms linear;
+    -ms-transition: width 555ms linear;
+    -o-transition: width 555ms linear;
+    transition: width 555ms linear;
     position: relative;
     left: 450px;
     width: 30px;
@@ -288,12 +294,11 @@ footer a:hover {
 
 #timepos {
     position: absolute;
-    height: 202px;
+    height: 218px;
     width: 3px;
     background: rgba(255,255,0,.5);
     z-index: 999;
     font-size: 5px;
-    margin-top: 17px;
 }
 
 #navbar {
