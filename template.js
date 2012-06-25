@@ -10,6 +10,7 @@ var earliest = new Date();
 var timeline;
 var videosToDisplay;
 var filenames = [];
+var colorList = ["Orange", "Aqua", "BlueViolet", "Khaki", "Olive", "Pink", "AliceBlue",  "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"];
 
 function video(offset, duration, id, file) {
     this.offset = offset.getTime() / 1000;
@@ -17,7 +18,7 @@ function video(offset, duration, id, file) {
     this.name = file;
     this.file = file;
     this.id = filenames.indexOf(file) + 1;
-
+    this.color = colorList[id];
     if (this.file.indexOf("2012") !== -1) {
         this.align = "vert";
     } else {
@@ -27,7 +28,7 @@ function video(offset, duration, id, file) {
     var container = $("<div/>", {
         id: "vcontain" + this.id,
         'class': 'vidcontainer'
-    });
+    }).css("border", "1px solid " + colorList[this.id]);
     var tools = $("<div/>", {
         'class': 'vidtools',
         text: this.id + ' '
@@ -199,7 +200,9 @@ function displayVideo(id, start, duration, meta) {
         "title": meta
     }).css({
         "left": leftpos / $("#maintimeline").width() * 100 + "%",
-        "width": 1}).appendTo(vidtl);
+        "width": "1px",
+        "background": colorList[id]
+    }).appendTo(vidtl);
          //console.log("Offset for duration " + duration + " is " + getOffset(duration));
     vidline.appendTo("#vidlines");
     $('.vidline').tsort({
