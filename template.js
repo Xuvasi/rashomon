@@ -71,6 +71,13 @@ $(document).ready(function () {
    
 
 
+/* focusDistance is a flag that says if a point has been specified to place a region of interest*/
+    var focusDistance = false;
+    /* dotCoords holds the first point specified by the user on the page*/
+    var dotCoords = [];
+    /* focusRegion holds the current region of interest specified by the user.  This will be used to play videos from a specific point in time.*/
+    var focusRegion = [];
+
 
 
     /* This handles the focus region when the user clicks the MAINTIMELINE*/
