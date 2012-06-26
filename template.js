@@ -249,11 +249,12 @@ function displayVideo(id, start, duration, meta) {
 	
             } else if (timeline.currentTime() > this.offset && timeline.currentTime() < this.offset + this.duration) {
                 this.pp.currentTime(timediff);
+                showVid(this.id);
+
                 if (!timeline.media.paused) {
                     console.log("it's not paused" + this.id);
 		    console.log(timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration );
 	            this.pp.play();
-		    showVid(this.id);
                 }
                 //console.log("setting " + this.id + " to " + timediff);
             } else {
