@@ -297,6 +297,15 @@ function setupTl(duration) {
     timeline.currentTime(70);
     timeline.play();
     timeline.endtime = duration; // 6 minutes
+    timeline.on("play", function() {
+        $("#play").hide();
+        $("#stop").show();
+    });    
+    timeline.on("pause", function() {
+        $("#play").show();
+        $("#stop").hide();
+    });
+
     $("#maintimeline").attr("data-duration", timeline.endtime);
     timeline.cue(timeline.endtime - 0.01, function () {
         timeline.pause();
@@ -328,8 +337,6 @@ function setupTl(duration) {
     });
     //play button behavior
     $("#play").click(function () {
-        $("#play").toggle();
-        $("#stop").toggle();
         //console.log(timeline.currentTime() + "of " + timeline.endtime);
         if (timeline.currentTime() < timeline.endtime) {
             console.log("Playing timeline");
@@ -347,8 +354,6 @@ function setupTl(duration) {
     //pause media when stop button is pressed
     $("#stop").click(function () {
         timeline.pause();
-        $("#play").toggle();
-        $("#stop").toggle();
         $(videos).each(function () {
             this.pp.pause();
         });
