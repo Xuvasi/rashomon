@@ -288,3 +288,18 @@ function regularPositioning(positionInRow, positionInCol, spaceX, spaceY, spacin
     return pos;
 }
 
+function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
+    activeFiles = [];
+    transferElements(files, activeFiles, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
+    $.each(activeFiles, function (key, val) {
+        var vid;
+        $.getJSON(val, function (data) {
+            var offset = data.Timeline.Offset;
+            var length = data.Temporal.Length;
+            var id = data.ID.VideoID;
+            var name = data.ID.Name;
+            vid = new video(offset, duration, id, name);
+            displayVideo(id, offset, duration, name);
+        });
+    });
+}
