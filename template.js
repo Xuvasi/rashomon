@@ -194,7 +194,7 @@ function displayVideo(id, start, duration, meta) {
         "id": "tl" + id,
 	"data-id": id
     }).appendTo(vidline);
-    console.log(meta);
+    
     var vidtime = $("<div/>", {
         "class": "vidtime",
         "id": "vidtime" + id,
@@ -229,6 +229,7 @@ function displayVideo(id, start, duration, meta) {
 	timeline.play();
     });
     */
+    
     $(".vidtl").unbind('click').click(function (e) {
 	var clickleft = e.pageX - $('#maintimeline').offset().left;
         var pct = clickleft / $('#maintimeline').width();
@@ -253,8 +254,8 @@ function displayVideo(id, start, duration, meta) {
 
                 if (!timeline.media.paused) {
                     console.log("it's not paused" + this.id);
-		    console.log(timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration );
-	            this.pp.play();
+                    console.log(timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration );
+                    this.pp.play();
                 }
                 //console.log("setting " + this.id + " to " + timediff);
             } else {
@@ -262,7 +263,7 @@ function displayVideo(id, start, duration, meta) {
             }
 
         }); // end rashomon each
-    }); //end nav click
+    }); //end nav click 
     $("#vid" + id).click(function () {
         var vid_id = id;
 
@@ -271,7 +272,7 @@ function displayVideo(id, start, duration, meta) {
     if ($('.vidcontainer:hidden').length > 0) {
         //console.log("togglin'");
         //toggleVid(id);
-        $('.vidcontainer').tsort({attr: 'id'});
+        //$('.vidcontainer').tsort({attr: 'id'});
     }
 
 
@@ -289,8 +290,6 @@ function sec2hms(time) {
 
 function showVid(id){
     var pp = Popcorn("#video" + id);
-    console.log("showing " + id);
-    //pp.play();
     $("#vcontain" + id).show("fast", "linear");
     $("#vid" + id).addClass("vidactive");
 }
@@ -300,8 +299,8 @@ function hideVid(id){
     var pp = Popcorn("#video" + id);
     pp.pause();
     if ($("#vcontain" + id).is(":visible")) {
-	$("#vcontain" + id).hide("fast", "linear");
-    	$("#vid" + id).removeClass("vidactive");
+        $("#vcontain" + id).hide("fast", "linear");
+        $("#vid" + id).removeClass("vidactive");
     }
 }
 
@@ -324,7 +323,7 @@ function toggleVid(id) {
 
 //sets up timelines once total duration has been set
 function setupTl(duration) {
-
+    console.log("setting up tl");
     Popcorn.player("baseplayer");
     timeline = Popcorn.baseplayer("#base");
     timeline.currentTime(70);
@@ -347,7 +346,6 @@ function setupTl(duration) {
     //as each video loads up, set up cues
     //todo - move video timeline drawing to this section
     $('video').bind('loadedmetadata', function () {
-
         var pid = $(this).attr('id');
         var pop = Popcorn('#' + pid);
         var id = $(this).attr('data-id');
@@ -357,27 +355,28 @@ function setupTl(duration) {
         $(this).attr('data-duration', pop.duration());
         var totalwidth = $("#maintimeline").width();
         var offset = getOffset($(this).attr('data-offset'));
-        console.log(id + " should trigger at " + of);
         displayVideo(id, offset, duration, videos[id - 1].file);
+        console.log("metadata loaded on " + pid)
         var offtime = Popcorn.util.toSeconds(duration) + parseInt(of);
-	console.log("Offtime " + offtime + " " + id);
-	timeline.cue(offtime, function() {
-	    console.log("turning off");
+        console.log(offtime);
+        
+        timeline.cue(offtime, function() {
             hideVid(id);
-	});
+        });
         timeline.cue(of, function () {
             if (!(timeline.media.paused)) {
-                console.log("playing" + id);
                 pop.play();
-		showVid(id);
+                showVid(id);
             }
-        });
-    });
+        }); //end cue
+        
+    }); //end bind
+    
     //play button behavior
     $("#play").click(function () {
         //console.log(timeline.currentTime() + "of " + timeline.endtime);
         if (timeline.currentTime() < timeline.endtime) {
-            console.log("Playing timeline");
+
             timeline.play();
         }
         $(videos).each(function () {
@@ -416,30 +415,13 @@ function setupTl(duration) {
 function drawVidtimes(){
 
     $.each(videos, function(i,vid){
-        console.log("testnow");
         var newwidth = getOffset(vid.duration) / $("#maintimeline").width() * 100 + "%";
-        console.log(newwidth);
-        $("#vidtime" + vid.id).css("width", newwidth)
+        $("#vidtime" + vid.id).css("width", newwidth);
     
     });
 
 }
 
-function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
-    activeFiles = [];
-    transferElements(files, activeFiles, (pageNumber - 1) * numVideosToDisplay, pageNumber * numVideosToDisplay - 1);
-    $.each(activeFiles, function (key, val) {
-        var vid;
-        $.getJSON(val, function (data) {
-            var offset = data.Timeline.Offset;
-            var length = data.Temporal.Length;
-            var id = data.ID.VideoID;
-            var name = data.ID.Name;
-            vid = new video(offset, duration, id, name);
-            displayVideo(id, offset, duration, name);
-        });
-    });
-}
 
 
 
@@ -489,6 +471,7 @@ function getOffset(time) {
 
 
 function formatDuration(duration) {
+    var dur;
     //because having different cameras output duration in the same format would be crazy!
     if (duration.indexOf(":") !== -1) {
         //return Popcorn.util.toSeconds(duration)
@@ -496,11 +479,11 @@ function formatDuration(duration) {
         var hr = split[0];
         var min = split[1];
         var sec = +split[2];
-        var dur = (hr * 60 * 60) + (min * 60) + sec;
+        dur = (hr * 60 * 60) + (min * 60) + sec;
         return dur;
     } else if (duration.indexOf("s") !== -1) {
         var seconds = duration.split(".");
-        var dur = seconds[0];
+        dur = seconds[0];
         return dur;
     } else {
         console.log("Some weird duration, couldn't format");
@@ -539,13 +522,13 @@ function setupVideos(json) {
                     $.each(videos, function () {
                         this.offset -= earliest.getTime() / 1000 - 3;
                         $('#video' + this.id).attr('data-offset', this.offset);
-                        //console.log(this.id + ": new offset is " + this.offset + " fulldur is " + fulldur + " duration is " + this.duration);
+
                         if (this.duration + this.offset > fulldur) {
                             fulldur = this.duration + this.offset + 15;
                         }
                     });
 
-                    //console.log("Full timeline duration is " + sec2hms(fulldur) + "(" + fulldur + ")");
+
                     $('#maintimeline').attr('data-duration', fulldur);
                     setupTl(fulldur);
 
