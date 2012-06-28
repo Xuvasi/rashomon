@@ -15,6 +15,21 @@ header {
     overflow: hidden;
 }
 
+#fullscreen {
+    position: absolute; 
+    top: 0; 
+    left:0; 
+    width: 100%; 
+    z-index: 1000; 
+    background: #111; 
+    display:none; 
+    text-align:left;
+}
+
+#fsbox{ position:absolute; width:300px; height:200px; z-index:200; border:5px solid #222; background: #FFF; top: 50%; left: 50%; margin-top: -100px; margin-left: -150px; }  
+
+.close{ top:0px; float:right; } 
+
 #signin {
     display: none;
     position: absolute;
