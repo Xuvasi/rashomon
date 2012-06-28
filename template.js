@@ -30,8 +30,7 @@ function video(offset, duration, id, file) {
         'class': 'vidcontainer'
     }).css("border-color", colorList[this.id]);
     var tools = $("<div/>", {
-        'class': 'vidtools',
-        text: this.id + ' '
+        'class': 'vidtools'
     }); // i is for info, f is fullscreen, TBI means to be implemented.  and icons would rock, too
     var vid = $("<video/>", {
         id: "video" + this.id,
@@ -50,9 +49,8 @@ function video(offset, duration, id, file) {
     }).appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
-    tools.appendTo(container);
+    tools.html("<em>" + this.id + "</em> <a href='#' class='fullscreen' id='"+ this.id + "'>Fullscreen</a>").appendTo(container);
     this.pp = Popcorn("#video" + this.id);
-
 
 }
 
@@ -336,6 +334,10 @@ function setupTl(duration) {
     timeline.on("pause", function() {
         $("#play").show();
         $("#stop").hide();
+        $(videos).each(function () {
+             this.pp.pause();
+        });
+
     });
 
     $("#maintimeline").attr("data-duration", timeline.endtime);
@@ -391,9 +393,6 @@ function setupTl(duration) {
     //pause media when stop button is pressed
     $("#stop").click(function () {
         timeline.pause();
-        $(videos).each(function () {
-            this.pp.pause();
-        });
     });
     //adjust playhead when main timeline moves
     timeline.on("timeupdate", function () {
@@ -520,8 +519,13 @@ function setupVideos(json) {
                 l--;
                 if (l === 0) {
                     $.each(videos, function () {
-                        this.offset -= earliest.getTime() / 1000 - 3;
+                        var id = this.id
+			this.offset -= earliest.getTime() / 1000 - 3;
                         $('#video' + this.id).attr('data-offset', this.offset);
+			$(".fullscreen").click(function(event){  
+          			loadFullscreen(event.target);
+          			return false;
+       			});
 
                         if (this.duration + this.offset > fulldur) {
                             fulldur = this.duration + this.offset + 15;
