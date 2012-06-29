@@ -5,6 +5,7 @@
 @param name is the name of this video
 */
 var videos = [];
+var loaded = 0;
 var mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
   
 var fulldur = 0;
@@ -327,7 +328,7 @@ function setupTl(duration) {
   Popcorn.player("baseplayer");
   timeline = Popcorn.baseplayer("#base");
   timeline.currentTime(70);
-  timeline.play();
+  //timeline.play();
   timeline.endtime = duration; // 6 minutes
   timeline.on("play", function () {
     $("#play").hide();
@@ -350,6 +351,7 @@ function setupTl(duration) {
   //as each video loads up, set up cues
   //todo - move video timeline drawing to this section
   $('video').bind('loadedmetadata', function () {
+    loaded++;
     var pid = $(this).attr('id');
     var pop = Popcorn('#' + pid);
     var id = $(this).attr('data-id');
@@ -373,7 +375,10 @@ function setupTl(duration) {
         showVid(id);
       }
     }); //end cue
-
+  console.log(loaded);
+  if (loaded == videos.length) {
+    timeline.play();
+  }
   }); //end bind
 
   //play button behavior
