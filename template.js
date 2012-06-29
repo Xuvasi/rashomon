@@ -51,7 +51,7 @@ function video(offset, duration, id, file) {
   this.mp4.appendTo(vid);
   container.appendTo($("#videos"));
   vid.appendTo(container);
-  tools.html("<em>" + this.id + "</em> <a href='#' class='fullscreen' id='" + this.id + "'> <img src='images/enlarge.png'id='" + this.id + "'/> </a>").appendTo(container);
+  tools.html("<em>" + this.id + "</em> <div class='tbuttons'><a href='#' class='fullscreen' id='" + this.id + "'> <img src='images/full-screen-icon.png'id='" + this.id + "'/> </a></div>").appendTo(container);
   this.pp = Popcorn("#video" + this.id);
 
 }
