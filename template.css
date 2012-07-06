@@ -277,7 +277,14 @@ footer a:hover {
     height: 320px;
 }
 
+.tbuttons {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+}
+
 .vidtools {
+    position: relative;
     padding: 25px 5px 25px 5px;
     text-align: center;
 }
@@ -327,7 +334,7 @@ footer a:hover {
 #timepos {
     margin-top: 18px;
     position: absolute;
-    height: 206px;
+    height: 0px;
     width: 3px;
     background: rgba(255,255,0,.5);
     z-index: 999;
