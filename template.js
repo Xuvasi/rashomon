@@ -270,11 +270,7 @@ function displayVideo(id, start, duration, meta) {
 
     toggleVid(id);
   }); // end vidnum click
-  if ($('.vidcontainer:hidden').length > 0) {
-    //console.log("togglin'");
-    //toggleVid(id);
-    //$('.vidcontainer').tsort({attr: 'id'});
-  }
+  
 
 
 }
@@ -328,7 +324,6 @@ function setupTl(duration) {
   Popcorn.player("baseplayer");
   timeline = Popcorn.baseplayer("#base");
   timeline.currentTime(70);
-  //timeline.play();
   timeline.endtime = duration; // 6 minutes
   timeline.on("play", function () {
     $("#play").hide();
@@ -376,8 +371,14 @@ function setupTl(duration) {
       }
     }); //end cue
   console.log(loaded);
+  //if all videos have loaded
   if (loaded == videos.length) {
+    var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
+  
+    $("#timepos").css("height", newheight);
+    $("#timepos").show();
     timeline.play();
+    
   }
   }); //end bind
 
