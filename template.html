@@ -7,12 +7,14 @@
 </style>
         <script src="https://browserid.org/include.js" type="text/javascript" async="async"></script>
         <link href='http://fonts.googleapis.com/css?family=Wire+One'
-        rel='stylesheet' type='text/css' />
+        rel='stylesheet' type='text/css' async="async"/>
         <link rel="stylesheet" type="text/css" href="template.css" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
         rel='stylesheet' type='text/css' />
         <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
+<script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" src="tweetable/jquery.tweetable.js"></script>
 <script type="text/javascript" src="fullscreen.js"></script>
 
@@ -29,6 +31,7 @@
             <div id="signin">Sign in</div>
         </header>
         <section id="videoswrapper">
+            
             <div id="timeposholder" class="timeline">
                 <div id="timepos"></div>
             </div>
@@ -37,12 +40,13 @@
             <div class="pager" id="down">&darr;</div>
         </section>
         <section id="tlcontainer">
+        
             <section class="controlbox">
                 <div id="controls">
-                    <span class="button" id="play">&#x25B6;</span>
-                    <span class="button" id="stop">&#x25A0;</span>
-                    <span class="timeloc">00:00:00</span>
-                    <span id="mouseloc"></span>
+                    <img class="button" id="play" src="images/play.png"/>
+                    <img class="button" id="stop" src="images/pause.png"/>
+
+                    <div class="timeloc">00:00:00</span>
                 </div>
             </section>
             <div id="navbar">
@@ -54,6 +58,9 @@
             <div class="timeline" id="maintimeline"></div>
         </section>
         <section id="videos"></section>
+        
+        
+          <section id="meta"><div id="map_canvas"> </div> <dl id="metadata"><dt>Metadata</dt></section>
         <footer>
             <a href="http://automation.berkeley.edu/rashomon">About Rashomon</a> &bull; 
             <a href="https://github.com/aleatorybug/rashomon">Source Code</a>

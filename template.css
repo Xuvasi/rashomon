@@ -350,24 +350,35 @@ footer a:hover {
 }
 
 .controlbox {
+    
+    position: relative;
     font-size: 8pt;
     background: #eee;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-    height: 18px;
+    height: 28px;
     width: 140px;
 }
 
 #controls {
-    padding-top: 3px;
+    position: relative;
     padding-left: 15px;
+    height: 100%;
 }
 
 #controls .button {
     cursor: pointer;
     display: block;
     float: left;
-    width: 16px;
+    width: 26px;
+}
+
+.timeloc {
+
+  position: relative;
+  vertical-align: bottom;
+  font-size: 14pt;
+
 }
 
 #ready {
