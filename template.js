@@ -15,32 +15,28 @@ var videosToDisplay;
 var filenames = [];
 var colorList = [ "Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"];
 
-function video(offset, duration, id, file) {
+function video(offset, duration, id, file, align, meta) {
   this.offset = offset.getTime() / 1000;
   this.duration = +duration;
   this.name = file;
   this.file = file;
   this.id = filenames.indexOf(file);
   this.color = colorList[id];
-  if (this.file.indexOf("2012") !== -1) {
-    this.align = "vert";
-  } else {
-    this.align = "hor";
-  }
+  this.align = align;
+  this.meta = meta;
   var container = $("<div/>", {
     id: "vcontain" + this.id,
     'class': 'vidcontainer'
   }).css("border-color", colorList[this.id]);
   var tools = $("<div/>", {
     'class': 'vidtools'
-  }); // i is for info, f is fullscreen, TBI means to be implemented.  and icons would rock, too
+  }); 
   var vid = $("<video/>", {
     id: "video" + this.id,
-    "class": 'rashomon',
+    "class": 'rashomon ' + this.align,
     "data-offset": this.offset,
     "data-id": this.id
   });
-  vid.addClass(this.align);
   this.webm = $("<source/>", {
     src: mpath + file + ".webm",
     type: 'video/webm'
@@ -52,7 +48,8 @@ function video(offset, duration, id, file) {
   this.mp4.appendTo(vid);
   container.appendTo($("#videos"));
   vid.appendTo(container);
-  tools.html("<em>" + this.id + "</em> <div class='tbuttons'><a href='#' class='fullscreen' id='" + this.id + "'> <img src='images/full-screen-icon.png'id='" + this.id + "'/> </a></div>").appendTo(container);
+  
+  tools.html("<em>" + (this.id + 1 ) + "</em> <div class='tbuttons'><a class='fullscreen' id='" + this.id + "'> <img src='images/full-screen-icon.png'id='" + this.id + "'/> </a> <em class='showmeta' id='" + this.id + "'>i</em>").appendTo(container);
   this.pp = Popcorn("#video" + this.id);
 
 }
@@ -101,14 +98,14 @@ $(document).ready(function () {
 
 
 
-
+/*
   displayEvent(1, "something happened right then", "orange", 15);
   displayEvent(2, "something else happened here", "aqua", 40);
   displayEvent(3, "another something", "BlueViolet", 212);
   displayEvent(4, "yet another", "Khaki", 512);
   displayEvent(5, "wwwhwat?", "Green", 432);
   displayEvent(6, "crazy", "Olive", 79);
-
+*/
 
 
 }); //end docReady
@@ -160,6 +157,8 @@ function displayEvent(id, title, color, time) {
     'background': color
   }).appendTo("#maintimeline");
 }
+
+
 
 
 
@@ -352,8 +351,17 @@ function setupTl(duration) {
     var id = $(this).attr('data-id');
     var of = $(this).attr('data-offset');
     var duration = pop.duration();
-
+    
     $(this).attr('data-duration', pop.duration());
+    var height = pop.media.videoHeight;
+    var width = pop.media.videoWidth;
+    console.log(height + " x " + width);
+    if (height > width) {
+        $(this).addClass("vert");
+    } else { 
+        $(this).addClass("hor");
+    }
+      
     var totalwidth = $("#maintimeline").width();
     var offset = getOffset($(this).attr('data-offset'));
     displayVideo(id, offset, duration, videos[id].file);
@@ -413,7 +421,6 @@ function setupTl(duration) {
     var newoffset = totalwidth * this.currentTime() / fulldur;
     $(".timeloc").text(sec2hms(this.currentTime()));
     $("#timepos").css('left', pct + "%");
-
 
   });
   //on navtl click, adjust video positions appropriately, obeying play conditions and such
@@ -507,30 +514,41 @@ function setupVideos(json) {
     var l = filenames.length;
     $.each(filenames, function () {
       var item = {};
+
       item.filename = '' + this;
       $.getJSON("metadata/" + this + ".json", function (itemdata) {
-
         item.tcDate = formatDate(itemdata[0].TrackCreateDate);
         item.tmDate = formatDate(itemdata[0].TrackModifyDate);
         item.fmDate = formatDate(itemdata[0].FileModifyDate);
         item.mcDate = formatDate(itemdata[0].MediaCreateDate);
         item.mDate = formatDate(itemdata[0].MediaModifyDate);
         item.duration = formatDuration(itemdata[0].Duration);
+  
         //get other tags like geo coords here
         item.validDate = validDate(item);
         if (item.validDate.getTime() < earliest.getTime()) {
 
           earliest = item.validDate;
         }
-        videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename));
+        videos.push(new video(item.validDate, item.duration, videos.length + 1, item.filename, item.align, itemdata[0]));
 
         l--;
         if (l === 0) {
+          //trigger fullscreen
           $(".fullscreen").click(function (event) {
               var target = $(event.target).attr('id');
               loadFullscreen(target);
               return false;
             });
+          //toggle metadata
+          $(".showmeta").click(function (event) {
+              var target = $(event.target).attr('id');
+              showMeta(target);
+              return false;
+            });
+          
+            
+            
           $.each(videos, function () {
             var id = this.id
             this.offset -= earliest.getTime() / 1000 - 3;
@@ -551,6 +569,33 @@ function setupVideos(json) {
       }); //end getJSON (per item)
     }); //end each
   }); //end manifest getJSON
+}
+
+function showMeta(id) {
+
+  $("#meta").css("right", "0");
+  var meta = videos[id].meta;
+  
+  if(meta.GPSPosition) {
+    var latLng = new google.maps.LatLng(convertCoord(meta.GPSLatitude), convertCoord(meta.GPSLongitude));
+    var map = new google.maps.Map(document.getElementById("map_canvas"),
+            { center: latLng, zoom: 15, mapTypeId: google.maps.MapTypeId.ROADMAP });
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map,
+      title: id + 1
+  });
+  }
+  
+}
+
+function convertCoord(coord){
+  var split = coord.split(" ");
+  if (split[1] == "S" || split[1] == "W"){
+    return split[0] * -1;      
+  } else { 
+    return split[0];
+  }
 }
 
 var isEven = function (someNumber) {
