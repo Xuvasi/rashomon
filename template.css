@@ -364,6 +364,7 @@ footer a:hover {
     position: relative;
     padding-left: 15px;
     height: 100%;
+    padding-top: 1px;
 }
 
 #controls .button {
@@ -371,13 +372,16 @@ footer a:hover {
     display: block;
     float: left;
     width: 26px;
+    z-index: 3;
 }
 
-.timeloc {
-
+#timeloc {
+  padding-top: 5px;
   position: relative;
-  vertical-align: bottom;
   font-size: 14pt;
+  z-index: 0;
+  background: orange;
+  width: auto;
 
 }
 
