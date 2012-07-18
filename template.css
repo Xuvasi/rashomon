@@ -376,12 +376,13 @@ footer a:hover {
 }
 
 #timeloc {
+  float: left;
   padding-top: 5px;
   position: relative;
   font-size: 14pt;
   z-index: 0;
-  background: orange;
   width: auto;
+  padding-left: 5px;
 
 }
 

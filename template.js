@@ -419,7 +419,7 @@ function setupTl(duration) {
     var totalwidth = $("#maintimeline").width();
     var pct = this.currentTime() / fulldur * 100; // for when we switch to % for window size adjustments
     var newoffset = totalwidth * this.currentTime() / fulldur;
-    $(".timeloc").text(sec2hms(this.currentTime()));
+    $("#timeloc").text(sec2hms(this.currentTime()));
     $("#timepos").css('left', pct + "%");
 
   });
