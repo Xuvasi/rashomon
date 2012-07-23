@@ -50,6 +50,8 @@ function video(offset, duration, id, file, align, meta) {
   vid.appendTo(container);
   
   tools.html("<em>" + (this.id + 1 ) + "</em> <div class='tbuttons'><a class='fullscreen' id='" + this.id + "'> <img src='images/full-screen-icon.png'id='" + this.id + "'/> </a> <em class='showmeta' id='" + this.id + "'>i</em>").appendTo(container);
+  
+  $("<div/>", { id: "vidDelay" + this.id } ).appendTo(tools);
   this.pp = Popcorn("#video" + this.id);
 
 }
@@ -230,7 +232,7 @@ function displayVideo(id, start, duration, meta) {
     });
     */
 
-  $(".vidtl").unbind('click').click(function (e) {
+  $("#tl" + id).click(function (e) {
     var clickleft = e.pageX - $('#maintimeline').offset().left;
     var pct = clickleft / $('#maintimeline').width();
     var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
@@ -238,13 +240,11 @@ function displayVideo(id, start, duration, meta) {
     $(videos).each(function () {
       var timediff = timeline.currentTime() - this.offset;
       if (timediff < 0) {
-        this.pp.pause();
-        this.pp.currentTime(0);
+        this.pp.pause(0);
         //console.log("setting " + this.id + " to 0");
         hideVid(this.id);
       } else if (timeline.currentTime() > this.offset + this.duration) {
-        this.pp.pause();
-        this.pp.currentTime(this.pp.duration());
+        this.pp.pause(this.pp.duration());
         console.log("setting " + this.id + " to " + this.duration);
         hideVid(this.id);
 
@@ -270,7 +270,14 @@ function displayVideo(id, start, duration, meta) {
     toggleVid(id);
   }); // end vidnum click
   
-
+  videos[id].pp.listen('timeupdate', function() {
+    var delay = timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() );
+    if  (!timeline.media.paused && delay > 0.5) {
+      videos[id].pp.play(timeline.currentTime() - videos[id].offset);
+    }
+    $("#vidDelay" + id).text("Delay: " + delay);
+  
+  });
 
 }
 
@@ -386,7 +393,6 @@ function setupTl(duration) {
     $("#timepos").css("height", newheight);
     $("#timepos").show();
     timeline.play();
-    
   }
   }); //end bind
 
