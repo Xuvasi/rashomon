@@ -1,13 +1,8 @@
-/* A video object - holds all of the information to display this video's footprint on the timeline.
-@param offset is the offset relative to the beginning of the time frame
-@param duration is the duration of the video
-@param is this video's identification number - to be able to link to the actual video
-@param name is the name of this video
-*/
+
 var videos = [];
 var loaded = 0;
 var mpath = "http://metaviddemo01.ucsc.edu/rashomon/media/";
-  
+var delayFixed = 0;  
 var fulldur = 0;
 var earliest = new Date();
 var timeline;
@@ -271,11 +266,12 @@ function displayVideo(id, start, duration, meta) {
   }); // end vidnum click
   
   videos[id].pp.listen('timeupdate', function() {
-    var delay = timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() );
-    if  (!timeline.media.paused && delay > 0.5) {
+    var delay = (timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() )).toFixed(3);
+    if  (!timeline.media.paused && delay > 1) {
       videos[id].pp.play(timeline.currentTime() - videos[id].offset);
+      delayFixed++;
     }
-    $("#vidDelay" + id).text("Delay: " + delay);
+    $("#vidDelay" + id).text("Sync offset: " + delay * 1000 + "ms");
   
   });
 
