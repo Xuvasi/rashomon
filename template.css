@@ -280,6 +280,10 @@ footer a:hover {
     height: 320px;
 }
 
+.toolbutton {
+  cursor: pointer;
+}
+
 .tbuttons {
   position: absolute;
   bottom: 3px;

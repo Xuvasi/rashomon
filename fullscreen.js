@@ -22,11 +22,11 @@ $(document).ready(function(){
     }); 
 */
 function loadFullscreen(id){
-    
+    console.log("FS for id " + id);
     var video = $("#video" + id);
     var ctime = Popcorn("#video" + id).currentTime();
     var sources = video.children();
-    console.dir(sources);
+
     if (!sources) {
       alert("Something wrong with sources for this video");
     }
