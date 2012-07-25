@@ -44,7 +44,7 @@ function video(offset, duration, id, file, align, meta) {
   container.appendTo($("#videos"));
   vid.appendTo(container);
   
-  tools.html("<em>" + (this.id + 1 ) + "</em> <div class='tbuttons'><a class='fullscreen' id='" + this.id + "'> <img src='images/full-screen-icon.png'id='" + this.id + "'/> </a> <em class='showmeta' id='" + this.id + "'>i</em>").appendTo(container);
+  tools.html("<em>" + (this.id + 1 ) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <em class='showmeta' id='meta" + this.id + "'>i</em>").appendTo(container);
   
   $("<div/>", { id: "vidDelay" + this.id } ).appendTo(tools);
   this.pp = Popcorn("#video" + this.id);
@@ -232,6 +232,19 @@ function displayVideo(id, start, duration, meta) {
 	     }
     });
   
+      //trigger fullscreen
+    $("#fs" + id).click(function () {
+        loadFullscreen(id);
+        return false;
+      });
+    //toggle metadata
+    $(".showmeta").click(function () {
+        showMeta(id);
+        return false;
+      });
+    
+      
+
 
   $("#tl" + id).click(function (e) {
     var clickleft = e.pageX - $('#maintimeline').offset().left;
@@ -271,9 +284,9 @@ function displayVideo(id, start, duration, meta) {
     toggleVid(id);
   }); // end vidnum click
   
-  videos[id].pp.listen('timeupdate', function() {
+  videos[id].pp.on('timeupdate', function() {
     var delay = Math.abs( timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() ) ).toFixed(2);
-    if  (!timeline.media.paused && delay > 1) {
+    if  (!timeline.media.paused && delay > .750) {
       videos[id].pp.currentTime(timeline.currentTime() - videos[id].offset);
       delayFixed++;
     }
@@ -332,7 +345,7 @@ function toggleVid(id) {
 function setupTl(duration) {
   console.log("setting up tl");
   Popcorn.player("baseplayer");
-  timeline = Popcorn.baseplayer("#base");
+  timeline = Popcorn.baseplayer("#maintimeline");
   timeline.currentTime(70);
   timeline.endtime = duration; // 6 minutes
   timeline.on("play", function () {
@@ -545,21 +558,6 @@ function setupVideos(json) {
 
         l--;
         if (l === 0) {
-          //trigger fullscreen
-          $(".fullscreen").click(function (event) {
-              var target = $(event.target).attr('id');
-              loadFullscreen(target);
-              return false;
-            });
-          //toggle metadata
-          $(".showmeta").click(function (event) {
-              var target = $(event.target).attr('id');
-              showMeta(target);
-              return false;
-            });
-          
-            
-            
           $.each(videos, function () {
             var id = this.id
             this.offset -= earliest.getTime() / 1000 - 3;
