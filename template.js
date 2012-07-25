@@ -218,14 +218,20 @@ function displayVideo(id, start, duration, meta) {
     });
     */
 
-  /* experimental seeking optimization code
-    $("video").on("seeking", function() {
-	timeline.pause();
+   //experimental seeking optimization code
+    $("video" + id).on("seeking", function() {
+      if (!timeline.media.paused && videos[id].pp.media.paused) {
+        	timeline.resume = true;
+        	timeline.pause();      
+      }
     });
-    $("video").on("seeked", function() {
-	timeline.play();
+    $("video" + id).on("seeked", function() {
+	     if(timeline.resume){
+	       timeline.play();
+	       timeline.resume = false;
+	     }
     });
-    */
+  
 
   $("#tl" + id).click(function (e) {
     var clickleft = e.pageX - $('#maintimeline').offset().left;
@@ -266,9 +272,9 @@ function displayVideo(id, start, duration, meta) {
   }); // end vidnum click
   
   videos[id].pp.listen('timeupdate', function() {
-    var delay = (timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() )).toFixed(3);
+    var delay = Math.abs( timeline.currentTime() - ( videos[id].offset + videos[id].pp.currentTime() ) ).toFixed(2);
     if  (!timeline.media.paused && delay > 1) {
-      videos[id].pp.play(timeline.currentTime() - videos[id].offset);
+      videos[id].pp.currentTime(timeline.currentTime() - videos[id].offset);
       delayFixed++;
     }
     $("#vidDelay" + id).text("Sync offset: " + delay * 1000 + "ms");
@@ -276,6 +282,8 @@ function displayVideo(id, start, duration, meta) {
   });
 
 }
+
+
 
 
 //converts secs to hh:mm:ss with leading zeros
@@ -330,6 +338,16 @@ function setupTl(duration) {
   timeline.on("play", function () {
     $("#play").hide();
     $("#stop").show();
+    $(videos).each(function () {
+  
+        var offset = this.offset;
+        var duration = this.pp.duration();
+        if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")) {
+          this.pp.play();
+        }
+      });
+
+  
   });
   timeline.on("pause", function () {
     $("#play").show();
@@ -396,17 +414,8 @@ function setupTl(duration) {
   $("#play").click(function () {
     //console.log(timeline.currentTime() + "of " + timeline.endtime);
     if (timeline.currentTime() < timeline.endtime) {
-
       timeline.play();
     }
-    $(videos).each(function () {
-
-      var offset = this.offset;
-      var duration = this.pp.duration();
-      if (timeline.currentTime() > offset && timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")) {
-        this.pp.play();
-      }
-    });
   });
   //pause media when stop button is pressed
   $("#stop").click(function () {
