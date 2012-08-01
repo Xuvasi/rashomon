@@ -303,3 +303,74 @@ function displayVids(files, activeFiles, pageNumber, numVideosToDisplay) {
         });
     });
 }
+
+
+
+
+
+
+
+
+
+/*Place box around region of interest specified by the user
+@param where is the place on the page to put this box
+@param coords is [xcoord, ycoord] of one bound
+@param  x, y is the [xcoord, ycoord] of the other bound
+Note : the order of these bounds does not matter
+*/
+function placeBeam(where, x, y, coords) {
+  $(".dot").css("visibility", "hidden");
+  $("<div/>", {
+    "class": 'beam'
+  }).css({
+    'width': Math.abs(coords[0] - x) + "px",
+    'left': Math.min(coords[0], x),
+    'background': "yellow"
+  }).appendTo(where);
+}
+
+
+
+
+
+  /* focusDistance is a flag that says if a point has been specified to place a region of interest*/
+  var focusDistance = false;
+  /* dotCoords holds the first point specified by the user on the page*/
+  var dotCoords = [];
+  /* focusRegion holds the current region of interest specified by the user.  This will be used to play videos from a specific point in time.*/
+  var focusRegion = [];
+
+
+
+  /* This handles the focus region when the user clicks the MAINTIMELINE*/
+  $("#maintimeline").click(function (mouse) {
+    var offset = $("#maintimeline").offset();
+    var fixedX = mouse.pageX - offset.left;
+    if (!focusDistance) {
+      focusDistance = true;
+      placeDot("#maintimeline", fixedX, mouse.pageY);
+      dotCoords = [];
+      dotCoords.push(fixedX, mouse.pageY);
+    } else {
+      placeBeam("#maintimeline", fixedX, mouse.pageY, dotCoords);
+      focusDistance = false;
+      focusRegion = [];
+      focusRegion.push(Math.min(fixedX, dotCoords[0]), Math.max(mouse.pageX, dotCoords[0]));
+    }
+  });
+
+
+
+/*Place a dot to show the user they specified one of the bounds of a region they are interested in
+@param where is the place on the page to put this dot
+@param x, y is the [xcoord, ycoord] of this dot
+*/
+function placeDot(where, x, y) {
+  $(".beam").css("visibility", "hidden");
+  $("<div/>", {
+    "class": 'dot'
+  }).css({
+    'left': x,
+    'background': "yellow"
+  }).appendTo(where);
+}
