@@ -12,11 +12,9 @@ var Rashomon = {
   getOffset : function(time) {
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
   },
-  setupVideos: function(json) {
-    
-    $.getJSON(json, function (collecdata) {
-  
-      Rashomon.filenames = collecdata.files;
+  /* woah */
+  setupVideos: function() {
+      Rashomon.filenames = rashomonManifest.files;
       var l = Rashomon.filenames.length;
       $.each(Rashomon.filenames, function () {
         var item = {};
@@ -66,7 +64,6 @@ var Rashomon = {
   
         }); //end getJSON (per item)
       }); //end each
-    }); //end manifest getJSON
   }
 
   
@@ -157,7 +154,7 @@ $(document).ready(function () {
 
 
   //loads filenames from manifest.json in local folder
-  Rashomon.setupVideos('manifest.json'); // could point to one from a different event or something
+  Rashomon.setupVideos(); // could point to one from a different event or something
 
 
   /*
@@ -320,7 +317,8 @@ function displayVideo(id, start, duration, meta) {
       Rashomon.videos[id].pp.currentTime(Rashomon.timeline.currentTime() - Rashomon.videos[id].offset);
       Rashomon.delayFixed++;
     }
-    $("#vidDelay" + id).text("Sync offset: " + delay * 1000 + "ms");
+    var syncmsg = Rashomon.timeline.currentTime().toFixed(2) + " - " + (Rashomon.videos[id].offset + Rashomon.videos[id].pp.currentTime()).toFixed(2); 
+    $("#vidDelay" + id).text(syncmsg);
 
   });
 
