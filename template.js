@@ -24,12 +24,60 @@ var Rashomon = {
 
   setupTimeline: function(duration){
     console.log("setting up tl");
+    $(Rashomon.videos).each(function(){
+      Rashomon.loaded++;
+      var id = this.id;
+      $('#video' + id).bind('loadedmetadata', function () {
+        var vid = Rashomon.videos[id];
+        var pid = vid.id;
+        var pop = vid.pp;
+        var of = vid.offset;
+        var duration = pop.duration();
+      
+        $(this).attr('data-duration', pop.duration());
+        var height = pop.media.videoHeight;
+        var width = pop.media.videoWidth;
+        console.log(height + " x " + width);
+        if (height > width) {
+          $(this).addClass("vert");
+        } else {
+          $(this).addClass("hor");
+        }
+      
+        var totalwidth = $("#maintimeline").width();
+        var offset = Rashomon.getOffset($(this).attr('data-offset'));
+      
+        Rashomon.videos[id].displayVideo(offset);
+        console.log("metadata loaded on " + pid);
+        var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
+        console.log(offtime);
+      
+        Rashomon.timeline.cue(offtime, function () {
+          hideVid(id);
+        });
+        Rashomon.timeline.cue(of, function () {
+          if (!(Rashomon.timeline.media.paused)) {
+            pop.play();
+            showVid(id);
+          }
+        }); //end cue
+        console.log(Rashomon.loaded);
+        //if all videos have loaded
+        if (Rashomon.loaded === Rashomon.videos.length) {
+          var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
+      
+          $("#timepos").css("height", newheight);
+          $("#timepos").show();
+          Rashomon.timeline.play();
+        }
+      }); //end bind
+    });//end each
+
     
-    console.log($('video').length);
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
     this.timeline.currentTime(70);
-    this.timeline.endtime = duration; // 6 minutes
+    this.fulldur = duration; // 6 minutes
     this.timeline.on("play", function () {
       $("#play").hide();
       $("#stop").show();
@@ -42,7 +90,6 @@ var Rashomon = {
         }
       }); // end videos each
   
-  
     }); //end play
     Rashomon.timeline.on("pause", function () {
       $("#play").show();
@@ -53,63 +100,16 @@ var Rashomon = {
   
     }); // end pause
   
-    $("#maintimeline").attr("data-duration", this.timeline.endtime);
-    this.timeline.cue(Rashomon.timeline.endtime - 0.01, function () {
+    $("#maintimeline").attr("data-duration", Rashomon.fulldur);
+    this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
       console.log("pausing");
     }); //end cue
     
-    $('video').bind('loadedmetadata', function () {
-      console.log("derp!");
-      Rashomon.loaded++;
-      var pid = $(this).attr('id');
-      var pop = Popcorn('#' + pid);
-      var id = $(this).attr('data-id');
-      var of = $(this).attr('data-offset');
-      var duration = pop.duration();
-  
-      $(this).attr('data-duration', pop.duration());
-      var height = pop.media.videoHeight;
-      var width = pop.media.videoWidth;
-      console.log(height + " x " + width);
-      if (height > width) {
-        $(this).addClass("vert");
-      } else {
-        $(this).addClass("hor");
-      }
-  
-      var totalwidth = $("#maintimeline").width();
-      var offset = Rashomon.getOffset($(this).attr('data-offset'));
-  
-      Rashomon.videos[id].displayVideo(offset);
-      console.log("metadata loaded on " + pid);
-      var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
-      console.log(offtime);
-  
-      Rashomon.timeline.cue(offtime, function () {
-        hideVid(id);
-      });
-      Rashomon.timeline.cue(of, function () {
-        if (!(Rashomon.timeline.media.paused)) {
-          pop.play();
-          showVid(id);
-        }
-      }); //end cue
-      console.log(Rashomon.loaded);
-      //if all videos have loaded
-      if (Rashomon.loaded === Rashomon.videos.length) {
-        var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
-  
-        $("#timepos").css("height", newheight);
-        $("#timepos").show();
-        Rashomon.timeline.play();
-      }
-    }); //end bind
-  
     //play button behavior
     $("#play").click(function () {
-      //console.log(Rashomon.timeline.currentTime() + "of " + Rashomon.timeline.endtime);
-      if (Rashomon.timeline.currentTime() < Rashomon.timeline.endtime) {
+      //console.log(Rashomon.timeline.currentTime() + "of " + Rashomon.fulldur);
+      if (Rashomon.timeline.currentTime() < Rashomon.fulldur) {
         Rashomon.timeline.play();
       }
     });
@@ -119,10 +119,9 @@ var Rashomon = {
     });
     //adjust playhead when main timeline moves
     Rashomon.timeline.on("timeupdate", function () {
-      if (this.currentTime() > this.endtime - 0.5) {
-        this.pause(this.endtime - 0.5);
+      if (this.currentTime() > Rashomon.fulldur - 0.5) {
+        this.pause(Rashomon.fulldur - 0.5);
       }
-      Rashomon.fulldur = Rashomon.timeline.endtime;
       var totalwidth = $("#maintimeline").width();
       var pct = this.currentTime() / Rashomon.fulldur * 100; // for when we switch to % for window size adjustments
       var newoffset = totalwidth * this.currentTime() / Rashomon.fulldur;
@@ -264,7 +263,7 @@ var video = function (options) {
     $("#vidtime" + this.id).css("width", newwidth);
   };
   
-  this.displayVideo = function (position){
+  this.displayVideo = function(position){
   
     var id = this.id;
     var start = this.position;
@@ -397,7 +396,7 @@ var video = function (options) {
     this.pp.on('timeupdate', function () {
      var delay = Rashomon.timeline.currentTime() - (Rashomon.videos[id].offset + this.currentTime()).toFixed(2);
       if (!Rashomon.timeline.media.paused && delay > 1.250) {
-        this.currentTime(Rashomon.timeline.currentTime() - start);
+        this.currentTime(Rashomon.timeline.currentTime() - Rashomon.videos[id].offset);
         Rashomon.delayFixed++;
       }
       var syncmsg = Rashomon.timeline.currentTime().toFixed(2) + " - " + (Rashomon.videos[id].offset + this.currentTime()).toFixed(2); 
