@@ -39,9 +39,9 @@ var Rashomon = {
   //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function(duration){
     $(Rashomon.videos).each(function(){
-      Rashomon.loaded++;
       var id = this.id;
       $('#video' + id).bind('loadeddata', function () {
+        Rashomon.loaded++;
         var vid = Rashomon.videos[id];
         var pid = vid.id;
         var pop = vid.pp;
