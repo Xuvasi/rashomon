@@ -303,7 +303,19 @@ footer a:hover {
     text-align: center;
 }
 
+.vidDelay {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    text-align: left;
+}
+
+.vidDelay p {
+    margin: 0;
+}
+
 #tlcontainer {
+
     position: relative;
     width: 100%;
     padding-top: 30px;
