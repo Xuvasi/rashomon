@@ -1,12 +1,13 @@
 /*
 rashomon
-
+copyleft 2012
 */
 
 var Rashomon = {
   videos: [],
+  photos: [],
   loaded: 0,
-  mpath: "http://metaviddemo01.ucsc.edu/rashomon/media/",
+  mpath: "http://fritz.local/~aphid/JulyRashomon/",
   delayFixed: 0,
   fulldur: 0,
   earliest: new Date(),
@@ -14,6 +15,8 @@ var Rashomon = {
   videosToDisplay: "",
   filenames: [],
   colorList: ["Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"],
+  
+  //converts seconds to hh:mm:ss
   sec2hms: function(time) {
   var totalSec = parseInt(time, 10);
   var hours = parseInt(totalSec / 3600, 10) % 24;
@@ -21,9 +24,20 @@ var Rashomon = {
   var seconds = parseInt(totalSec % 60, 10);
   return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
   },
-
+  //coordinate conversion for GPS metadata
+  convertCoord: function(coord){
+    var split = coord.split(" ");
+    if (split[1] == "S" || split[1] == "W"){
+      return split[0] * -1;
+    } else {
+      return split[0];
+    }
+  },
+  isEven: function(someNumber) {
+      return (someNumber % 2 === 0) ? "even" : "odd";
+  },
+  //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function(duration){
-    console.log("setting up tl");
     $(Rashomon.videos).each(function(){
       Rashomon.loaded++;
       var id = this.id;
@@ -33,11 +47,11 @@ var Rashomon = {
         var pop = vid.pp;
         var of = vid.offset;
         var duration = pop.duration();
-      
+
         $(this).attr('data-duration', pop.duration());
-        var height = pop.media.videoHeight;
-        var width = pop.media.videoWidth;
-        console.log(height + " x " + width);
+        var height = + pop.media.videoHeight;
+        var width = + pop.media.videoWidth;
+        //console.log(pid + ": " + height + " x " + width);
         if (height > width) {
           $(this).addClass("vert");
         } else {
@@ -48,10 +62,8 @@ var Rashomon = {
         var offset = Rashomon.getOffset($(this).attr('data-offset'));
       
         Rashomon.videos[id].displayVideo(offset);
-        console.log("metadata loaded on " + pid);
         var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
-        console.log(offtime);
-      
+        
         Rashomon.timeline.cue(offtime, function () {
           hideVid(id);
         });
@@ -61,7 +73,6 @@ var Rashomon = {
             showVid(id);
           }
         }); //end cue
-        console.log(Rashomon.loaded);
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
@@ -76,13 +87,12 @@ var Rashomon = {
     
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
-    this.timeline.currentTime(70);
+    this.timeline.currentTime(0);
     this.fulldur = duration; // 6 minutes
     this.timeline.on("play", function () {
       $("#play").hide();
       $("#stop").show();
       $(Rashomon.videos).each(function () {
-        console.log(this.id);
         var offset = this.offset;
         var duration = this.pp.duration();
         if (Rashomon.timeline.currentTime() > offset && Rashomon.timeline.currentTime() < offset + duration && !$("#vcontain" + this.id).is(":hidden")) {
@@ -91,15 +101,15 @@ var Rashomon = {
       }); // end videos each
   
     }); //end play
-    Rashomon.timeline.on("pause", function () {
+    this.timeline.on("pause", function () {
       $("#play").show();
       $("#stop").hide();
       $(Rashomon.videos).each(function () {
-        this.pp.pause();
-      });  // end each
-  
-    }); // end pause
-  
+        this.pp.pause(Rashomon.timeline.currentTime() - this.offset);
+      });
+    }); //end pause
+
+
     $("#maintimeline").attr("data-duration", Rashomon.fulldur);
     this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
@@ -138,11 +148,11 @@ var Rashomon = {
   setupVideos: function() {
       Rashomon.filenames = rashomonManifest.files;
       var l = Rashomon.filenames.length;
-      $.each(Rashomon.filenames, function () {
+      $.each(Rashomon.filenames, function(index) {
         var item = {};
-  
         item.filename = '' + this;
         $.getJSON("metadata/" + this + ".json", function (itemdata) {
+
           item.tcDate = formatDate(itemdata[0].TrackCreateDate);
           item.tmDate = formatDate(itemdata[0].TrackModifyDate);
           item.fmDate = formatDate(itemdata[0].FileModifyDate);
@@ -156,17 +166,28 @@ var Rashomon = {
   
             Rashomon.earliest = item.validDate;
           }
-          var vid = Rashomon.videos.push(new video({
-            "offset": item.validDate.getTime() / 1000, 
-            "duration": + item.duration, 
-            "id": Rashomon.videos.length + 1, 
-            "file": item.filename, 
-            "meta": itemdata[0] 
-          })) - 1;
-          Rashomon.videos[vid].buildVideoPlayer();
-  
+          if (item.duration){
+
+            var vid = Rashomon.videos.push(new video({
+              "offset": item.validDate.getTime() / 1000,
+              "duration": + item.duration,
+              "id": index,
+              "file": item.filename,
+              "meta": itemdata[0]
+            })) - 1;
+            Rashomon.videos[vid].buildVideoPlayer();
+          } else {
+
+            var photo = Rashomon.photos.push(new photo({
+              "offset": item.validDate.getTime() / 1000,
+              "id": Rashomon.videos.length + 1,
+              "file": item.filename,
+              "meta": itemdata[0]
+            }));
+          }
+          
           l--;
-          if (l === 0) {
+          if (index === Rashomon.filenames.length - 1) {
             $.each(Rashomon.videos, function () {
               var id = this.id;
               this.offset -= Rashomon.earliest.getTime() / 1000 - 3;
@@ -194,6 +215,31 @@ var Rashomon = {
 
 };
 
+var photo = function (options) {
+  this.offset = options.offset;
+  this.duration = options.duration;
+  this.name = options.file;
+  this.file = options.file;
+  this.id = Rashomon.filenames.indexOf(options.file);
+  this.color = Rashomon.colorList[this.id];
+  this.meta = options.meta;
+  this.buildPhotoViewer = function(){
+    var pContainer = $("<div/>", {
+      id: "pContainer" + this.id,
+      'class': 'pContainer'
+    });
+    var tools = $("<div/>", { 'class': 'vidtools'});
+    var vid = $("<img/>", {
+      id: "photo" + this.id,
+      "class": 'rashomon',
+      "data-offset": this.offset,
+      "data-id": this.id,
+      "src": this.file + ".jpg"
+    });
+
+  };
+}; // end photo
+
 var video = function (options) {
   this.offset = options.offset;
   this.duration = options.duration;
@@ -212,7 +258,7 @@ var video = function (options) {
     });
     var vid = $("<video/>", {
       id: "video" + this.id,
-      "class": 'rashomon ' + this.align,
+      "class": 'rashomon',
       "data-offset": this.offset,
       "data-id": this.id
     });
@@ -224,12 +270,12 @@ var video = function (options) {
       src: Rashomon.mpath + this.file + ".mp4",
       type: 'video/mp4'
     });
-    this.webm.appendTo(vid);
     this.mp4.appendTo(vid);
+    this.webm.appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
   
-    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <em class='showmeta' id='meta" + this.id + "'>i</em>").appendTo(container);
+    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
   
     $("<div/>", {
       id: "vidDelay" + this.id
@@ -240,9 +286,9 @@ var video = function (options) {
   
   this.showMeta = function() {
     $("#meta").css("right", "0");
-    console.log(this.meta);
+    //console.log(this.meta);
     if (this.meta.GPSPosition) {
-      var latLng = new google.maps.LatLng(convertCoord(this.meta.GPSLatitude), convertCoord(this.meta.GPSLongitude));
+      var latLng = new google.maps.LatLng(Rashomon.convertCoord(this.meta.GPSLatitude), Rashomon.convertCoord(this.meta.GPSLongitude));
       
       var map = new google.maps.Map(document.getElementById("map_canvas"), {
         center: latLng,
@@ -270,13 +316,11 @@ var video = function (options) {
     var duration = this.duration;
     var meta = this.meta;
     var offset = this.offset;
-    console.log("waat");
-    console.log("id " + id + "start " + start + "dur " + duration + "meta " + meta + " " + "offset " + offset + "position " + position);
     //todo duration->space, match meta to real meta
     var vPosition = $("#maintimeline").offset().left;
     var leftpos = position;
     var vidline = $("<div/>", {
-      "class": "vidline " + isEven(id),
+      "class": "vidline " + Rashomon.isEven(id),
       "id": "vidline" + id
     });
     var vidnum = $("<div/>", {
@@ -308,7 +352,7 @@ var video = function (options) {
       "class": "vidtime",
       "id": "vidtime" + id,
       "data-id": id,
-      "title": meta
+      "title": this.file
     }).css({
       "left": leftpos / $("#maintimeline").width() * 100 + "%",
       "width": "1px",
@@ -320,7 +364,7 @@ var video = function (options) {
       attr: 'id'
     });
     this.drawVidtimes();
-    /*  block to show relative time, calculation is wrong to show time 
+    /*  block to show relative time, calculation is wrong to show time
       $('.vidtl').mousemove(function(e){
           var mouseleft = e.pageX - $('#maintimeline').offset().left;
           var pct = mouseleft / $('#maintimeline').width();
@@ -387,7 +431,7 @@ var video = function (options) {
         }
   
       }); // end rashomon each
-    }); //end nav click 
+    }); //end nav click
     $("#vid" + id).click(function () {
       var vid_id = id;
   
@@ -399,7 +443,7 @@ var video = function (options) {
         this.currentTime(Rashomon.timeline.currentTime() - Rashomon.videos[id].offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = Rashomon.timeline.currentTime().toFixed(2) + " - " + (Rashomon.videos[id].offset + this.currentTime()).toFixed(2); 
+      var syncmsg = Rashomon.timeline.currentTime().toFixed(2) + " - " + (Rashomon.videos[id].offset + this.currentTime()).toFixed(2);
       $("#vidDelay" + id).text(syncmsg);
       
     });
@@ -567,15 +611,3 @@ function formatDuration(duration) {
 
 
 
-function convertCoord(coord) {
-  var split = coord.split(" ");
-  if (split[1] === "S" || split[1] === "W") {
-    return split[0] * -1;
-  } else {
-    return split[0];
-  }
-}
-
-var isEven = function (someNumber) {
-  return (someNumber % 2 === 0) ? "even" : "odd";
-};
