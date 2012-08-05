@@ -31,7 +31,7 @@ function loadFullscreen(id){
       alert("Something wrong with sources for this video");
     }
     
-    timeline.pause();
+    Rashomon.timeline.pause();
     
     //$('body').css('overflow', "hidden");
     $('#fullscreen').fadeIn("slow"); 
@@ -40,8 +40,8 @@ function loadFullscreen(id){
     console.log("clicked " + id)
     console.log(ctime);
     var videotag = $("<video/>", { 'id': 'fsvid', "controls": true }).appendTo('#fsvidholder');    
-    videos[id].webm.appendTo(videotag);
-    videos[id].mp4.appendTo(videotag);
+    Rashomon.videos[id].webm.appendTo(videotag);
+    Rashomon.videos[id].mp4.appendTo(videotag);
     
       $("#fsvid").css("left",  $(window).width() / 2  -  $("#fsvid").width() / 2 );
     var fspop = Popcorn("#fsvid");
