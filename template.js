@@ -40,7 +40,9 @@ var Rashomon = {
   setupTimeline: function(duration){
     $(Rashomon.videos).each(function(){
       var id = this.id;
+      console.log("Binding " + id);
       $('#video' + id).bind('loadeddata', function () {
+        console.log("Data loated on " + id);
         Rashomon.loaded++;
         var vid = Rashomon.videos[id];
         var pid = vid.id;
@@ -201,7 +203,7 @@ var Rashomon = {
   
   
             $('#maintimeline').attr('data-duration', Rashomon.fulldur);
-
+	    console.log("bloop");
             Rashomon.setupTimeline(Rashomon.fulldur);
   
           }
