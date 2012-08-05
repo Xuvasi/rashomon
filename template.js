@@ -41,7 +41,7 @@ var Rashomon = {
     $(Rashomon.videos).each(function(){
       Rashomon.loaded++;
       var id = this.id;
-      $('#video' + id).bind('loadedmetadata', function () {
+      $('#video' + id).bind('loadeddata', function () {
         var vid = Rashomon.videos[id];
         var pid = vid.id;
         var pop = vid.pp;
