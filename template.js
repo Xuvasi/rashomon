@@ -7,7 +7,7 @@ var Rashomon = {
   videos: [],
   photos: [],
   loaded: 0,
-  mpath: "http://localhost/~aphid/JulyRashomon/",
+  mpath: "http://metaviddemo01.ucsc.edu/rashomon/media/",
   delayFixed: 0,
   fulldur: 0,
   earliest: new Date(),
@@ -23,6 +23,9 @@ var Rashomon = {
   var minutes = parseInt(totalSec / 60, 10) % 60;
   var seconds = parseInt(totalSec % 60, 10);
   return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+  },
+  hideMeta: function(){
+
   },
   //coordinate conversion for GPS metadata
   convertCoord: function(coord){
@@ -290,7 +293,14 @@ var video = function (options) {
   
   this.showMeta = function() {
     $("#meta").css("right", "0");
-    //console.log(this.meta);  
+    //console.log(this.meta);
+    $("#metadata ul").remove();
+    var list = $("<ul/>");
+    $("<li/>", { text: "Filename : " + this.file } ).appendTo(list);
+    $("<li/>", { text: "Start time: " + this.meta.mediaCreateDate }).appendTo(list);
+    $("<li/>", { text: "Duration: " + this.duration }).appendTo(list);
+    $("<li/>", { text: "..." }).appendTo(list);
+    list.appendTo("#metadata");
   };
 
   this.drawVidtimes = function() {
@@ -452,7 +462,9 @@ $(document).ready(function () {
 
   //loads filenames from manifest.json in local folder
   Rashomon.setupVideos(); // could point to one from a different event or something
-
+  $("#metaX").click(function(){
+    $("#meta").css("right", "-210px");
+  });
 
   /*
   displayEvent(1, "something happened right then", "orange", 15);
