@@ -203,9 +203,9 @@ var Rashomon = {
               if (this.duration + this.offset > Rashomon.fulldur) {
                 Rashomon.fulldur = this.duration + this.offset + 15;
               }
-
             });
-  
+ 	    displayEvent(1, Rashomon.earliest, "orange", 1);
+ 
   
             $('#maintimeline').attr('data-duration', Rashomon.fulldur);
             Rashomon.setupTimeline(Rashomon.fulldur);
@@ -297,8 +297,9 @@ var video = function (options) {
     $("#metadata ul").remove();
     var list = $("<ul/>");
     $("<li/>", { text: "Filename : " + this.file } ).appendTo(list);
-    $("<li/>", { text: "Start time: " + this.meta.mediaCreateDate }).appendTo(list);
-    $("<li/>", { text: "Duration: " + this.duration }).appendTo(list);
+    $("<li/>", { text: "Start time: " + this.meta.MediaCreateDate }).appendTo(list);
+    $("<li/>", { text: "Offset: " + this.offset + "s" }).appendTo(list);
+    $("<li/>", { text: "Duration: " + this.meta.Duration }).appendTo(list);
     $("<li/>", { text: "..." }).appendTo(list);
     list.appendTo("#metadata");
   };
