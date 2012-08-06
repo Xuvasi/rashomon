@@ -470,7 +470,7 @@ footer a:hover {
 }
 
 #meta {
-    background: rgba(85,85,85,0.7);
+    background: rgba(85,85,85,0.95);
     -webkit-transition: all 0.5s linear;
     -moz-transition: all 0.5s linear;
     -ms-transition: all 0.5s linear;
@@ -481,7 +481,22 @@ footer a:hover {
     top: 150px;
     width: 200px;
     height: 400px;
-    right: -200px;
+    right: -210px;
     overflow: hidden;
+    padding: 5px;
+}
+
+#metadata {
+   font-size: 9pt;
+
+}
+
+#metaX {
+   position: absolute;
+   top: 1px;
+   left: 1px;
+   font-size: 9pt;
+   cursor: pointer;
+   color: white;
 }
  
