@@ -7,7 +7,7 @@ body {
     overflow-x: hidden;
 }
 
-header {
+header#main{
     position: relative;
     background: #666;
     padding-top: 15px;
@@ -15,6 +15,52 @@ header {
     height: auto;
     overflow: hidden;
 }
+
+header#sub {
+    position: relative;
+    width: 100%;
+    background: #666;
+    font-size: 16pt;
+    height: 35px;
+}
+
+header nav {
+    position: relative;
+    padding-left: 15px;
+
+}
+
+
+header#sub a:link, header#sub a:visited {
+  text-decoration: none;
+  background: #e3e3e3;
+  border: 1px solid #bbb;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  -moz-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  box-shadow: inset 0 0 1px 1px #f6f6f6;
+  color: #333;
+  font: bold 12px "helvetica neue", helvetica, arial, sans-serif;
+  line-height: 1;
+  padding: 3px 5px;
+  text-align: center;
+  text-shadow: 0 1px 0 #fff;
+  width: 150px; 
+}
+
+  header#sub a:hover {
+    background: #d9d9d9;
+    -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
+    -moz-box-shadow: inset 0 0 1px 1px #eaeaea;
+    box-shadow: inset 0 0 1px 1px #eaeaea;
+    color: #222;
+    cursor: pointer; 
+}
+
+ 
+
 
 #fullscreen {
     position: absolute;
@@ -68,29 +114,8 @@ opacity: 0;
     color: #aaa;
     cursor: pointer;
 }
-footer {
-    clear: both;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #666;
-    font-size: 12pt;
-    text-align: right;
-}
 
-footer nav {
-    padding-right: 15px;
 
-}
-
-footer a:link, footer a:visited {
-    color: white;
-    text-decoration: none;
-}
-
-footer a:hover {
-    color: orange;
-}
 
 #project {
     color: white;
