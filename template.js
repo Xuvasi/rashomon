@@ -248,11 +248,11 @@ var Rashomon = {
         }
 
         l--;
-        console.log("l" + l + "idx " + index + "vids " + Rashomon.videos.length)
+        console.log("l" + l + "idx " + index + "vids " + Rashomon.videos.length);
         if (Rashomon.videos.length === Rashomon.filenames.length) {
           $.each(Rashomon.videos, function () {
             var id = this.id;
-            this.offset -= Rashomon.earliest.getTime() / 1000 - 3;
+            this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
             $('#video' + this.id).attr('data-offset', this.offset);
 
 
