@@ -11,7 +11,7 @@ header {
     position: relative;
     background: #666;
     padding-top: 15px;
-    padding-left: 140px;
+    padding-left: 15px;
     height: auto;
     overflow: hidden;
 }
@@ -73,7 +73,7 @@ footer {
     clear: both;
     position: relative;
     background: #666;
-    font-size: 8pt;
+    font-size: 12pt;
     text-align: right;
     padding-right: 10px;
 }
@@ -90,9 +90,18 @@ footer a:hover {
 #project {
     color: white;
     font-family: sans-serif;
-    font-size: 48pt;
+    font-size: 30pt;
     font-weight: bold;
     text-shadow: 0 -1px 1px #000;
+}
+
+#projectsub{
+
+    color: white;
+    font-family: sans-serif;
+    font-size: 14pt;
+    text-shadow: 0 -1px 1px #000;
+
 }
 
 #tlinfo {
@@ -126,9 +135,9 @@ footer a:hover {
 #videoswrapper {
     position: relative;
     width: 100%;
-    padding-top: 30px;
+    padding-top: 15px;
     background: #aaa;
-    min-height: 141px;
+    min-height: 100px;
 }
 
 .pager {
@@ -162,7 +171,7 @@ footer a:hover {
 
 .vidline {
     position: relative;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     height: 20px;
     width: 100%;
     background: #bbb;
@@ -267,7 +276,7 @@ footer a:hover {
     background: black;
     font-size: 9pt;
     color: #aaa;
-    min-height: 600px;
+    min-height: 380px;
 }
 
 .vidcontainer {
