@@ -31,7 +31,7 @@ header nav {
 }
 
 
-header#sub a:link, header#sub a:visited {
+a.but, a.but:link, a.but:visited {
   text-decoration: none;
   background: #e3e3e3;
   border: 1px solid #bbb;
@@ -50,7 +50,7 @@ header#sub a:link, header#sub a:visited {
   width: 150px; 
 }
 
-  header#sub a:hover {
+a.but:hover {
     background: #d9d9d9;
     -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
     -moz-box-shadow: inset 0 0 1px 1px #eaeaea;
@@ -60,6 +60,12 @@ header#sub a:link, header#sub a:visited {
 }
 
  
+a.current, a.current:link, a.current:visited {
+
+background: #7d7;
+
+
+}
 
 
 #fullscreen {
