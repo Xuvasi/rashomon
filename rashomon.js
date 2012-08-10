@@ -224,8 +224,8 @@ var Rashomon = {
         //get other tags like geo coords here
         item.vDate = Rashomon.validDate(item);
         if (item.vDate.getTime() < Rashomon.earliest.getTime()) {
-
           Rashomon.earliest = item.vDate;
+          console.log("Earliest now " + Rashomon.earliest)
         }
         if (item.duration) {
 
@@ -531,12 +531,15 @@ var video = function (options) {
     }); // end vidnum click
 
     this.pp.on('timeupdate', function () {
-      var delay = (Rashomon.timeline.currentTime() - (Rashomon.videos[id].offset + this.currentTime())).toFixed(2) * 1000;
+      var vid = Rashomon.videos[id];
+      var delay = (Rashomon.timeline.currentTime() - (vid.offset + this.currentTime())).toFixed(2) * 1000;
       if (!Rashomon.timeline.media.paused && Math.abs(delay) > 1250) {
-        this.currentTime(Rashomon.timeline.currentTime() - Rashomon.videos[id].offset);
+        this.currentTime(Rashomon.timeline.currentTime() - vid.offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = "<p>" + Rashomon.timeline.currentTime().toFixed(2) + " - " + (Rashomon.videos[id].offset + this.currentTime()).toFixed(2) + "</p><p>Video Drift: " + delay + "ms</p>";
+      var syncmsg = "<p>Currenttime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + 
+          "<p>Offset: " + (vid.offset + this.currentTime()).toFixed(2) + 
+          "</p><p>Video Drift: " + delay + "ms</p>";
       $("#vidDelay" + id).html(syncmsg);
 
     }); //end on
