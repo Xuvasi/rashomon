@@ -1,0 +1,12 @@
+var rashomonManifest = { 
+	"mediaPath": "http://metaviddemo01.ucsc.edu/youtube_deface/",
+	"event": "2012-05-07",
+    "files": [
+      "2012-07-26_11.14.53",
+      "2012-07-26_11.14.37",     
+      "IMG_0227",
+      "IMG_0263",
+      "20120726_111303"
+    ]
+};
+        

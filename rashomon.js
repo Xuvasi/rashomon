@@ -6,7 +6,6 @@ var Rashomon = {
   videos: [],
   photos: [],
   loaded: 0,
-  mpath: "http://metaviddemo01.ucsc.edu/rashomon/media/",
   delayFixed: 0,
   fulldur: 0,
   earliest: new Date(),
@@ -14,7 +13,8 @@ var Rashomon = {
   videosToDisplay: "",
   filenames: [],
   colorList: ["Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"],
-
+  mpath: rashomonManifest.mediaPath,
+  filenames: rashomonManifest.files,
 
   validDate: function (item) {
     //makes sure date isn't from 1904 or 1946 or sometime way before videos existed
@@ -207,7 +207,6 @@ var Rashomon = {
   },
   /* reads videos from rashomonManifest object, which is created by another hunk of js linked in the html */
   setupVideos: function () {
-    Rashomon.filenames = rashomonManifest.files;
     var l = Rashomon.filenames.length;
     $.each(Rashomon.filenames, function (index) {
       var item = {};
