@@ -121,9 +121,8 @@ var Rashomon = {
         }
 
         var totalwidth = $("#maintimeline").width();
-        var offset = Rashomon.getOffset($(this).attr('data-offset'));
 
-        Rashomon.videos[id].displayVideo(offset);
+        Rashomon.videos[id].displayVideo();
         var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
 
         Rashomon.timeline.cue(offtime, function () {
@@ -248,7 +247,6 @@ var Rashomon = {
         }
 
         l--;
-        console.log("l" + l + "idx " + index + "vids " + Rashomon.videos.length);
         if (Rashomon.videos.length === Rashomon.filenames.length) {
           $.each(Rashomon.videos, function () {
             var id = this.id;
@@ -283,7 +281,7 @@ var photo = function (options) {
   this.id = Rashomon.filenames.indexOf(options.file);
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
-  this.buildPhotoViewer = function () {
+  this.buildPhotoViewer = function() {
     var pContainer = $("<div/>", {
       id: "pContainer" + this.id,
       'class': 'pContainer'
@@ -310,7 +308,7 @@ var video = function (options) {
   this.id = Rashomon.filenames.indexOf(options.file);
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
-  this.buildVideoPlayer = function () {
+  this.buildVideoPlayer = function() {
     var container = $("<div/>", {
       id: "vcontain" + this.id,
       'class': 'vidcontainer'
@@ -385,16 +383,20 @@ var video = function (options) {
 
   this.drawVidtimes = function () {
     var newwidth = Rashomon.getOffset(this.duration) / $("#maintimeline").width() * 100 + "%";
-    $("#vidtime" + this.id).css("width", newwidth);
+    $("#vidtime" + this.id).css({"width": newwidth, "left": Rashomon.getOffset(this.offset)});;
+
   };
 
-  this.displayVideo = function (position) {
+  this.displayVideo = function () {
 
     var id = this.id;
     var start = this.position;
     var duration = this.duration;
     var meta = this.meta;
     var offset = this.offset;
+    var position = Rashomon.getOffset(offset);
+    console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
+    //console.log(offset);
     //todo duration->space, match meta to real meta
     var vPosition = $("#maintimeline").offset().left;
     var leftpos = position;
