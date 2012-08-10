@@ -536,9 +536,10 @@ var video = function (options) {
         this.currentTime(Rashomon.timeline.currentTime() - vid.offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = "<p>Currenttime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + 
+      /*var syncmsg = "<p>Currenttime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + 
           "<p>Offset: " + (vid.offset + this.currentTime()).toFixed(2) + 
-          "</p><p>Video Drift: " + delay + "ms</p>";
+          "</p><p>Video Drift: " + delay + "ms</p>"; */
+      var syncmsg = "<p>Video Drift: " + delay + "ms</p>"; 
       $("#vidDelay" + id).html(syncmsg);
 
     }); //end on
