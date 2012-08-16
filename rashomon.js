@@ -235,7 +235,6 @@ var Rashomon = {
           console.log("Earliest now " + Rashomon.earliest);
         }
         if (item.duration) {
-
           var vid = Rashomon.videos.push(new video({
             "offset": item.vDate.getTime() / 1000,
             "duration": +item.duration,
@@ -257,9 +256,8 @@ var Rashomon = {
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
           $.each(Rashomon.videos, function () {
             var id = this.id;
-            console.log("Offset" + id + ": " + this.offset);
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
-            console.log("Offset" + id + ": " + this.offset);
+
             $('#video' + id).attr('data-offset', this.offset);
 
 
@@ -270,7 +268,7 @@ var Rashomon = {
           displayEvent(1, Rashomon.earliest, "orange", 1);
           $('#maintimeline').attr('data-duration', Rashomon.fulldur);
           Rashomon.setupTimeline(Rashomon.fulldur);
-          $.each(Rashomon.videos, function () {
+          $.each(Rashomon.videos, function() {
             this.displayVideo();
           }); //end each
         } // end if
@@ -397,13 +395,13 @@ var video = function (options) {
     list.appendTo("#metadata");
   };
 
-  this.drawVidtimes = function () {
+  this.drawVidtimes = function() {
     var newwidth = Rashomon.getOffset(this.duration) / $("#maintimeline").width() * 100 + "%";
     $("#vidtime" + this.id).css({"width": newwidth, "left": Rashomon.getOffset(this.offset)});
 
   };
 
-  this.displayVideo = function () {
+  this.displayVideo = function() {
 
     var id = this.id;
     var start = this.position;
@@ -411,7 +409,7 @@ var video = function (options) {
     var meta = this.meta;
     var offset = this.offset;
     var position = Rashomon.getOffset(offset);
-    console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
+    //console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
     //console.log(offset);
     //todo duration->space, match meta to real meta
     var vPosition = $("#maintimeline").offset().left;
