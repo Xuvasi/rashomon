@@ -569,7 +569,7 @@ var video = function (options) {
           "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" +
           "<p>Offset: " + vid.offset + "</p>" +
           "<p>Video Drift: " + delay + "ms</p>"; 
-      //var syncmsg = "<p>Video Drift: " + delay + "ms</p>"; 
+      var syncmsg = "<p>Video Drift: " + delay + "ms</p>"; 
       $("#vidDelay" + id).html(syncmsg);
 
     }); //end on
