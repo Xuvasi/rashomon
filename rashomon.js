@@ -106,14 +106,13 @@ var Rashomon = {
     });
     $(Rashomon.videos).each(function () {
       var id = this.id;
-
+      var vid = this;
       this.buildVideoPlayer();
-      console.log("Binding " + id);
+      //console.log("Binding " + id);
       $('#video' + id).on('loadeddata', function () {
 
-        console.log("Data loaded on " + id);
+        //console.log("Data loaded on " + id);
         Rashomon.loaded++;
-        var vid = Rashomon.videos[id];
         var pid = vid.id;
         var of = vid.offset;
         var duration = vid.pp.duration();
@@ -318,8 +317,8 @@ var video = function (options) {
   this.duration = options.duration;
   this.name = options.file;
   this.file = options.file;
-  this.id = Rashomon.filenames.indexOf(options.file);
-
+  this.id = (options.id);
+      console.log(this.id + " is " + this.file);
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
   this.buildVideoPlayer = function() {
@@ -357,6 +356,7 @@ var video = function (options) {
     }).appendTo(tools);
 
     this.pp = Popcorn("#video" + this.id);
+    this.pp.mute();
   };
 
   this.showVid = function () {
@@ -402,7 +402,7 @@ var video = function (options) {
   };
 
   this.displayVideo = function() {
-
+    var vid = this;
     var id = this.id;
     var start = this.position;
     var duration = this.duration;
@@ -414,6 +414,9 @@ var video = function (options) {
     //todo duration->space, match meta to real meta
     var vPosition = $("#maintimeline").offset().left;
     var leftpos = position;
+    console.log(id + " is " + this.file);
+
+
     var vidline = $("<div/>", {
       "class": "vidline " + Rashomon.isEven(id),
       "id": "vidline" + id
@@ -421,7 +424,7 @@ var video = function (options) {
     var vidnum = $("<div/>", {
       "class": "vidnum",
       "id": "vid" + id,
-      text: +id + 1,
+      "text": +id + 1,
       title: "Click to show video"
     }).appendTo(vidline);
     var vidmeta = $("<div/>", {
@@ -442,7 +445,7 @@ var video = function (options) {
       "id": "tl" + id,
       "data-id": id
     }).appendTo(vidline);
-
+    console.log("and..." + this.id + " is " + this.file);
     var vidtime = $("<div/>", {
       "class": "vidtime",
       "id": "vidtime" + id,
@@ -469,17 +472,26 @@ var video = function (options) {
       */
 
     //experimental seeking optimization code
-    $("video" + id).on("seeking", function () {
-      if (!Rashomon.timeline.media.paused && this.pp.media.paused) {
+    $("#video" + id).on("seeking", function () {
+      if (!Rashomon.timeline.media.paused && Popcorn("#video" + id).media.paused) {
         Rashomon.timeline.resume = true;
         Rashomon.timeline.pause();
       }
     });
-    $("video" + id).on("seeked", function () {
+    $("#video" + id).on("seeked", function () {
       if (Rashomon.timeline.resume) {
         Rashomon.timeline.play();
         Rashomon.timeline.resume = false;
       }
+    });
+
+    $("#video" + id).mouseover(function(){
+      Popcorn("#video" + id).unmute();
+
+    });
+    $("#video" + id).mouseleave(function(){
+      Popcorn("#video" + id).mute();
+
     });
 
     //trigger fullscreen
@@ -489,7 +501,7 @@ var video = function (options) {
     });
     //toggle metadata
     $("#meta" + id).click(function () {
-      Rashomon.videos[id].showMeta();
+      vid.showMeta();
       return false;
     });
 
@@ -547,13 +559,12 @@ var video = function (options) {
     }); // end vidnum click
 
     this.pp.on('timeupdate', function () {
-      var vid = Rashomon.videos[id];
       var delay = (Rashomon.timeline.currentTime() - (vid.offset + this.currentTime())).toFixed(2) * 1000;
       if (!Rashomon.timeline.media.paused && Math.abs(delay) > 1250) {
         this.currentTime(Rashomon.timeline.currentTime() - vid.offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = "<p>" + vid.file + "</p>" +
+      var syncmsg = "<p>" + id + " " + vid.file + "</p>" +
           "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + 
           "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" +
           "<p>Offset: " + vid.offset + "</p>" +
