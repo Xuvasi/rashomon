@@ -14,7 +14,6 @@ var Rashomon = {
   colorList: ["Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"],
   mpath: rashomonManifest.mediaPath,
   filenames: rashomonManifest.files,
-
   validDate: function (item) {
     //makes sure date isn't from 1904 or 1946 or sometime way before videos existed
     if (item.mcDate > 2000) {
@@ -24,7 +23,7 @@ var Rashomon = {
     }
   },
   formatDate: function (exifDate) {
-    if(!exifDate){
+    if (!exifDate) {
       return false;
     }
     //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
@@ -47,14 +46,11 @@ var Rashomon = {
       hour -= zone;
       hour = hour < 10 ? "0" + hour : hour;
     } //end if
-
     var d = new Date(year, month, day, hour, minute, second, 0);
     //console.log(d);
     //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
     return d;
-
   },
-
   //converts seconds to hh:mm:ss
   sec2hms: function (time) {
     var totalSec = parseInt(time, 10);
@@ -64,7 +60,7 @@ var Rashomon = {
     return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
   },
   formatDuration: function (duration) {
-    if (!duration){
+    if (!duration) {
       return false;
     }
     var dur;
@@ -85,8 +81,6 @@ var Rashomon = {
       console.log("Some weird duration, couldn't format");
     }
   },
-
-
   //coordinate conversion for GPS metadata
   convertCoord: function (coord) {
     var split = coord.split(" ");
@@ -101,7 +95,7 @@ var Rashomon = {
   },
   //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function (duration) {
-    $(Rashomon.photos).each(function() {
+    $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
     });
     $(Rashomon.videos).each(function () {
@@ -110,13 +104,10 @@ var Rashomon = {
       this.buildVideoPlayer();
       //console.log("Binding " + id);
       $('#video' + id).on('loadeddata', function () {
-
         //console.log("Data loaded on " + id);
         Rashomon.loaded++;
-        var pid = vid.id;
         var of = vid.offset;
         var duration = vid.pp.duration();
-
         $(this).attr('data-duration', vid.pp.duration());
         var height = +vid.pp.media.videoHeight;
         var width = +vid.pp.media.videoWidth;
@@ -126,11 +117,7 @@ var Rashomon = {
         } else {
           $(this).addClass("hor");
         }
-
-        var totalwidth = $("#maintimeline").width();
-
         var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
-
         Rashomon.timeline.cue(offtime, function () {
           vid.hideVid();
         });
@@ -143,15 +130,12 @@ var Rashomon = {
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
-
           $("#timepos").css("height", newheight);
           $("#timepos").show();
           Rashomon.timeline.play();
         }
       }); //end bind
     }); //end each
-
-
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
     this.timeline.currentTime(0);
@@ -166,7 +150,6 @@ var Rashomon = {
           this.pp.play();
         }
       }); // end videos each
-
     }); //end play
     this.timeline.on("pause", function () {
       $("#play").show();
@@ -175,14 +158,11 @@ var Rashomon = {
         this.pp.pause(Rashomon.timeline.currentTime() - this.offset);
       });
     }); //end pause
-
-
     $("#maintimeline").attr("data-duration", Rashomon.fulldur);
     this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
       console.log("pausing");
     }); //end cue
-
     //play button behavior
     $("#play").click(function () {
       //console.log(Rashomon.timeline.currentTime() + "of " + Rashomon.fulldur);
@@ -199,12 +179,9 @@ var Rashomon = {
       if (this.currentTime() > Rashomon.fulldur - 0.5) {
         this.pause(Rashomon.fulldur - 0.5);
       }
-      var totalwidth = $("#maintimeline").width();
       var pct = this.currentTime() / Rashomon.fulldur * 100; // for when we switch to % for window size adjustments
-      var newoffset = totalwidth * this.currentTime() / Rashomon.fulldur;
       $("#timeloc").text(Rashomon.sec2hms(this.currentTime()));
       $("#timepos").css('left', pct + "%");
-
     });
     //on navtl click, adjust video positions appropriately, obeying play conditions and such
   },
@@ -218,7 +195,6 @@ var Rashomon = {
       var item = {};
       item.filename = '' + this;
       $.getJSON("metadata/" + this + ".json", function (itemdata) {
-
         item.origDate = Rashomon.formatDate(itemdata[0].DateTimeOriginal);
         item.tcDate = Rashomon.formatDate(itemdata[0].TrackCreateDate);
         item.tmDate = Rashomon.formatDate(itemdata[0].TrackModifyDate);
@@ -226,7 +202,6 @@ var Rashomon = {
         item.mcDate = Rashomon.formatDate(itemdata[0].MediaCreateDate);
         item.mDate = Rashomon.formatDate(itemdata[0].MediaModifyDate);
         item.duration = Rashomon.formatDuration(itemdata[0].Duration);
-
         //get other tags like geo coords here
         item.vDate = Rashomon.validDate(item);
         if (item.vDate.getTime() < Rashomon.earliest.getTime()) {
@@ -242,7 +217,6 @@ var Rashomon = {
             "meta": itemdata[0]
           }));
         } else {
-
           var aphoto = Rashomon.photos.push(new photo({
             "offset": item.vDate.getTime() / 1000,
             "id": Rashomon.videos.length + 1,
@@ -250,16 +224,12 @@ var Rashomon = {
             "meta": itemdata[0]
           }));
         }
-
         l--;
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
-
             $('#video' + id).attr('data-offset', this.offset);
-
-
             if (this.duration + this.offset > Rashomon.fulldur) {
               Rashomon.fulldur = this.duration + this.offset + 15;
             }
@@ -267,20 +237,14 @@ var Rashomon = {
           displayEvent(1, Rashomon.earliest, "orange", 1);
           $('#maintimeline').attr('data-duration', Rashomon.fulldur);
           Rashomon.setupTimeline(Rashomon.fulldur);
-          $.each(Rashomon.videos, function() {
+          $.each(Rashomon.videos, function () {
             this.displayVideo();
           }); //end each
         } // end if
-
       }); //end getJSON (per item)
     }); //end each
   }
-
-
-
-
 };
-
 var photo = function (options) {
   this.offset = options.offset;
   this.name = options.file;
@@ -288,7 +252,7 @@ var photo = function (options) {
   this.id = Rashomon.filenames.indexOf(options.file);
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
-  this.buildPhotoViewer = function() {
+  this.buildPhotoViewer = function () {
     var pContainer = $("<div/>", {
       id: "pContainer" + this.id,
       'class': 'container'
@@ -297,7 +261,6 @@ var photo = function (options) {
       'class': 'tools'
     });
     tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(pContainer);
-
     var photo = $("<img/>", {
       id: "photo" + this.id,
       "class": 'rashomon',
@@ -307,21 +270,17 @@ var photo = function (options) {
     });
     pContainer.appendTo("#videos");
     photo.appendTo(pContainer);
-
-
   };
 }; // end photo
-
 var video = function (options) {
   this.offset = options.offset;
   this.duration = options.duration;
   this.name = options.file;
   this.file = options.file;
   this.id = (options.id);
-      console.log(this.id + " is " + this.file);
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
-  this.buildVideoPlayer = function() {
+  this.buildVideoPlayer = function () {
     var container = $("<div/>", {
       id: "vcontain" + this.id,
       'class': 'container'
@@ -347,23 +306,18 @@ var video = function (options) {
     this.webm.appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
-
     tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
-
     $("<div/>", {
       "id": "vidDelay" + this.id,
       "class": "vidDelay"
     }).appendTo(tools);
-
     this.pp = Popcorn("#video" + this.id);
     this.pp.mute();
   };
-
   this.showVid = function () {
     $("#vcontain" + this.id).show("fast", "linear");
     $("#vid" + this.id).addClass("vidactive");
   };
-
   this.hideVid = function () {
     this.pp.pause();
     if ($("#vcontain" + this.id).is(":visible")) {
@@ -371,7 +325,6 @@ var video = function (options) {
       $("#vid" + this.id).removeClass("vidactive");
     }
   };
-
   this.showMeta = function () {
     $("#meta").css("right", "0");
     //console.log(this.meta);
@@ -394,17 +347,16 @@ var video = function (options) {
     }).appendTo(list);
     list.appendTo("#metadata");
   };
-
-  this.drawVidtimes = function() {
+  this.drawVidtimes = function () {
     var newwidth = Rashomon.getOffset(this.duration) / $("#maintimeline").width() * 100 + "%";
-    $("#vidtime" + this.id).css({"width": newwidth, "left": Rashomon.getOffset(this.offset)});
-
+    $("#vidtime" + this.id).css({
+      "width": newwidth,
+      "left": Rashomon.getOffset(this.offset)
+    });
   };
-
-  this.displayVideo = function() {
+  this.displayVideo = function () {
     var vid = this;
     var id = this.id;
-    var start = this.position;
     var duration = this.duration;
     var meta = this.meta;
     var offset = this.offset;
@@ -412,11 +364,7 @@ var video = function (options) {
     //console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
     //console.log(offset);
     //todo duration->space, match meta to real meta
-    var vPosition = $("#maintimeline").offset().left;
     var leftpos = position;
-    console.log(id + " is " + this.file);
-
-
     var vidline = $("<div/>", {
       "class": "vidline " + Rashomon.isEven(id),
       "id": "vidline" + id
@@ -439,13 +387,11 @@ var video = function (options) {
     $("<p/>", {
       text: "duration: " + Rashomon.sec2hms(duration)
     }).appendTo(vidmeta);
-
     var vidtl = $("<div/>", {
       "class": "vidtl",
       "id": "tl" + id,
       "data-id": id
     }).appendTo(vidline);
-    console.log("and..." + this.id + " is " + this.file);
     var vidtime = $("<div/>", {
       "class": "vidtime",
       "id": "vidtime" + id,
@@ -470,7 +416,6 @@ var video = function (options) {
           $('#mouseloc').html(Rashomon.sec2hms(tldur * pct));
       });
       */
-
     //experimental seeking optimization code
     $("#video" + id).on("seeking", function () {
       if (!Rashomon.timeline.media.paused && Popcorn("#video" + id).media.paused) {
@@ -484,16 +429,12 @@ var video = function (options) {
         Rashomon.timeline.resume = false;
       }
     });
-
-    $("#video" + id).mouseover(function(){
+    $("#video" + id).mouseover(function () {
       Popcorn("#video" + id).unmute();
-
     });
-    $("#video" + id).mouseleave(function(){
+    $("#video" + id).mouseleave(function () {
       Popcorn("#video" + id).mute();
-
     });
-
     //trigger fullscreen
     $("#fs" + id).click(function () {
       loadFullscreen(id);
@@ -504,17 +445,11 @@ var video = function (options) {
       vid.showMeta();
       return false;
     });
-
-
-
-
     $("#tl" + id).click(function (e) {
       var clickleft = e.pageX - $('#maintimeline').offset().left;
       var pct = clickleft / $('#maintimeline').width();
       var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
       Rashomon.timeline.currentTime(tldur * pct);
-
-
       $(Rashomon.videos).each(function () {
         var timediff = Rashomon.timeline.currentTime() - this.offset;
         if (timediff < 0) {
@@ -524,11 +459,9 @@ var video = function (options) {
           this.pp.pause(this.pp.duration());
           console.log("setting " + this.id + " to " + this.duration);
           this.hideVid();
-
         } else if (Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < this.offset + this.duration) {
           this.pp.currentTime(timediff);
           this.showVid();
-
           if (!Rashomon.timeline.media.paused) {
             console.log("it's not paused" + this.id);
             console.log(Rashomon.timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration);
@@ -538,15 +471,12 @@ var video = function (options) {
         } else {
           console.log("id " + this.id + " tdiff " + timediff);
         }
-
       }); // end rashomon each
     }); //end nav click
     $("#vid" + id).click(function () {
-      var vid_id = id;
       console.log("toggling " + id);
       $("#vid" + id).toggleClass("vidactive");
       var pp = Popcorn("#video" + id);
-      var of = $("#video" + id).attr("data-offset");
       $("#vidnum" + id).toggleClass("vidactive");
       var thisvid = $("#vcontain" + id);
       thisvid.fadeToggle("fast", "linear");
@@ -557,37 +487,26 @@ var video = function (options) {
         //deal with case where if video doesn't play if toggled on during period when it should
       }
     }); // end vidnum click
-
     this.pp.on('timeupdate', function () {
       var delay = (Rashomon.timeline.currentTime() - (vid.offset + this.currentTime())).toFixed(2) * 1000;
       if (!Rashomon.timeline.media.paused && Math.abs(delay) > 1250) {
         this.currentTime(Rashomon.timeline.currentTime() - vid.offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = "<p>" + id + " " + vid.file + "</p>" +
-          "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + 
-          "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" +
-          "<p>Offset: " + vid.offset + "</p>" +
-          "<p>Video Drift: " + delay + "ms</p>"; 
-      var syncmsg = "<p>Video Drift: " + delay + "ms</p>"; 
+      var syncmsg = "<p>" + id + " " + vid.file + "</p>" + "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" + "<p>Offset: " + vid.offset + "</p>" + "<p>Video Drift: " + delay + "ms</p>";
+      var syncmsg = "<p>Video Drift: " + delay + "ms</p>";
       $("#vidDelay" + id).html(syncmsg);
-
     }); //end on
-
   };
   return this.id;
-
 }; // end video
-
 $(document).ready(function () {
   //loads filenames from manifest.json in local folder
   Rashomon.setupVideos(); // could point to one from a different event or something
   $("#metaX").click(function () {
     $("#meta").css("right", "-210px");
   });
-
 }); //end docReady
-
 //last freehanging event because it needs a rewrite
 function displayEvent(id, title, color, time) {
   //todo need to figure out how to distribute colors, convert time to space
