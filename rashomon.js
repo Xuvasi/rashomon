@@ -461,7 +461,7 @@ var video = function (options) {
           $('#mouseloc').html(Rashomon.sec2hms(tldur * pct));
       });
       */
-    //experimental seeking optimization code
+    /* experimental seeking optimization code
     $("#video" + id).on("seeking", function () {
       if (!Rashomon.timeline.media.paused && Popcorn("#video" + id).media.paused) {
         Rashomon.timeline.resume = true;
@@ -474,7 +474,7 @@ var video = function (options) {
         Rashomon.timeline.resume = false;
       }
     });
-    
+    */
     /* muting/unmuting
     $("#video" + id).mouseover(function () {
       Popcorn("#video" + id).unmute();
