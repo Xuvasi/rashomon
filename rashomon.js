@@ -103,8 +103,8 @@ var Rashomon = {
       var vid = this;
       this.buildVideoPlayer();
       //console.log("Binding " + id);
-      $('#video' + id).on('loadeddata', function () {
-        //console.log("Data loaded on " + id);
+      this.pp.on('loadeddata', function () {
+        console.log("Can play " + id);
         Rashomon.loaded++;
         var of = vid.offset;
         var duration = vid.pp.duration();
@@ -113,9 +113,9 @@ var Rashomon = {
         var width = +vid.pp.media.videoWidth;
         //console.log(pid + ": " + height + " x " + width);
         if (height > width) {
-          $(this).addClass("vert");
+          $("#video" + id).addClass("vert");
         } else {
-          $(this).addClass("hor");
+          $("#video" + id).addClass("hor");
         }
         var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
         Rashomon.timeline.cue(offtime, function () {
@@ -132,7 +132,8 @@ var Rashomon = {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
           $("#timepos").css("height", newheight);
           $("#timepos").show();
-          Rashomon.timeline.play();
+          //not fond of this, but it seems to keep playhead from locking
+          setTimeout(function () { Rashomon.timeline.play(); }, 1500);
         }
       }); //end bind
     }); //end each
@@ -249,35 +250,79 @@ var photo = function (options) {
   this.offset = options.offset;
   this.name = options.file;
   this.file = options.file;
-  this.id = Rashomon.filenames.indexOf(options.file);
+  this.id = options.id;
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
+  var photo = this;
+
+  this.showPhoto = function () {
+      $("#pContainer" + this.id).show("fast", "linear");
+    };
+  this.hidePhoto = function () {
+    if ($("#pContainer" + this.id).is(":visible")) {
+      $("#pContainer" + this.id).hide("fast", "linear");
+    }
+  };
+  this.showMeta = function () {
+    $("#meta").css("right", "0");
+    //console.log(this.meta);
+    $("#metadata ul").remove();
+    var list = $("<ul/>");
+    $("<li/>", {
+      text: "Filename : " + this.file
+    }).appendTo(list);
+    $("<li/>", {
+      text: "Start time: " + this.meta.MediaCreateDate
+    }).appendTo(list);
+    $("<li/>", {
+      text: "Offset: " + this.offset + "s"
+    }).appendTo(list);
+    
+    $("<li/>", {
+      text: "..."
+    }).appendTo(list);
+    list.appendTo("#metadata");
+  };
   this.buildPhotoViewer = function () {
+
     var pContainer = $("<div/>", {
       id: "pContainer" + this.id,
       'class': 'container'
-    });
+    }).css("border-color", Rashomon.colorList[this.id]);
     var tools = $("<div/>", {
       'class': 'tools'
     });
-    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(pContainer);
-    var photo = $("<img/>", {
+    var image = $("<img/>", {
       id: "photo" + this.id,
       "class": 'rashomon',
       "data-offset": this.offset,
       "data-id": this.id,
-      "src": Rashomon.mpath + this.file + ".jpg"
+      "src": Rashomon.mpath + this.file + "_320.jpg"
     });
+
     pContainer.appendTo("#videos");
-    photo.appendTo(pContainer);
-  };
+    image.appendTo(pContainer);
+    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(pContainer);
+    //make display function for timeline thing
+    //call popcorn plugin
+
+    $("#meta" + this.id).click(function () {
+        photo.showMeta();
+        return false;
+    });
+
+    
+   
+    
+
+  }; // end viewer
 }; // end photo
 var video = function (options) {
   this.offset = options.offset;
   this.duration = options.duration;
   this.name = options.file;
   this.file = options.file;
-  this.id = (options.id);
+  this.id = options.id;
   this.color = Rashomon.colorList[this.id];
   this.meta = options.meta;
   this.buildVideoPlayer = function () {
@@ -429,12 +474,15 @@ var video = function (options) {
         Rashomon.timeline.resume = false;
       }
     });
+    
+    /* muting/unmuting
     $("#video" + id).mouseover(function () {
       Popcorn("#video" + id).unmute();
     });
     $("#video" + id).mouseleave(function () {
       Popcorn("#video" + id).mute();
     });
+    */
     //trigger fullscreen
     $("#fs" + id).click(function () {
       loadFullscreen(id);
@@ -494,7 +542,7 @@ var video = function (options) {
         Rashomon.delayFixed++;
       }
       var syncmsg = "<p>" + id + " " + vid.file + "</p>" + "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" + "<p>Offset: " + vid.offset + "</p>" + "<p>Video Drift: " + delay + "ms</p>";
-      var syncmsg = "<p>Video Drift: " + delay + "ms</p>";
+      syncmsg = "<p>Video Drift: " + delay + "ms</p>";
       $("#vidDelay" + id).html(syncmsg);
     }); //end on
   };
