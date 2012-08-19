@@ -371,7 +371,7 @@ var video = function (options) {
       "class": "vidDelay"
     }).appendTo(tools);
     this.pp = Popcorn("#video" + this.id);
-    this.pp.mute();
+    //this.pp.mute();
   };
   this.showVid = function () {
     $("#vcontain" + this.id).show("fast", "linear");
