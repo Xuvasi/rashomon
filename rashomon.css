@@ -407,6 +407,7 @@ opacity: 0;
 #maintimeline {
     background: #666;
     height: 25px;
+    cursor: crosshair;
 }
 
 #navtl {

@@ -229,6 +229,36 @@ var Rashomon = {
         }
         l--;
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
+          //putting this here, will refactor as we move rashomon timeline behavior to popcorn plugin.
+          $("#maintimeline").click(function (e) {
+            var clickleft = e.pageX - $('#maintimeline').offset().left;
+            var pct = clickleft / $('#maintimeline').width();
+            var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+            Rashomon.timeline.currentTime(tldur * pct);
+            $(Rashomon.videos).each(function () {
+              var timediff = Rashomon.timeline.currentTime() - this.offset;
+              if (timediff < 0) {
+                this.pp.pause(0);
+                this.hideVid();
+              } else if (Rashomon.timeline.currentTime() > this.offset + this.duration) {
+                this.pp.pause(this.pp.duration());
+                console.log("setting " + this.id + " to " + this.duration);
+                this.hideVid();
+              } else if (Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < this.offset + this.duration) {
+                this.pp.currentTime(timediff);
+                this.showVid();
+                if (!Rashomon.timeline.media.paused) {
+                  console.log("it's not paused" + this.id);
+                  console.log(Rashomon.timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration);
+                  this.pp.play();
+                }
+                //console.log("setting " + this.id + " to " + timediff);
+              } else {
+                console.log("id " + this.id + " tdiff " + timediff);
+              }
+            }); // end rashomon each
+          }); //end nav click
+
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
@@ -567,6 +597,9 @@ $(document).ready(function () {
   Rashomon.setupVideos(); // could point to one from a different event or something
   $("#metaX").click(function () {
     $("#meta").css("right", "-210px");
+  
+
+
   });
 }); //end docReady
 //last freehanging event because it needs a rewrite
