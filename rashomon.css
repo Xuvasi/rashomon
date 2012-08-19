@@ -30,6 +30,16 @@ header nav {
 
 }
 
+.photothumb {
+    position: relative;
+    top: 0;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+
+}
+
 
 a.but, a.but:link, a.but:visited {
   text-decoration: none;
@@ -151,6 +161,7 @@ opacity: 0;
 
 .event {
     position: absolute;
+    top: 0;
     height: 25px;
     width: 3px;
     cursor: pointer;
