@@ -95,6 +95,8 @@ var Rashomon = {
   },
   //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function (duration) {
+    Popcorn.player("baseplayer");
+    this.timeline = Popcorn.baseplayer("#maintimeline");
     $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
     });
@@ -137,8 +139,7 @@ var Rashomon = {
         }
       }); //end bind
     }); //end each
-    Popcorn.player("baseplayer");
-    this.timeline = Popcorn.baseplayer("#maintimeline");
+
     this.timeline.currentTime(0);
     this.fulldur = duration; // 6 minutes
     this.timeline.on("play", function () {
@@ -205,6 +206,7 @@ var Rashomon = {
         item.duration = Rashomon.formatDuration(itemdata[0].Duration);
         //get other tags like geo coords here
         item.vDate = Rashomon.validDate(item);
+        console.log(item.filename + " " + item.vDate);
         if (item.vDate.getTime() < Rashomon.earliest.getTime()) {
           Rashomon.earliest = item.vDate;
           console.log("Earliest now " + Rashomon.earliest);
@@ -220,7 +222,7 @@ var Rashomon = {
         } else {
           var aphoto = Rashomon.photos.push(new photo({
             "offset": item.vDate.getTime() / 1000,
-            "id": Rashomon.videos.length + 1,
+            "id": index,
             "file": item.filename,
             "meta": itemdata[0]
           }));
@@ -232,6 +234,14 @@ var Rashomon = {
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
             $('#video' + id).attr('data-offset', this.offset);
             if (this.duration + this.offset > Rashomon.fulldur) {
+              Rashomon.fulldur = this.duration + this.offset + 15;
+            }
+          });
+          $.each(Rashomon.photos, function () {
+            var id = this.id;
+            this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
+            console.log(this.offset + "is the new offset")
+            if (this.offset > Rashomon.fulldur) {
               Rashomon.fulldur = this.duration + this.offset + 15;
             }
           });
@@ -311,10 +321,14 @@ var photo = function (options) {
         return false;
     });
 
+    Rashomon.timeline.rphoto({ "id": this.id, "start": this.offset, "end": this.offset + 5 });
+    $("<img/>", {
+      id: "pthumb" + this.id,
+      "class": 'photothumb',
+      "data-id": this.id,
+      "src": Rashomon.mpath + this.file + "_320.jpg"
+    }).css({ "left": Rashomon.getOffset(this.offset) +"px"}).appendTo("#maintimeline");
     
-   
-    
-
   }; // end viewer
 }; // end photo
 var video = function (options) {
