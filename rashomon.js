@@ -228,14 +228,16 @@ var Rashomon = {
             $("#selection").remove();
             var leftOffset = $("#maintimeline").offset().left;
             var firstPos = e.pageX - leftOffset;
-            $("<div/>", { "id": "selection"}).css({  "left": firstPos + "px", "width": "1px"}).appendTo("#maintimeline");
+            var firstPct = firstPos/ $('#maintimeline').width() * 100;
+            $("<div/>", { "id": "selection"}).css({  "left": firstPct + "%", "width": "1px"}).appendTo("#maintimeline");
 
             $("#maintimeline").mousemove(function(event) {
               var thisPos = event.pageX - leftOffset;
+              var thisPct = thisPos / $('#maintimeline').width() * 100;
               if (thisPos < firstPos) {
-                $("#selection").css({"left": thisPos, "width": firstPos - thisPos });
+                $("#selection").css({"left": thisPct + "%", "width": firstPct - thisPct + "%" });
               } else {
-                $("#selection").css({"left": firstPos, "width": thisPos - firstPos });
+                $("#selection").css({"left": firstPct + "%", "width": thisPct - firstPct + "%"});
               }
 
             });
