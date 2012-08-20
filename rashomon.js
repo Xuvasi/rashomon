@@ -97,6 +97,7 @@ var Rashomon = {
   setupTimeline: function (duration) {
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
+    Rashomon.timeline.cue("loop");
     $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
     });
@@ -106,7 +107,7 @@ var Rashomon = {
       this.buildVideoPlayer();
       //console.log("Binding " + id);
       this.pp.on('loadeddata', function () {
-        console.log("Can play " + id);
+        //console.log("Can play " + id);
         Rashomon.loaded++;
         var of = vid.offset;
         var duration = vid.pp.duration();
@@ -119,16 +120,9 @@ var Rashomon = {
         } else {
           $("#video" + id).addClass("hor");
         }
-        var offtime = Popcorn.util.toSeconds(duration) + parseInt(of, 10);
-        Rashomon.timeline.cue(offtime, function () {
-          vid.hideVid();
-        });
-        Rashomon.timeline.cue(of, function () {
-          if (!(Rashomon.timeline.media.paused)) {
-            vid.pp.play();
-            vid.showVid();
-          }
-        }); //end cue
+        var offtime = parseInt(Popcorn.util.toSeconds(duration) + of, 10);
+        Rashomon.timeline.rashomonVideo({"vid": vid, "timeline": Rashomon.timeline, "start": of, "end": offtime});
+        
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
@@ -206,10 +200,9 @@ var Rashomon = {
         item.duration = Rashomon.formatDuration(itemdata[0].Duration);
         //get other tags like geo coords here
         item.vDate = Rashomon.validDate(item);
-        console.log(item.filename + " " + item.vDate);
         if (item.vDate.getTime() < Rashomon.earliest.getTime()) {
           Rashomon.earliest = item.vDate;
-          console.log("Earliest now " + Rashomon.earliest);
+          //console.log("Earliest now " + Rashomon.earliest);
         }
         if (item.duration) {
           var vid = Rashomon.videos.push(new video({
@@ -229,36 +222,59 @@ var Rashomon = {
         }
         l--;
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
-          //putting this here, will refactor as we move rashomon timeline behavior to popcorn plugin.
-          $("#maintimeline").click(function (e) {
-            var clickleft = e.pageX - $('#maintimeline').offset().left;
-            var pct = clickleft / $('#maintimeline').width();
-            var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
-            Rashomon.timeline.currentTime(tldur * pct);
-            $(Rashomon.videos).each(function () {
-              var timediff = Rashomon.timeline.currentTime() - this.offset;
-              if (timediff < 0) {
-                this.pp.pause(0);
-                this.hideVid();
-              } else if (Rashomon.timeline.currentTime() > this.offset + this.duration) {
-                this.pp.pause(this.pp.duration());
-                console.log("setting " + this.id + " to " + this.duration);
-                this.hideVid();
-              } else if (Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < this.offset + this.duration) {
-                this.pp.currentTime(timediff);
-                this.showVid();
-                if (!Rashomon.timeline.media.paused) {
-                  console.log("it's not paused" + this.id);
-                  console.log(Rashomon.timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration);
-                  this.pp.play();
-                }
-                //console.log("setting " + this.id + " to " + timediff);
-              } else {
-                console.log("id " + this.id + " tdiff " + timediff);
-              }
-            }); // end rashomon each
-          }); //end nav click
+        
+          $("#maintimeline").mousedown(function(e){
+            
+            $("#selection").remove();
+            var leftOffset = $("#maintimeline").offset().left;
+            var firstPos = e.pageX - leftOffset;
+            $("<div/>", { "id": "selection"}).css({  "left": firstPos + "px", "width": "1px"}).appendTo("#maintimeline");
 
+            $("#maintimeline").mousemove(function(event) {
+              var thisPos = event.pageX - leftOffset;
+              if (thisPos < firstPos) {
+                $("#selection").css({"left": thisPos, "width": firstPos - thisPos });
+              } else {
+                $("#selection").css({"left": firstPos, "width": thisPos - firstPos });
+              }
+
+            });
+            $("#maintimeline").mouseup(function(event){
+              var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+              if ($("#selection").width() < 5){
+                Rashomon.timeline.cue("loop", 0, function(){
+                  //do nothing;
+                });
+                $("#selection").remove();
+                var pct = firstPos / $("#maintimeline").width();
+                Rashomon.timeline.currentTime(tldur * pct);
+              } else {
+                //we are looping
+                var secondPos = event.pageX - leftOffset;
+                if (firstPos < secondPos){
+                  var startPct = firstPos / $("#maintimeline").width();
+                  var endPct = secondPos / $("#maintimeline").width();
+                  Rashomon.timeline.play(tldur * startPct);
+                  Rashomon.timeline.cue("loop", tldur * endPct, function(){
+                    Rashomon.timeline.play(tldur * startPct);
+                  });
+                } else {
+                  var startPct = secondPos / $("#maintimeline").width();
+                  var endPct = firstPos / $("#maintimeline").width();
+                  Rashomon.timeline.play(tldur * startPct);
+                  Rashomon.timeline.cue("loop", tldur * endPct, function(){
+                    Rashomon.timeline.play(tldur * startPct);
+                  });
+                }
+              }
+
+              $("#maintimeline").unbind('mousemove');
+              $("#maintimeline").unbind('mouseup');
+
+
+
+            });
+          });
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
@@ -270,7 +286,7 @@ var Rashomon = {
           $.each(Rashomon.photos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
-            console.log(this.offset + "is the new offset")
+            //console.log(this.offset + "is the new offset");
             if (this.offset > Rashomon.fulldur) {
               Rashomon.fulldur = this.duration + this.offset + 15;
             }
@@ -537,33 +553,12 @@ var video = function (options) {
       vid.showMeta();
       return false;
     });
+    //on timeline click, seek.
     $("#tl" + id).click(function (e) {
       var clickleft = e.pageX - $('#maintimeline').offset().left;
       var pct = clickleft / $('#maintimeline').width();
       var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
       Rashomon.timeline.currentTime(tldur * pct);
-      $(Rashomon.videos).each(function () {
-        var timediff = Rashomon.timeline.currentTime() - this.offset;
-        if (timediff < 0) {
-          this.pp.pause(0);
-          this.hideVid();
-        } else if (Rashomon.timeline.currentTime() > this.offset + this.duration) {
-          this.pp.pause(this.pp.duration());
-          console.log("setting " + this.id + " to " + this.duration);
-          this.hideVid();
-        } else if (Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < this.offset + this.duration) {
-          this.pp.currentTime(timediff);
-          this.showVid();
-          if (!Rashomon.timeline.media.paused) {
-            console.log("it's not paused" + this.id);
-            console.log(Rashomon.timeline.currentTime() + "is > " + this.offset + " and < " + this.offset + this.duration);
-            this.pp.play();
-          }
-          //console.log("setting " + this.id + " to " + timediff);
-        } else {
-          console.log("id " + this.id + " tdiff " + timediff);
-        }
-      }); // end rashomon each
     }); //end nav click
     $("#vid" + id).click(function () {
       console.log("toggling " + id);

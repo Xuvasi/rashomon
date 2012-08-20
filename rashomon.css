@@ -40,7 +40,15 @@ header nav {
 
 }
 
+#selection{
+        border: 0;
+        padding: 0;
+        position: absolute;
+        top: 0;
+        height: 100%;
+        background: rgba(255,50,50,0.5);
 
+    }
 a.but, a.but:link, a.but:visited {
   text-decoration: none;
   background: #e3e3e3;
