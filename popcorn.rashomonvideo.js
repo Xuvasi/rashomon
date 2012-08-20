@@ -1,26 +1,27 @@
-// PLUGIN: IMAGE
+// PLUGIN: video controller for rashomon project
+// inputs are 'vid' which is a rashomon video object
+// and 'timeline' which is the Rashomon timeline object
 
 (function (Popcorn) {
   
-  Popcorn.plugin( "rphoto", {
+  Popcorn.plugin( "rashomonVideo", {
 
       manifest: {
         about:{
-          name: "rashomon photo thingy",
+          name: "rashomon video plugin",
           version: "0.1",
           author: "aphid",
           website: "aphid.org"
         },
         options:{
-          id : {elem:'input', type:'number', label:'id'},
+          vid: {elem:'input', type:'object', label: 'Video'},
+          timeline: {elem:'input', type:'object', label: 'Timeline'},
           start :  {elem:'input', type:'number', label:'In'},
-          end :    {elem:'input', type:'number', label:'Out'},
-          offset:  {elem:'input', type:'number', label:'Offset'}
+          end :    {elem:'input', type:'number', label:'Out'}
         }
       },
 
       _setup: function( options ) {
-      
         
       },
 
@@ -31,7 +32,13 @@
        * options variable
        */
       start: function( event, options ) {
-        $("#pContainer" + options.id).show("fast", "linear");
+        var timediff = + options.timeline.currentTime() - options.vid.offset;
+        $("#vcontain" + options.vid.id).show("fast", "linear");
+        options.vid.pp.currentTime(timediff);
+        //options.vid.showVid();
+        if (!Rashomon.timeline.media.paused) {
+          options.vid.pp.play();
+        }
       },
       /**
        * 
@@ -40,9 +47,15 @@
        * options variable
        */
       end: function( event, options ) {
-        $("#pContainer" + options.id).hide("fast", "linear");
+        var timediff = + options.timeline.currentTime() - options.vid.offset;
+        console.log(timediff);
+        options.vid.hideVid();
+        if (timediff < 0) {
+          options.vid.pp.pause(0);
+        } else if (options.timeline.currentTime() > options.vid.offset) {
+          options.vid.pp.pause(options.vid.pp.duration());
+        }
       }
-          
   });
 
 })( Popcorn );
