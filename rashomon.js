@@ -373,7 +373,7 @@ var photo = function (options) {
       "class": 'photothumb',
       "data-id": this.id,
       "src": Rashomon.mpath + this.file + "_320.jpg"
-    }).css({ "left": Rashomon.getOffset(this.offset) +"px"}).appendTo("#maintimeline");
+    }).css({ "left": (Rashomon.getOffset(this.offset) / $("#maintimeline").width() * 100 + "%")}).appendTo("#maintimeline");
     
   }; // end viewer
 }; // end photo
@@ -456,7 +456,7 @@ var video = function (options) {
     var newwidth = Rashomon.getOffset(this.duration) / $("#maintimeline").width() * 100 + "%";
     $("#vidtime" + this.id).css({
       "width": newwidth,
-      "left": Rashomon.getOffset(this.offset)
+      "left": ( Rashomon.getOffset(this.offset) / $("#maintimeline").width() * 100 + "%")
     });
   };
   this.displayVideo = function () {
