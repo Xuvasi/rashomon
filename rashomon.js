@@ -6,6 +6,9 @@ var Rashomon = {
   videos: [],
   photos: [],
   loaded: 0,
+  looping: false,
+  startLoop: 0,
+  endLoop: 0,
   delayFixed: 0,
   fulldur: 0,
   earliest: new Date(),
@@ -13,6 +16,7 @@ var Rashomon = {
   videosToDisplay: "",
   colorList: ["Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"],
   mpath: rashomonManifest.mediaPath,
+  eventName: rashomonManifest.event,
   filenames: rashomonManifest.files,
   validDate: function (item) {
     //makes sure date isn't from 1904 or 1946 or sometime way before videos existed
@@ -97,6 +101,7 @@ var Rashomon = {
   setupTimeline: function (duration) {
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
+    $("#eventTitle").text(Rashomon.eventName)
     Rashomon.timeline.cue("loop");
     $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
@@ -105,6 +110,8 @@ var Rashomon = {
       var id = this.id;
       var vid = this;
       this.buildVideoPlayer();
+
+      this.pp.volume(0.33);
       //console.log("Binding " + id);
       this.pp.on('loadeddata', function () {
         //console.log("Can play " + id);
@@ -175,6 +182,14 @@ var Rashomon = {
       if (this.currentTime() > Rashomon.fulldur - 0.5) {
         this.pause(Rashomon.fulldur - 0.5);
       }
+      //if you glitch and pass the loop endtime, 
+      if (Rashomon.looping) {
+        //nesting so it isn't testing currentTime every frame
+        if (this.currentTime() > Rashomon.endLoop){
+          console.log("seeking to " + (Rashomon.startLoop));
+          Rashomon.timeline.play(Rashomon.endLoop);
+        }
+      }
       var pct = this.currentTime() / Rashomon.fulldur * 100; // for when we switch to % for window size adjustments
       $("#timeloc").text(Rashomon.sec2hms(this.currentTime()));
       $("#timepos").css('left', pct + "%");
@@ -243,30 +258,45 @@ var Rashomon = {
             });
             $("#maintimeline").mouseup(function(event){
               var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+              //If selection is small, don't loop;
               if ($("#selection").width() < 5){
                 Rashomon.timeline.cue("loop", 0, function(){
-                  //do nothing;
+
                 });
+                Rashomon.looping = false;
+                Rashomon.startLoop = false;
+                Rashomon.endLoop = false;
                 $("#selection").remove();
                 var pct = firstPos / $("#maintimeline").width();
                 Rashomon.timeline.currentTime(tldur * pct);
+                if (Rashomon.timeline.media.paused){
+                  $(Rashomon.videos).each(function(){
+                    this.seekPaused();
+                  });
+                }
               } else {
                 //we are looping
                 var secondPos = event.pageX - leftOffset;
                 if (firstPos < secondPos){
                   var startPct = firstPos / $("#maintimeline").width();
                   var endPct = secondPos / $("#maintimeline").width();
-                  Rashomon.timeline.play(tldur * startPct);
+                  Rashomon.looping = true;
+                  Rashomon.startLoop = tldur * startPct;
+                  Rashomon.endLoop = tldur * endPct;
                   Rashomon.timeline.cue("loop", tldur * endPct, function(){
                     Rashomon.timeline.play(tldur * startPct);
                   });
+                  Rashomon.timeline.play(tldur * startPct);
                 } else {
                   var startPct = secondPos / $("#maintimeline").width();
                   var endPct = firstPos / $("#maintimeline").width();
-                  Rashomon.timeline.play(tldur * startPct);
+                  Rashomon.looping = true;
+                  Rashomon.startLoop = tldur * startPct;
+                  Rashomon.endLoop = tldur * endPct;
                   Rashomon.timeline.cue("loop", tldur * endPct, function(){
                     Rashomon.timeline.play(tldur * startPct);
                   });
+                  Rashomon.timeline.play(tldur * startPct);
                 }
               }
 
@@ -419,8 +449,12 @@ var video = function (options) {
       "class": "vidDelay"
     }).appendTo(tools);
     this.pp = Popcorn("#video" + this.id);
-    //this.pp.mute();
   };
+  //in cases where you seek when main timeline is paused, popcorn does not run 'start' event if seeking from within another in-band event
+  this.seekPaused = function() {
+    this.pp.currentTime(Rashomon.timeline.currentTime() - this.offset);
+  };
+
   this.showVid = function () {
     $("#vcontain" + this.id).show("fast", "linear");
     $("#vid" + this.id).addClass("vidactive");
@@ -561,6 +595,11 @@ var video = function (options) {
       var pct = clickleft / $('#maintimeline').width();
       var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
       Rashomon.timeline.currentTime(tldur * pct);
+      if (Rashomon.timeline.media.paused) {
+        $(Rashomon.videos).each(function(){
+          this.seekPaused();
+        });
+      }
     }); //end nav click
     $("#vid" + id).click(function () {
       console.log("toggling " + id);
