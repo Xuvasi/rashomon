@@ -2,10 +2,8 @@
 <html>
   
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Rashomon Project</title>
-
-    
     <link href='http://fonts.googleapis.com/css?family=Wire+One'
     rel='stylesheet' type='text/css' async="async" />
     <link rel="stylesheet" type="text/css" href="rashomon.css" />
@@ -26,20 +24,21 @@
   <body>
     <section id="fullscreen">
       <div id="xbox">X</div>
-      <div id="fsvidholder">
+      <div id="fsvidholder"></div>
     </section>
     <header id="main">
-      <span id="project">The Rashomon Project: </span>
+      <span id="project">The Rashomon Project:</span>
       <span id="projectsub">An Online Toolkit for Assembling Multi-Perspective Chronologies</span>
-      <div id="signin">Sign in</div>
+      <div
+      id="signin">Sign in</div>
     </header>
     <header id="sub">
-      <nav>
-      <a class="but" href="index.html">Unobscured</a>  
-      <a class="but" href="faceblur.html" >YouTube Blur</a>  
-      <a class="but current" href="obscure.html">ObscuraCam</a> &nbsp; 
-      <a class="but" href="http://automation.berkeley.edu/rashomon">About Rashomon</a>
-      <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
+      <nav> 
+        <a class="but" href="index.html" >YouTube Blur</a> 
+        <a class="but" href="unobscured.html">Unobscured</a>  
+        <a class="but current" href="obscure.html">ObscuraCam</a> &nbsp; 
+        <a class="but" href="http://automation.berkeley.edu/rashomon">About Rashomon</a>
+        <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
      </nav>
     </header>
     <section id="videoswrapper">
@@ -50,32 +49,34 @@
       <div id="vidlines"></div>
       <div class="pager" id="down">&darr;</div>
     </section>
-    <section id="tlcontainer">
-      <section class="controlbox">
-        <div id="controls">
+    <section id="controls">
+      <div id="controlOuter">
+        <div id="controlInner">
           <img class="button" id="play" src="images/play.png" />
           <img class="button" id="stop" src="images/pause.png" />
-          <div id="timeloc">00:00:00</span>
-          </div>
-      </section>
-      <div id="navbar">
-        <div class="timeline" id="navtl"></div>
+          <div id="timeloc">00:00:00</div>
+        </div>
       </div>
+      <div id="eventTitle">&nbsp;</div>
+    </section>
+
+
+    <section id="tlcontainer">
+     
+
       <div class="namebox">
         <div id="title">TIMELINE</div>
       </div>
       <div class="timeline" id="maintimeline"></div>
     </section>
     <section id="videos"></section>
-    <section id="meta"> 
+    <section id="meta">
       <div id="metadata">
         <div id="metaX">x</div>
         <h3>Metadata</h3>
-
       </div>
       <div id="map_canvas"></div>
     </section>
-
   </body>
 
 </html>

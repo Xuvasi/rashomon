@@ -1,4 +1,4 @@
-var rashomonManifest = { "event": "2012-05-07",
+var rashomonManifest = { "event": "Dramatization of Campus Funding Cuts Protest, July 26, 2012",
     "mediaPath": "http://metaviddemo01.ucsc.edu/rashomon/media/",
     "files": [
       "2012-07-26_11.14.53",

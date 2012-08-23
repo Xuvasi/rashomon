@@ -382,7 +382,6 @@ opacity: 0;
 
     position: relative;
     width: 100%;
-    padding-top: 30px;
     background: #aaa;
 }
 
@@ -406,7 +405,7 @@ opacity: 0;
 
 .timeline {
     position: absolute;
-    left: 147px;
+    left: 145px;
     right: 0;
     font-size: 18pt;
     height: 100%;
@@ -418,9 +417,7 @@ opacity: 0;
     cursor: crosshair;
 }
 
-#navtl {
-    height: 5px;
-}
+
 
 #timepos {
     margin-top: 18px;
@@ -437,17 +434,34 @@ opacity: 0;
     cursor: crosshair;
 }
 
-.controlbox {
+#eventTitle{
+    position: absolute;
+    left: 145px;
+    bottom: 0;
+    background: #333;
+    width: 100%;
+    color: #eee;
+    padding-left: 5px;
+    font-size: 10pt;
+}
+
+#controls{
+    position: relative;
+    background: #aaa;
+}
+
+#controlOuter {
     position: relative;
     font-size: 8pt;
     background: #eee;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     height: 28px;
-    width: 140px;
+    width: 145px;
+
 }
 
-#controls {
+#controlInner {
     position: relative;
     padding-left: 15px;
     height: 100%;
