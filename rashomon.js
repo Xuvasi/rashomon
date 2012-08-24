@@ -26,6 +26,46 @@ var Rashomon = {
       return item.fmDate;
     }
   },
+  setupLoop: function(firstPos, secondPos){
+    timepos = $("#timepos").position().left;
+    console.log(firstPos);
+    console.log(secondPos);
+    var startPct, endPct;
+    var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+    if (firstPos < secondPos){
+      startPct = firstPos / $("#maintimeline").width();
+      endPct = secondPos / $("#maintimeline").width();
+      Rashomon.looping = true;
+      Rashomon.startLoop = tldur * startPct;
+      Rashomon.endLoop = tldur * endPct;
+      Rashomon.timeline.cue("loop", tldur * endPct, function(){
+        Rashomon.timeline.currentTime(tldur * startPct);
+      });
+
+      //only move currentTime if it is out of scope of new boundaries
+      if (!(timepos > firstPos && timepos < secondPos)){
+        console.log(timepos + " out of bounds of " + firstPos + " " + secondPos);
+        Rashomon.timeline.currentTime(tldur * startPct);
+      }
+    } else {
+      startPct = secondPos / $("#maintimeline").width();
+      endPct = firstPos / $("#maintimeline").width();
+      Rashomon.looping = true;
+      Rashomon.startLoop = tldur * startPct;
+      Rashomon.endLoop = tldur * endPct;
+      Rashomon.timeline.cue("loop", tldur * endPct, function(){
+        Rashomon.timeline.play(tldur * startPct);
+      });
+
+      //only move currentTime if it is out of scope of new boundaries
+      if (!(timepos > secondPos && timepos < firstPos)){
+        console.log(timepos + " out of bounds of " + secondPos + " " + firstPos);
+        Rashomon.timeline.currentTime(tldur * startPct);
+      }
+    }
+
+
+  },
   formatDate: function (exifDate) {
     if (!exifDate) {
       return false;
@@ -239,74 +279,72 @@ var Rashomon = {
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
         
           $("#maintimeline").mousedown(function(e){
-            
-            $("#selection").remove();
-            var leftOffset = $("#maintimeline").offset().left;
-            var firstPos = e.pageX - leftOffset;
-            var firstPct = firstPos/ $('#maintimeline').width() * 100;
-            $("<div/>", { "id": "selection"}).css({  "left": firstPct + "%", "width": "1px"}).appendTo("#maintimeline");
+            if(!$(e.target).is('.ui-resizable-handle, #selection')) {
+              $("#selection").remove();
+              var leftOffset = $("#maintimeline").offset().left;
+              var firstPos = e.pageX - leftOffset;
+              var firstPct = firstPos/ $('#maintimeline').width() * 100;
+              $("<div/>", { "id": "selection"}).css({  "left": firstPct + "%", "width": "1px"}).appendTo("#maintimeline");
 
-            $("#maintimeline").mousemove(function(event) {
-              var thisPos = event.pageX - leftOffset;
-              var thisPct = thisPos / $('#maintimeline').width() * 100;
-              if (thisPos < firstPos) {
-                $("#selection").css({"left": thisPct + "%", "width": firstPct - thisPct + "%" });
-              } else {
-                $("#selection").css({"left": firstPct + "%", "width": thisPct - firstPct + "%"});
-              }
-
-            });
-            $("#maintimeline").mouseup(function(event){
-              var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
-              //If selection is small, don't loop;
-              if ($("#selection").width() < 5){
-                Rashomon.timeline.cue("loop", 0, function(){
-
-                });
-                Rashomon.looping = false;
-                Rashomon.startLoop = false;
-                Rashomon.endLoop = false;
-                $("#selection").remove();
-                var pct = firstPos / $("#maintimeline").width();
-                Rashomon.timeline.currentTime(tldur * pct);
-                if (Rashomon.timeline.media.paused){
-                  $(Rashomon.videos).each(function(){
-                    this.seekPaused();
-                  });
-                }
-              } else {
-                //we are looping
-                var secondPos = event.pageX - leftOffset;
-                if (firstPos < secondPos){
-                  var startPct = firstPos / $("#maintimeline").width();
-                  var endPct = secondPos / $("#maintimeline").width();
-                  Rashomon.looping = true;
-                  Rashomon.startLoop = tldur * startPct;
-                  Rashomon.endLoop = tldur * endPct;
-                  Rashomon.timeline.cue("loop", tldur * endPct, function(){
-                    Rashomon.timeline.play(tldur * startPct);
-                  });
-                  Rashomon.timeline.play(tldur * startPct);
+              $("#maintimeline").mousemove(function(event) {
+                var thisPos = event.pageX - leftOffset;
+                var thisPct = thisPos / $('#maintimeline').width() * 100;
+                if (thisPos < firstPos) {
+                  $("#selection").css({"left": thisPct + "%", "width": firstPct - thisPct + "%" });
                 } else {
-                  var startPct = secondPos / $("#maintimeline").width();
-                  var endPct = firstPos / $("#maintimeline").width();
-                  Rashomon.looping = true;
-                  Rashomon.startLoop = tldur * startPct;
-                  Rashomon.endLoop = tldur * endPct;
-                  Rashomon.timeline.cue("loop", tldur * endPct, function(){
-                    Rashomon.timeline.play(tldur * startPct);
-                  });
-                  Rashomon.timeline.play(tldur * startPct);
+                  $("#selection").css({"left": firstPct + "%", "width": thisPct - firstPct + "%"});
                 }
-              }
 
-              $("#maintimeline").unbind('mousemove');
-              $("#maintimeline").unbind('mouseup');
+              });
+              $("#maintimeline").mouseup(function(event){
+                var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+                var secondPos = event.pageX - leftOffset;
+                //If selection is small, don't loop;
+                if ($("#selection").width() < 5){
+                  Rashomon.timeline.cue("loop", 0, function(){
+
+                  });
+                  Rashomon.looping = false;
+                  Rashomon.startLoop = false;
+                  Rashomon.endLoop = false;
+                  $("#selection").remove();
+                  var pct = firstPos / $("#maintimeline").width();
+
+                  Rashomon.timeline.currentTime(tldur * pct);
+                  if (Rashomon.timeline.media.paused){
+                    $(Rashomon.videos).each(function(){
+                      this.seekPaused();
+                    });
+                  }
+                } else {
+
+                  //we are looping
+                  Rashomon.setupLoop(firstPos,secondPos);
+
+                  $("#selection").resizable({
+                    handles: "e, w",
+                    containment: "parent",
+                    stop: function(){
+                      firstPos = $("#selection").offset().left - $("#maintimeline").offset().left;
+                      secondPos = firstPos + $("#selection").width();
+                      Rashomon.setupLoop(firstPos,secondPos);
+                    }
+                  });
+                  
+
+
+                
+                
+                }
+
+                $("#maintimeline").unbind('mousemove');
+                $("#maintimeline").unbind('mouseup');
 
 
 
-            });
-          });
+              }); //end mouseup
+            } // end if
+          }); // end mousedown
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
@@ -514,7 +552,7 @@ var video = function (options) {
       "class": "vidnum",
       "id": "vid" + id,
       "text": +id + 1,
-      title: "Click to show video"
+      title: "Click to toggle video"
     }).appendTo(vidline);
     var vidmeta = $("<div/>", {
       "class": "vidmeta"
