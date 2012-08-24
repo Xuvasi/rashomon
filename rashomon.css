@@ -48,8 +48,8 @@ header nav {
         height: 100%;
         background: rgba(50,50,255,0.5);
         cursor: default;
-        border-left: 2px solid rgba(70,120,230,0.7);
-        border-right: 2px solid rgba(70,120,230,0.7);
+        border-left: 4px solid rgba(230,70,70,0.7);
+        border-right: 4px solid rgba(230,70,70,0.7);
     }
 a.but, a.but:link, a.but:visited {
   text-decoration: none;
