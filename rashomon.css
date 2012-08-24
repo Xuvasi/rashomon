@@ -46,9 +46,10 @@ header nav {
         position: absolute;
         top: 0;
         height: 100%;
-        background: rgba(255,50,50,0.5);
+        background: rgba(50,50,255,0.5);
         cursor: default;
-
+        border-left: 2px solid rgba(70,120,230,0.7);
+        border-right: 2px solid rgba(70,120,230,0.7);
     }
 a.but, a.but:link, a.but:visited {
   text-decoration: none;
