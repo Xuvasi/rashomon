@@ -486,6 +486,7 @@ var video = function (options) {
       "id": "vidDelay" + this.id,
       "class": "vidDelay"
     }).appendTo(tools);
+    console.log("Making popcorn" +  this.id)
     this.pp = Popcorn("#video" + this.id);
   };
   //in cases where you seek when main timeline is paused, popcorn does not run 'start' event if seeking from within another in-band event
