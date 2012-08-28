@@ -32,12 +32,14 @@
        * options variable
        */
       start: function( event, options ) {
-        var timediff = + options.timeline.currentTime() - options.vid.offset;
-        $("#vcontain" + options.vid.id).show("fast", "linear");
-        options.vid.pp.currentTime(timediff);
-        //options.vid.showVid();
-        if (!Rashomon.timeline.media.paused) {
-          options.vid.pp.play();
+        if ($("#vid" + options.vid.id).hasClass("vidactive")){
+          var timediff = + options.timeline.currentTime() - options.vid.offset;
+          $("#vcontain" + options.vid.id).show("fast", "linear");
+          options.vid.pp.currentTime(timediff);
+          //options.vid.showVid();
+          if (!Rashomon.timeline.media.paused) {
+            options.vid.pp.play();
+          }
         }
       },
       /**

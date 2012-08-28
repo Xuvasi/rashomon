@@ -261,7 +261,7 @@ var Rashomon = {
           //console.log("Earliest now " + Rashomon.earliest);
         }
         if (item.duration) {
-          Rashomon.videos[index] = (new video({
+          Rashomon.videos.push(new video({
             "offset": item.vDate.getTime() / 1000,
             "duration": +item.duration,
             "id": index,
@@ -449,8 +449,8 @@ var photo = function (options) {
   }; // end viewer
 }; // end photo
 var video = function (options) {
-  this.offset = options.offset;
-  this.duration = options.duration;
+  this.offset = parseInt(options.offset, 10);
+  this.duration = parseInt(options.duration, 10);
   this.name = options.file;
   this.file = options.file;
   this.id = options.id;
@@ -534,6 +534,32 @@ var video = function (options) {
       "width": newwidth,
       "left": ( Rashomon.getOffset(this.offset) / $("#maintimeline").width() * 100 + "%")
     });
+  };
+  this.toggleStatus = function () {
+
+    if ($("#vid" + this.id).hasClass("vidactive")){
+      //shut it down!
+      this.pp.pause();
+
+      $("#vid" + this.id).removeClass("vidactive");
+      $("#vid" + this.id).addClass("vidinactive");
+      $("#vcontain" + this.id).hide("fast", "linear");
+
+    } else {
+      //turn it on!
+      $("#vid" + this.id).addClass("vidactive");
+      $("#vid" + this.id).removeClass("vidinactive");
+      console.log("on " + this.id);
+      console.log(Rashomon.timeline.currentTime() + " between points " + this.offset + " " + (this.offset + this.duration) + "?");
+      if ( Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < (this.offset + this.duration)){
+        console.log("truth");
+        $("#vcontain" + this.id).show("fast", "linear");
+        if (Rashomon.timeline.media.paused === false){
+         this.pp.play();    
+        }
+      }
+    }
+
   };
   this.displayVideo = function () {
     var vid = this;
@@ -642,21 +668,9 @@ var video = function (options) {
       }
     }); //end nav click
     $("#vid" + id).click(function () {
+      vid.toggleStatus();
 
 
-      /*
-      console.log("toggling " + id);
-      $("#vid" + id).toggleClass("vidactive");
-      var pp = Popcorn("#video" + id);
-      $("#vidnum" + id).toggleClass("vidactive");
-      var thisvid = $("#vcontain" + id);
-      thisvid.fadeToggle("fast", "linear");
-      if (thisvid.is(":hidden")) {
-        pp.pause();
-      } else {
-        console.log("test case");
-        //deal with case where if video doesn't play if toggled on during period when it should
-      }*/
     }); // end vidnum click
 
     this.pp.on('timeupdate', function () {
@@ -672,6 +686,10 @@ var video = function (options) {
   };
   return this.id;
 }; // end video
+
+
+
+
 $(document).ready(function () {
   //loads filenames from manifest.json in local folder
   Rashomon.setupVideos(); // could point to one from a different event or something
