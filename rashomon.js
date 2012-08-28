@@ -175,6 +175,7 @@ var Rashomon = {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
           $("#timepos").css("height", newheight);
           $("#timepos").show();
+          $(".vidnum").addClass("vidactive")
           //not fond of this, but it seems to keep playhead from locking
           setTimeout(function () { Rashomon.timeline.play(); }, 1500);
         }
@@ -260,7 +261,7 @@ var Rashomon = {
           //console.log("Earliest now " + Rashomon.earliest);
         }
         if (item.duration) {
-          var vid = Rashomon.videos.push(new video({
+          Rashomon.videos[index] = (new video({
             "offset": item.vDate.getTime() / 1000,
             "duration": +item.duration,
             "id": index,
@@ -496,13 +497,13 @@ var video = function (options) {
 
   this.showVid = function () {
     $("#vcontain" + this.id).show("fast", "linear");
-    $("#vid" + this.id).addClass("vidactive");
+    
   };
   this.hideVid = function () {
     this.pp.pause();
     if ($("#vcontain" + this.id).is(":visible")) {
       $("#vcontain" + this.id).hide("fast", "linear");
-      $("#vid" + this.id).removeClass("vidactive");
+
     }
   };
   this.showMeta = function () {
@@ -641,6 +642,9 @@ var video = function (options) {
       }
     }); //end nav click
     $("#vid" + id).click(function () {
+
+
+      /*
       console.log("toggling " + id);
       $("#vid" + id).toggleClass("vidactive");
       var pp = Popcorn("#video" + id);
@@ -652,8 +656,9 @@ var video = function (options) {
       } else {
         console.log("test case");
         //deal with case where if video doesn't play if toggled on during period when it should
-      }
+      }*/
     }); // end vidnum click
+
     this.pp.on('timeupdate', function () {
       var delay = (Rashomon.timeline.currentTime() - (vid.offset + this.currentTime())).toFixed(2) * 1000;
       if (!Rashomon.timeline.media.paused && Math.abs(delay) > 1250) {
