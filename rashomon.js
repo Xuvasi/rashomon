@@ -177,7 +177,7 @@ var Rashomon = {
           $("#timepos").show();
           $(".vidnum").addClass("vidactive")
           //not fond of this, but it seems to keep playhead from locking
-          //setTimeout(function () { Rashomon.timeline.play(); }, 1500);
+          setTimeout(function () { Rashomon.timeline.play(); }, 2500);
         }
       }); //end bind
     }); //end each
