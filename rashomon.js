@@ -14,7 +14,7 @@ var Rashomon = {
   earliest: new Date(),
   timeline: "",
   videosToDisplay: "",
-  colorList: ["Sienna", "BlueViolet", "DarkGreen", "Indigo", "Darkred", "AliceBlue", "DarkBlue", "DarkGoldenRod", "DarkGreen", "Crimson", "ForestGreen", "DarkSeaGreen", "DarkSalmon", "Darkorange", "IndianRed", "Indigo"],
+  colorList: ["#5144be", "#75a1d2", "#9bc0b3", "#d8d648", "#d9770f"],
   mpath: rashomonManifest.mediaPath,
   eventName: rashomonManifest.event,
   filenames: rashomonManifest.files,
@@ -177,7 +177,7 @@ var Rashomon = {
           $("#timepos").show();
           $(".vidnum").addClass("vidactive")
           //not fond of this, but it seems to keep playhead from locking
-          setTimeout(function () { Rashomon.timeline.play(); }, 1500);
+          //setTimeout(function () { Rashomon.timeline.play(); }, 1500);
         }
       }); //end bind
     }); //end each
@@ -429,7 +429,8 @@ var photo = function (options) {
 
     pContainer.appendTo("#videos");
     image.appendTo(pContainer);
-    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(pContainer);
+    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'").appendTo(pContainer);
+    // <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>")
     //make display function for timeline thing
     //call popcorn plugin
 
@@ -482,12 +483,15 @@ var video = function (options) {
     this.webm.appendTo(vid);
     container.appendTo($("#videos"));
     vid.appendTo(container);
-    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
+    //this one has meta button
+    //tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
+    //this one doesn't
+    tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/>").appendTo(container);
+
     $("<div/>", {
       "id": "vidDelay" + this.id,
       "class": "vidDelay"
     }).appendTo(tools);
-    console.log("Making popcorn" +  this.id)
     this.pp = Popcorn("#video" + this.id);
   };
   //in cases where you seek when main timeline is paused, popcorn does not run 'start' event if seeking from within another in-band event
@@ -544,11 +548,13 @@ var video = function (options) {
       $("#vid" + this.id).removeClass("vidactive");
       $("#vid" + this.id).addClass("vidinactive");
       $("#vcontain" + this.id).hide("fast", "linear");
-
+      $("#vidtime" + this.id).css("opacity", "0.45");
     } else {
       //turn it on!
       $("#vid" + this.id).addClass("vidactive");
       $("#vid" + this.id).removeClass("vidinactive");
+      $("#vidtime" + this.id).css("opacity", "1");
+
       console.log("on " + this.id);
       console.log(Rashomon.timeline.currentTime() + " between points " + this.offset + " " + (this.offset + this.duration) + "?");
       if ( Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < (this.offset + this.duration)){
@@ -582,6 +588,7 @@ var video = function (options) {
       "text": +id + 1,
       title: "Click to toggle video"
     }).appendTo(vidline);
+    /* removing meta from next to number
     var vidmeta = $("<div/>", {
       "class": "vidmeta"
     }).appendTo(vidline);
@@ -594,6 +601,7 @@ var video = function (options) {
     $("<p/>", {
       text: "duration: " + Rashomon.sec2hms(duration)
     }).appendTo(vidmeta);
+    */
     var vidtl = $("<div/>", {
       "class": "vidtl",
       "id": "tl" + id,
@@ -679,9 +687,9 @@ var video = function (options) {
         this.currentTime(Rashomon.timeline.currentTime() - vid.offset);
         Rashomon.delayFixed++;
       }
-      var syncmsg = "<p>" + id + " " + vid.file + "</p>" + "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" + "<p>Offset: " + vid.offset + "</p>" + "<p>Video Drift: " + delay + "ms</p>";
-      syncmsg = "<p>Video Drift: " + delay + "ms</p>";
-      $("#vidDelay" + id).html(syncmsg);
+      //var syncmsg = "<p>" + id + " " + vid.file + "</p>" + "<p>CurrentTime: " + Rashomon.timeline.currentTime().toFixed(2) + "</p>" + "<p>Video Location: " + (vid.offset + this.currentTime()).toFixed(2) + "</p>" + "<p>Offset: " + vid.offset + "</p>" + "<p>Video Drift: " + delay + "ms</p>";
+      //syncmsg = "<p>Video Drift: " + delay + "ms</p>";
+      //$("#vidDelay" + id).html(syncmsg);
     }); //end on
   };
   return this.id;
