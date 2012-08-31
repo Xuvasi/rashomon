@@ -51,6 +51,13 @@ header nav {
 
 }
 
+#titlebar {
+    width: 100%;
+    position: relative;
+    background: #333;
+    height: 25px;
+}
+
 .photothumb {
     position: relative;
     top: 0;
@@ -402,7 +409,7 @@ opacity: 0;
 }
 
 #tlcontainer {
-
+    padding-top: 10px;
     position: relative;
     width: 100%;
     background: #aaa;
@@ -458,18 +465,19 @@ opacity: 0;
 }
 
 #eventTitle{
-    position: absolute;
-    left: 145px;
+    position: relative;
+    left: 160px;
     bottom: 0;
     background: #333;
     width: 100%;
     color: #eee;
-    padding-left: 5px;
-    font-size: 10pt;
+    padding-top: 3px;
+    font-size: 12pt;
 }
 
 #controls{
-    position: relative;
+    position: absolute;
+
     background: #aaa;
 }
 
@@ -477,11 +485,13 @@ opacity: 0;
     position: relative;
     font-size: 8pt;
     background: #eee;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    height: 28px;
+    height: 25px;
     width: 145px;
 
+}
+
+#controlOuter img {
+    width: 75%;
 }
 
 #controlInner {
@@ -501,7 +511,6 @@ opacity: 0;
 
 #timeloc {
     float: left;
-    padding-top: 5px;
     position: relative;
     font-size: 14pt;
     z-index: 0;
