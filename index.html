@@ -11,8 +11,8 @@
     <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
     rel='stylesheet' type='text/css' />
     <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="Stylesheet" />  
-<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
     <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
     <script src="popcorn.rashomonphoto.js"></script>
     <script src="popcorn.rashomonvideo.js"></script>
@@ -49,6 +49,16 @@
         </nav>
       </header>
 
+    <section id="titlebar">
+      <div class="namebox">
+        <div id="title">TIMELINE</div>
+      </div>
+      <div id="eventTitle">&nbsp;</div>
+        
+
+    </section>
+
+
     <section id="videoswrapper">
       <div id="timeposholder" class="timeline">
         <div id="timepos"></div>
@@ -57,25 +67,18 @@
       <div id="vidlines"></div>
       <div class="pager" id="down">&darr;</div>
     </section>
-    <section id="controls">
-      <div id="controlOuter">
-        <div id="controlInner">
-          <img class="button" id="play" src="images/play.png" />
-          <img class="button" id="stop" src="images/pause.png" />
-          <div id="timeloc">00:00:00</div>
-        </div>
-      </div>
-      <div id="eventTitle">&nbsp;</div>
-    </section>
-
+    
 
     <section id="tlcontainer">
      
-
-      <div class="namebox">
-        <div id="title">TIMELINE</div>
+    <section id="controls">
+      <div id="controlOuter">
+          <img class="button" id="play" src="images/play.png" />
+          <img class="button" id="stop" src="images/pause.png" />
+          <div id="timeloc">00:00:00</div>
       </div>
-      <div class="timeline" id="maintimeline"></div>
+    </section>
+     <div class="timeline" id="maintimeline"></div>
     </section>
     <section id="videos"></section>
     <section id="meta">
