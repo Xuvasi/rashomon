@@ -457,13 +457,21 @@ opacity: 0;
     border-bottom: 1px solid #666;
 }
 
-
+#timeloc {
+    float: left;
+    position: relative;
+    font-size: 14pt;
+    z-index: 0;
+    width: auto;
+    padding-left: 5px;
+    cursor: pointer;
+}
 
 #timepos {
-    margin-top: 18px;
+    bottom: 0;
     position: absolute;
     height: 1px;
-    width: 3px;
+    width: 5px;
     background: rgba(255,255,0,.5);
     z-index: 999;
 }
@@ -494,7 +502,7 @@ opacity: 0;
 #controlOuter {
     position: relative;
     font-size: 8pt;
-    background: #eee;
+    background: #ccc;
     height: 25px;
     width: 145px;
 
@@ -517,15 +525,6 @@ opacity: 0;
     float: left;
     width: 26px;
     z-index: 3;
-}
-
-#timeloc {
-    float: left;
-    position: relative;
-    font-size: 14pt;
-    z-index: 0;
-    width: auto;
-    padding-left: 5px;
 }
 
 #ready {
