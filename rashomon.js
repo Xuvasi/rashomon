@@ -26,45 +26,61 @@ var Rashomon = {
       return item.fmDate;
     }
   },
-  setupLoop: function(firstPos, secondPos){
-    timepos = $("#timepos").position().left;
-    console.log(firstPos);
-    console.log(secondPos);
-    var startPct, endPct;
+  getPct: function(offset){
+    return( offset / $("#maintimeline").width() * 100 );
+  },
+  setupLoop: function(start, finish){
+    console.log("Makin a loop");
+    startPos = Rashomon.getOffset(start);
+    finishPos = Rashomon.getOffset(finish);
+    startPct = Rashomon.getPct(startPos);
+    finishPct = Rashomon.getPct(finishPos);
+    Rashomon.looping = true;
+    Rashomon.startLoop = start;
+    Rashomon.endLoop = finish;
+    
     var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
-    if (firstPos < secondPos){
-      startPct = firstPos / $("#maintimeline").width();
-      endPct = secondPos / $("#maintimeline").width();
-      Rashomon.looping = true;
-      Rashomon.startLoop = tldur * startPct;
-      Rashomon.endLoop = tldur * endPct;
-      Rashomon.timeline.cue("loop", tldur * endPct, function(){
-        Rashomon.timeline.currentTime(tldur * startPct);
-      });
 
-      //only move currentTime if it is out of scope of new boundaries
-      if (!(timepos > firstPos && timepos < secondPos)){
-        console.log(timepos + " out of bounds of " + firstPos + " " + secondPos);
-        Rashomon.timeline.currentTime(tldur * startPct);
-      }
-    } else {
-      startPct = secondPos / $("#maintimeline").width();
-      endPct = firstPos / $("#maintimeline").width();
-      Rashomon.looping = true;
-      Rashomon.startLoop = tldur * startPct;
-      Rashomon.endLoop = tldur * endPct;
-      Rashomon.timeline.cue("loop", tldur * endPct, function(){
-        Rashomon.timeline.play(tldur * startPct);
-      });
 
-      //only move currentTime if it is out of scope of new boundaries
-      if (!(timepos > secondPos && timepos < firstPos)){
-        console.log(timepos + " out of bounds of " + secondPos + " " + firstPos);
-        Rashomon.timeline.currentTime(tldur * startPct);
+    //var selection = $("<div/>", { "id": "selection", "class": "ui-selection-range"}).css({  "left": startPct + "%", "width": finishPct - startPct + "%"}).appendTo("#maintimeline");
+    
+    var leftMover = $("<div/>", { "id": "leftMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
+     var rightMover = $("<div/>", { "id": "rightMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
+    //console.log(rightMover.position().left);
+    $(".mover").css({ "background": "transparent", "border": "0", "margin-left": "-8px", "margin-top": "-12px", "color": "black", "cursor": "pointer"});
+    $(".ui-slider-range").css({"position": "relative", "height": "100%", "border": "0", "background": "url('images/reel.png') top left repeat-x"});
+    $("#maintimeline").slider({
+      range: true,
+      min: 0,
+      max: Rashomon.fulldur,
+      values: [ start, finish ],
+      change: function( event, ui ) {
+        var value = ui.values;
+        Rashomon.timeline.cue("loop", value[1], function(){
+          console.log("reached end of loop");
+          Rashomon.timeline.currentTime(value[0]);
+        });
+        //move if currentTime is out of bounds
+        if (Rashomon.timeline.currentTime() < value[0] || Rashomon.timeline.currentTime() > value[1]){
+          Rashomon.timeline.currentTime(value[0]);
       }
+      
+      }
+    }).css({ "border": "0", "border-bottom": "1px solid #666"});
+
+
+    //handles the cues
+    timepos = $("#timepos").position().left;
+
+
+    
+
+    /*only move currentTime if it is out of scope of new boundaries
+    if (!(timepos > startPos && timepos < finishPos)){
+      console.log(timepos + " out of bounds of " + start + " " + finish);
+      Rashomon.timeline.currentTime(tldur * startPct);
     }
-
-
+    */
   },
   formatDate: function (exifDate) {
     if (!exifDate) {
@@ -141,7 +157,7 @@ var Rashomon = {
   setupTimeline: function (duration) {
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
-    $("#eventTitle").text(Rashomon.eventName)
+    $("#eventTitle").text(Rashomon.eventName);
     Rashomon.timeline.cue("loop");
     $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
@@ -173,11 +189,15 @@ var Rashomon = {
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
+          
+          //not fond of this, but it seems to keep playhead from locking
+          setTimeout(function () {
           $("#timepos").css("height", newheight);
           $("#timepos").show();
-          $(".vidnum").addClass("vidactive")
-          //not fond of this, but it seems to keep playhead from locking
-          setTimeout(function () { Rashomon.timeline.play(); }, 2500);
+          $(".vidnum").addClass("vidactive");
+          Rashomon.setupLoop(0, Rashomon.fulldur - 5);
+          Rashomon.timeline.play(Rashomon.startLoop);
+          }, 2500);
         }
       }); //end bind
     }); //end each
@@ -278,74 +298,6 @@ var Rashomon = {
         }
         l--;
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
-        
-          $("#maintimeline").mousedown(function(e){
-            if(!$(e.target).is('.ui-resizable-handle, #selection')) {
-              $("#selection").remove();
-              var leftOffset = $("#maintimeline").offset().left;
-              var firstPos = e.pageX - leftOffset;
-              var firstPct = firstPos/ $('#maintimeline').width() * 100;
-              $("<div/>", { "id": "selection"}).css({  "left": firstPct + "%", "width": "1px"}).appendTo("#maintimeline");
-
-              $("#maintimeline").mousemove(function(event) {
-                var thisPos = event.pageX - leftOffset;
-                var thisPct = thisPos / $('#maintimeline').width() * 100;
-                if (thisPos < firstPos) {
-                  $("#selection").css({"left": thisPct + "%", "width": firstPct - thisPct + "%" });
-                } else {
-                  $("#selection").css({"left": firstPct + "%", "width": thisPct - firstPct + "%"});
-                }
-
-              });
-              $("#maintimeline").mouseup(function(event){
-                var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
-                var secondPos = event.pageX - leftOffset;
-                //If selection is small, don't loop;
-                if ($("#selection").width() < 5){
-                  Rashomon.timeline.cue("loop", 0, function(){
-
-                  });
-                  Rashomon.looping = false;
-                  Rashomon.startLoop = false;
-                  Rashomon.endLoop = false;
-                  $("#selection").remove();
-                  var pct = firstPos / $("#maintimeline").width();
-
-                  Rashomon.timeline.currentTime(tldur * pct);
-                  if (Rashomon.timeline.media.paused){
-                    $(Rashomon.videos).each(function(){
-                      this.seekPaused();
-                    });
-                  }
-                } else {
-
-                  //we are looping
-                  Rashomon.setupLoop(firstPos,secondPos);
-
-                  $("#selection").resizable({
-                    handles: "e, w",
-                    containment: "parent",
-                    stop: function(){
-                      firstPos = $("#selection").offset().left - $("#maintimeline").offset().left;
-                      secondPos = firstPos + $("#selection").width();
-                      Rashomon.setupLoop(firstPos,secondPos);
-                    }
-                  });
-                  
-
-
-                
-                
-                }
-
-                $("#maintimeline").unbind('mousemove');
-                $("#maintimeline").unbind('mouseup');
-
-
-
-              }); //end mouseup
-            } // end if
-          }); // end mousedown
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
