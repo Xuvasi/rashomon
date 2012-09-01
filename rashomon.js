@@ -346,7 +346,7 @@ var Rashomon = {
               Rashomon.fulldur = this.duration + this.offset + 15;
             }
           });
-          displayEvent(1, Rashomon.earliest, "orange", 1);
+          //displayEvent(1, Rashomon.earliest, "orange", 1);
           $('#maintimeline').attr('data-duration', Rashomon.fulldur);
           Rashomon.setupTimeline(Rashomon.fulldur);
           $.each(Rashomon.videos, function () {
