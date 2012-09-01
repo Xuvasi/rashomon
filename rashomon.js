@@ -26,6 +26,11 @@ var Rashomon = {
       return item.fmDate;
     }
   },
+  offset2time: function(offset){
+    var pct = offset / $('#maintimeline').width();
+    var tldur = Rashomon.fulldur;
+    return(tldur * pct);
+  },
   getPct: function(offset){
     return( offset / $("#maintimeline").width() * 100 );
   },
@@ -56,11 +61,18 @@ var Rashomon = {
       values: [ start, finish ],
       change: function( event, ui ) {
         var value = ui.values;
+        Rashomon.startLoop = ui.values[0];
+        Rashomon.endLoop = ui.values[1];
+
         Rashomon.timeline.cue("loop", value[1], function(){
           console.log("reached end of loop");
-          Rashomon.timeline.currentTime(value[0]);
+            if (!Rashomon.timeline.media.paused){
+            console.log("adjusting");
+           Rashomon.timeline.currentTime(value[0]);
+          }
         });
         //move if currentTime is out of bounds
+        console.log(value);
         if (Rashomon.timeline.currentTime() < value[0] || Rashomon.timeline.currentTime() > value[1]){
           Rashomon.timeline.currentTime(value[0]);
       }
@@ -188,11 +200,34 @@ var Rashomon = {
         
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
-          var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#timepos").offset().top;
-          
+          var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#vidlines").offset().top;
+          $("#timepos").draggable({
+            "containment": "parent",
+            "axis": "x",
+            "start": function(event,ui){
+              if (!Rashomon.timeline.media.paused){
+                Rashomon.resume = true;
+              }
+              Rashomon.timeline.pause();
+            },
+            "stop": function(event,ui){
+              var pct = $("#timepos").position().left / $('#maintimeline').width();
+              var tldur = Rashomon.fulldur;
+              Rashomon.timeline.currentTime(tldur * pct);
+              if(Rashomon.resume){
+                Rashomon.timeline.play();
+                Rashomon.resume = false;
+              } else {
+                $(Rashomon.videos).each(function(){
+                  this.seekPaused();
+                });
+              }
+
+            }
+          });
           //not fond of this, but it seems to keep playhead from locking
           setTimeout(function () {
-          $("#timepos").css("height", newheight);
+          $("#timepos").css({"height": newheight, "cursor": "pointer"});
           $("#timepos").show();
           $(".vidnum").addClass("vidactive");
           Rashomon.setupLoop(0, Rashomon.fulldur - 5);
@@ -205,6 +240,9 @@ var Rashomon = {
     this.timeline.currentTime(0);
     this.fulldur = duration; // 6 minutes
     this.timeline.on("play", function () {
+      if (Rashomon.timeline.currentTime() < Rashomon.startLoop || Rashomon.timeline.currentTime() > Rashomon.endLoop){
+        Rashomon.timeline.currentTime(Rashomon.startLoop);
+      }
       $("#play").hide();
       $("#stop").show();
       $(Rashomon.videos).each(function () {
@@ -243,14 +281,8 @@ var Rashomon = {
       if (this.currentTime() > Rashomon.fulldur - 0.5) {
         this.pause(Rashomon.fulldur - 0.5);
       }
-      //if you glitch and pass the loop endtime, 
-      if (Rashomon.looping) {
-        //nesting so it isn't testing currentTime every frame
-        if (this.currentTime() > Rashomon.endLoop){
-          console.log("seeking to " + (Rashomon.startLoop));
-          Rashomon.timeline.play(Rashomon.endLoop);
-        }
-      }
+      //if you glitch and pass the loop endtime,
+      
       var pct = this.currentTime() / Rashomon.fulldur * 100; // for when we switch to % for window size adjustments
       $("#timeloc").text(Rashomon.sec2hms(this.currentTime()));
       $("#timepos").css('left', pct + "%");
