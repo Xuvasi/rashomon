@@ -43,7 +43,9 @@ var Rashomon = {
     Rashomon.looping = true;
     Rashomon.startLoop = start;
     Rashomon.endLoop = finish;
-    
+    Rashomon.timeline.cue(Rashomon.endLoop, function () {
+      Rashomon.timeline.play(Rashomon.startLoop);
+    });
     var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
 
 
@@ -53,7 +55,8 @@ var Rashomon = {
      var rightMover = $("<div/>", { "id": "rightMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
     //console.log(rightMover.position().left);
     $(".mover").css({ "background": "transparent", "border": "0", "margin-left": "-8px", "margin-top": "-12px", "color": "black", "cursor": "pointer"});
-    $(".ui-slider-range").css({"position": "relative", "height": "100%", "border": "0", "background": "url('images/reel.png') top left repeat-x"});
+    $(".ui-slider-range").css({"position": "relative", "height": "100%", "border": "0", "border-radius": 0, "background": "url('images/reel.png') top left repeat-x"});
+    $("#maintimeline").css({"border-radius": "0"});
     $("#maintimeline").slider({
       range: true,
       min: 0,
@@ -206,6 +209,9 @@ var Rashomon = {
         });
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
+
+          $("#timeDisplay").fadeIn();
+          $("#timeDisplay").css({ "margin-left": "-" + $("#timeDisplay").width() / 2 + "px"});
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#vidlines").offset().top;
           $("#timepos").draggable({
             "containment": "parent",
@@ -216,8 +222,6 @@ var Rashomon = {
               }
               Rashomon.timeline.pause();
 
-              $("#timeDisplay").fadeIn();
-              $("#timeDisplay").css({ "margin-left": "-" + $("#timeDisplay").width() / 2 + "px"});
             },
             "drag": function(event,ui){
               console.log(ui.position.left);
@@ -228,7 +232,6 @@ var Rashomon = {
             },
             "stop": function(event,ui){
 
-              $("#timeDisplay").fadeOut();
               var pct = $("#timepos").position().left / $('#maintimeline').width();
               var tldur = Rashomon.fulldur;
               Rashomon.timeline.currentTime(tldur * pct);
@@ -249,6 +252,7 @@ var Rashomon = {
           $("#timepos").show();
           $(".vidnum").addClass("vidactive");
           Rashomon.setupLoop(0, Rashomon.fulldur - 5);
+          
           Rashomon.timeline.play(Rashomon.startLoop);
           }, 2500);
         }
@@ -279,6 +283,7 @@ var Rashomon = {
       });
     }); //end pause
     $("#maintimeline").attr("data-duration", Rashomon.fulldur);
+    
     this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
       console.log("pausing");
@@ -294,6 +299,14 @@ var Rashomon = {
     $("#stop").click(function () {
       Rashomon.timeline.pause();
     });
+    $("#forward").click(function() {
+      //reduced so it doesn't trigger the loop rewind
+      Rashomon.timeline.pause(Rashomon.endLoop - 0.5);
+    });
+    $("#rewind").click(function() {
+      Rashomon.timeline.currentTime(Rashomon.startLoop);
+    });
+
     //adjust playhead when main timeline moves
     Rashomon.timeline.on("timeupdate", function () {
       if (this.currentTime() > Rashomon.fulldur - 0.5) {
