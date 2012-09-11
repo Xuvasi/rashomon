@@ -197,7 +197,13 @@ var Rashomon = {
         }
         var offtime = parseInt(Popcorn.util.toSeconds(duration) + of, 10);
         Rashomon.timeline.rashomonVideo({"vid": vid, "timeline": Rashomon.timeline, "start": of, "end": offtime});
-        
+        $("#timepos").on("mousedown", function(){
+          if (!Rashomon.timeline.media.paused){
+                Rashomon.resume = true;
+              }
+          Rashomon.timeline.pause();
+
+        });
         //if all videos have loaded
         if (Rashomon.loaded === Rashomon.videos.length) {
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#vidlines").offset().top;
@@ -209,8 +215,20 @@ var Rashomon = {
                 Rashomon.resume = true;
               }
               Rashomon.timeline.pause();
+
+              $("#timeDisplay").fadeIn();
+              $("#timeDisplay").css({ "margin-left": "-" + $("#timeDisplay").width() / 2 + "px"});
+            },
+            "drag": function(event,ui){
+              console.log(ui.position.left);
+              $("#timeDisplay").css({left: ui.position.left });
+              var pct = ui.position.left / $('#maintimeline').width();
+              $("#timeDisplay").text(Rashomon.sec2hms(Rashomon.fulldur * pct));
+
             },
             "stop": function(event,ui){
+
+              $("#timeDisplay").fadeOut();
               var pct = $("#timepos").position().left / $('#maintimeline').width();
               var tldur = Rashomon.fulldur;
               Rashomon.timeline.currentTime(tldur * pct);
@@ -284,8 +302,8 @@ var Rashomon = {
       //if you glitch and pass the loop endtime,
       
       var pct = this.currentTime() / Rashomon.fulldur * 100; // for when we switch to % for window size adjustments
-      $("#timeloc").text(Rashomon.sec2hms(this.currentTime()));
-      $("#timepos").css('left', pct + "%");
+      $("#timeloc, #timeDisplay").text(Rashomon.sec2hms(this.currentTime()));
+      $("#timepos, #timeDisplay").css('left', pct + "%");
     });
     //on navtl click, adjust video positions appropriately, obeying play conditions and such
   },
@@ -532,7 +550,7 @@ var video = function (options) {
       $("#vid" + this.id).removeClass("vidactive");
       $("#vid" + this.id).addClass("vidinactive");
       $("#vcontain" + this.id).hide("fast", "linear");
-      $("#vidtime" + this.id).css("opacity", "0.45");
+      $("#vidtime" + this.id).css("opacity", "0.25");
     } else {
       //turn it on!
       $("#vid" + this.id).addClass("vidactive");

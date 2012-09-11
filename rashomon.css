@@ -371,7 +371,10 @@ opacity: 0;
     font-size: 9pt;
     color: #aaa;
     min-height: 380px;
+    margin-top: 60px;
+    height: 100%;
 }
+
 
 .container {
     margin-top: 15px;
@@ -471,9 +474,23 @@ opacity: 0;
     bottom: 0;
     position: absolute;
     height: 1px;
-    width: 5px;
+    width: 8px;
+    margin-left: -4px;
     background: rgba(255,255,0,.5);
     z-index: 999;
+}
+
+#timeDisplay {
+    display: none;
+    bottom: -23px;
+    position: absolute;
+    height: 20px;
+    width: 60px;
+    background: #333;
+    color: #eee;
+    z-index: 999;
+    font-size: 8pt;
+    text-align: center;
 }
 
 #navbar {
@@ -539,12 +556,7 @@ opacity: 0;
     display: none;
 }
 
-#videos {
-    position: relative;
-    width: 100%;
-    margin-top: 30px;
-    height: 100%;
-}
+
 
 .showmeta {
     font-size: 18pt;
