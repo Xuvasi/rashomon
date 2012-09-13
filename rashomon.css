@@ -125,7 +125,7 @@ a.but:hover {
     width: 100%;
     height: 100%;
     background: #000;
-    z-index: 10000;
+    z-index: 9000;
     display: none;
 }
 
@@ -141,6 +141,9 @@ a.but:hover {
     right: 5px;
     color: white;
     cursor: pointer;
+    font-size: 20pt;
+    z-index: 10000;
+    text-shadow: black 0.1em 0.1em 0.2em;
 }
 
 #fsvid {
@@ -154,7 +157,6 @@ a.but:hover {
     transition: opacity 1s ease-in;
 }
 
-opacity: 0;
 .close {
     top: 0px;
     float: right;
@@ -393,14 +395,11 @@ opacity: 0;
     height: 320px;
 }
 
-.toolbutton {
-    cursor: pointer;
-}
-
 .tbuttons {
     position: absolute;
     bottom: 3px;
     right: 3px;
+    cursor: pointer;
 }
 
 .tools {
