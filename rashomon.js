@@ -14,7 +14,7 @@ var Rashomon = {
   earliest: new Date(),
   timeline: "",
   videosToDisplay: "",
-  colorList: ["#eb4747", "#CAEB47", "#47EB89", "#4789EB", "#CA47EB"],
+  colorList: ["#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#CA47EB"],
   mpath: rashomonManifest.mediaPath,
   eventName: rashomonManifest.event,
   filenames: rashomonManifest.files,
