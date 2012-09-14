@@ -67,19 +67,24 @@ var Rashomon = {
         Rashomon.startLoop = ui.values[0];
         Rashomon.endLoop = ui.values[1];
 
+
         Rashomon.timeline.cue("loop", value[1], function(){
           console.log("reached end of loop");
             if (!Rashomon.timeline.media.paused){
-            console.log("adjusting");
-           Rashomon.timeline.currentTime(value[0]);
+              console.log("adjusting");
+              Rashomon.timeline.currentTime(value[0]);
           }
         });
         //move if currentTime is out of bounds
         console.log(value);
         if (Rashomon.timeline.currentTime() < value[0] || Rashomon.timeline.currentTime() > value[1]){
           Rashomon.timeline.currentTime(value[0]);
-      }
-      
+          if(Rashomon.timeline.media.paused){
+            $(Rashomon.videos).each(function(){
+              this.seekPaused();
+            });
+          }
+        }
       }
     }).css({ "border": "0", "border-bottom": "1px solid #666"});
 
