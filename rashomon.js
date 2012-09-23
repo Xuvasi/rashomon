@@ -35,7 +35,7 @@ var Rashomon = {
     return( offset / $("#maintimeline").width() * 100 );
   },
   setupLoop: function(start, finish){
-    console.log("Makin a loop");
+    console.log("Makin a loop from " + start + " to " + finish);
     startPos = Rashomon.getOffset(start);
     finishPos = Rashomon.getOffset(finish);
     startPct = Rashomon.getPct(startPos);
@@ -256,8 +256,17 @@ var Rashomon = {
           $("#timepos").css({"height": newheight, "cursor": "pointer"});
           $("#timepos").show();
           $(".vidnum").addClass("vidactive");
-          Rashomon.setupLoop(0, Rashomon.fulldur - 5);
-          
+          var url = $.url();
+          if (url.attr("fragment")){
+            var frag = url.attr("fragment");
+            var fragtemp = frag.split("=");
+            fragtemp = fragtemp[1].split(",");
+            var loopStart = parseInt(fragtemp[0], 10);
+            var loopEnd = parseInt(loopStart + parseInt(fragtemp[1], 10), 10);
+            Rashomon.setupLoop(loopStart, loopEnd);
+          } else {
+            Rashomon.setupLoop(0, Rashomon.fulldur - 5);
+          }
           Rashomon.timeline.play(Rashomon.startLoop);
           }, 2500);
         }
