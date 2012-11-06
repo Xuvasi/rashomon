@@ -16,6 +16,7 @@ var Rashomon = {
   videosToDisplay: "",
   colorList: ["#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f"],
   mpath: rashomonManifest.mediaPath,
+  dataPath: rashomonManifest.dataPath,
   eventName: rashomonManifest.event,
   filenames: rashomonManifest.files,
   validDate: function (item) {
@@ -33,9 +34,9 @@ var Rashomon = {
   },
   getPct: function(offset){
     return( offset / $("#maintimeline").width() * 100 );
-  },
+  },  
+  //initiates loop, times determined by media or media fragment uri
   setupLoop: function(start, finish){
-    console.log("Makin a loop from " + start + " to " + finish);
     startPos = Rashomon.getOffset(start);
     finishPos = Rashomon.getOffset(finish);
     startPct = Rashomon.getPct(startPos);
@@ -48,15 +49,13 @@ var Rashomon = {
     });
     var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
 
-
-    //var selection = $("<div/>", { "id": "selection", "class": "ui-selection-range"}).css({  "left": startPct + "%", "width": finishPct - startPct + "%"}).appendTo("#maintimeline");
-    
+    //add movers to timeline, set up slider
     var leftMover = $("<div/>", { "id": "leftMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
-     var rightMover = $("<div/>", { "id": "rightMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
-    //console.log(rightMover.position().left);
+    var rightMover = $("<div/>", { "id": "rightMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
     $(".mover").css({ "background": "transparent", "border": "0", "margin-left": "-8px", "margin-top": "-12px", "color": "black", "cursor": "pointer"});
     $(".ui-slider-range").css({"position": "relative", "height": "100%", "border": "0", "border-radius": 0, "background": "url('images/reel.png') top left repeat-x"});
     $("#maintimeline").css({"border-radius": "0"});
+    
     $("#maintimeline").slider({
       range: true,
       min: 0,
@@ -67,14 +66,13 @@ var Rashomon = {
         Rashomon.startLoop = ui.values[0];
         Rashomon.endLoop = ui.values[1];
 
-
         Rashomon.timeline.cue("loop", value[1], function(){
           console.log("reached end of loop");
             if (!Rashomon.timeline.media.paused){
               console.log("adjusting");
               Rashomon.timeline.currentTime(value[0]);
           }
-        });
+        }); //end cue
         //move if currentTime is out of bounds
         console.log(value);
         if (Rashomon.timeline.currentTime() < value[0] || Rashomon.timeline.currentTime() > value[1]){
@@ -83,25 +81,16 @@ var Rashomon = {
             $(Rashomon.videos).each(function(){
               this.seekPaused();
             });
-          }
-        }
-      }
+          } //end if 
+        } //end if
+      } //end slider
     }).css({ "border": "0", "border-bottom": "1px solid #666"});
-
 
     //handles the cues
     timepos = $("#timepos").position().left;
-
-
-    
-
-    /*only move currentTime if it is out of scope of new boundaries
-    if (!(timepos > startPos && timepos < finishPos)){
-      console.log(timepos + " out of bounds of " + start + " " + finish);
-      Rashomon.timeline.currentTime(tldur * startPct);
-    }
-    */
+    //end setuploop
   },
+  //formats exifTool's dates to something javascript Date object can use
   formatDate: function (exifDate) {
     if (!exifDate) {
       return false;
@@ -139,6 +128,7 @@ var Rashomon = {
     var seconds = parseInt(totalSec % 60, 10);
     return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
   },
+  //deals with various duration metadata standards
   formatDuration: function (duration) {
     if (!duration) {
       return false;
@@ -179,16 +169,18 @@ var Rashomon = {
     this.timeline = Popcorn.baseplayer("#maintimeline");
     $("#eventTitle").text(Rashomon.eventName);
     Rashomon.timeline.cue("loop");
+    //setup photos
     $(Rashomon.photos).each(function () {
       this.buildPhotoViewer();
     });
+    //setup videos
     $(Rashomon.videos).each(function () {
       var id = this.id;
       var vid = this;
       this.buildVideoPlayer();
-
+      //lower volume
       this.pp.volume(0.33);
-      //console.log("Binding " + id);
+      //once metadata has loaded, read video timing/size metadata and add video to timeline
       this.pp.on('loadeddata', function () {
         //console.log("Can play " + id);
         Rashomon.loaded++;
@@ -212,12 +204,13 @@ var Rashomon = {
           Rashomon.timeline.pause();
 
         });
-        //if all videos have loaded
+        //All videos have loaded, finish setting up.
         if (Rashomon.loaded === Rashomon.videos.length) {
 
           $("#timeDisplay").fadeIn();
           $("#timeDisplay").css({ "margin-left": "-" + $("#timeDisplay").width() / 2 + "px"});
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#vidlines").offset().top;
+          //set up time position draggable events
           $("#timepos").draggable({
             "containment": "parent",
             "axis": "x",
@@ -251,12 +244,13 @@ var Rashomon = {
 
             }
           });
-          //not fond of this, but it seems to keep playhead from locking
+          //not fond of this, but it seems to keep playhead from locking.  using better event than metadataloaded could help?
           setTimeout(function () {
           $("#timepos").css({"height": newheight, "cursor": "pointer"});
           $("#timepos").show();
           $(".vidnum").addClass("vidactive");
           var url = $.url();
+          //detects for Media Fragment uri (?t=15,5 returns a 5 second loop starting at 15 seconds)
           if (url.attr("fragment")){
             var frag = url.attr("fragment");
             var fragtemp = frag.split("=");
@@ -267,7 +261,7 @@ var Rashomon = {
           } else {
             Rashomon.setupLoop(0, Rashomon.fulldur - 5);
           }
-          Rashomon.timeline.play(Rashomon.startLoop);
+            Rashomon.timeline.play(Rashomon.startLoop);
           }, 2500);
         }
       }); //end bind
@@ -275,6 +269,7 @@ var Rashomon = {
 
     this.timeline.currentTime(0);
     this.fulldur = duration; // 6 minutes
+
     this.timeline.on("play", function () {
       if (Rashomon.timeline.currentTime() < Rashomon.startLoop || Rashomon.timeline.currentTime() > Rashomon.endLoop){
         Rashomon.timeline.currentTime(Rashomon.startLoop);
@@ -289,6 +284,7 @@ var Rashomon = {
         }
       }); // end videos each
     }); //end play
+
     this.timeline.on("pause", function () {
       $("#play").show();
       $("#stop").hide();
@@ -296,8 +292,9 @@ var Rashomon = {
         this.pp.pause(Rashomon.timeline.currentTime() - this.offset);
       });
     }); //end pause
+
     $("#maintimeline").attr("data-duration", Rashomon.fulldur);
-    
+
     this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
       console.log("pausing");
@@ -337,13 +334,13 @@ var Rashomon = {
   getOffset: function (time) {
     return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
   },
-  /* reads videos from rashomonManifest object, which is created by another hunk of js linked in the html */
+  // reads videos from rashomonManifest object, which is created by another hunk of js linked in the html
   setupVideos: function () {
     var l = Rashomon.filenames.length;
     $.each(Rashomon.filenames, function (index) {
       var item = {};
       item.filename = '' + this;
-      $.getJSON("metadata/" + this + ".json", function (itemdata) {
+      $.getJSON(Rashomon.dataPath + this + ".json", function (itemdata) {
         item.origDate = Rashomon.formatDate(itemdata[0].DateTimeOriginal);
         item.tcDate = Rashomon.formatDate(itemdata[0].TrackCreateDate);
         item.tmDate = Rashomon.formatDate(itemdata[0].TrackModifyDate);
