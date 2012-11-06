@@ -53,6 +53,23 @@ header nav {
 
 }
 
+#content {
+    width: 100%;
+    position: relative;
+    padding-left: 20px;
+    width: 75%;
+    font-size: 14pt;
+
+}
+#docui {
+    width: 600px;
+    border: 1px solid #666;
+}
+#demovid {
+    border: 1px solid #666;
+    width: 800px;
+}
+
 #titlebar {
     width: 100%;
     position: relative;
