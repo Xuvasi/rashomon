@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+  
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rashomon Project</title>
+    <link href='http://fonts.googleapis.com/css?family=Wire+One'
+    rel='stylesheet' type='text/css' async="async" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
+    rel='stylesheet' type='text/css' />
+    <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="Stylesheet" />  
+    <script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
+    <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
+    <script src="upload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="upload/js/jquery.iframe-transport.js"></script>
+    <script src="upload/js/jquery.fileupload.js"></script>
+    <script src="https://login.persona.org/include.js"></script>
+    <script src="rashomon.auth.js"></script>
+    <script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        acceptFileTypes: /(\.|\/)(3gp|mpe?g|mkv|mp4|mov)$/i,
+        sequentialUploads: 'true',
+        dropZone: "#drop",
+        
+        progressall: function (e, data) {
+            var progress = data.loaded / data.total * 100;
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        },
+        add: function (e, data) {
+            data.context = $('<p/>').text('Uploading...').appendTo(document.body);
+            data.submit();
+        },
+        failed: function(e, data) {
+            data.context.text('Upload failed.')
+        },
+        done: function (e, data) {
+            if (data.result[0].error === "Filetype not allowed"){
+                data.context.text('This does not appear to be a photo or video.')
+            } else {
+                data.context.text('Upload finished.');
+                $.each(data.result, function (index, file) {
+                    $('<p/>').text(file.name).appendTo(document.body);
+                });
+            }
+            
+        }
+
+    });
+
+});
+
+</script>
+    
+    <link rel="stylesheet" type="text/css" href="rashomon.css" />
+    <style type="text/css">
+    body {
+      background: #aaa;
+      font-family: sans-serif;
+    }
+
+    .bar {
+    height: 18px;
+    background: green;
+}
+
+#upload{
+  display: none;
+  margin-top: 20px;
+    margin-left: 200px;
+    background: #aaa;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+#drop { 
+    position: relative;
+    left: 15px;
+    top: 5px;
+    padding: 15px; 
+    border: 3px solid #333; 
+    width: 200px;
+    height: 200px;
+    border-radius: 15px;
+    background: #999;
+
+
+}
+
+#filedialog {
+    position: absolute;
+    left: 280px;
+    top: 5px;
+}
+
+#progress { 
+    position: relative;
+    width: 800px; 
+    border: 1px solid #333;
+    margin-top: 15px;
+}
+#auth{ margin-left: 300px; margin-top: 75px;}
+
+
+    </style>
+  </head>
+  
+  <body>
+    
+    <section id='head'>
+        <div id="signin">Sign in</div>
+
+      <header id="mainL">
+        <div id="project"><div id="proto">Prototype: (Under Construction)</div><div>The Rashomon Project:</div></div>
+        <div class="projectsub">An Online Toolkit for Assembling Multi-Perspective Chronologies</div>
+      </header>
+      <header id="mainR">
+        <div class="projectsub"><a href="http://opinion.berkeley.edu/ddi/">A CITRIS Data &amp; Democracy Project</a>
+        </div>
+        <header id="sub">
+        <nav>
+          <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
+          <a class="but" href="http://automation.berkeley.edu/rashomon">About Rashomon</a>
+        </nav>
+      </header>
+
+    </section>
+      
+      </header>
+
+<section id="content">
+<div id="auth">
+  <p>Before uploading, please sign in with any valid email address.</p> <img class="signin" src="https://developer.mozilla.org/files/3961/persona_sign_in_black.png">
+</div>
+<div id="upload">
+
+    <div id="drop">Drag video files into this box to upload...</div> 
+    <div id="filedialog">
+        <p>...or select from your HD here.</p>
+        <input id="fileupload" type="file" name="files[]" data-url="http://localhost:8888" multiple>
+    </div>
+
+<div id="progress">
+    <div class="bar" style="width: 0%;"></div>
+</div>
+</div>
+
+
+
+</section>

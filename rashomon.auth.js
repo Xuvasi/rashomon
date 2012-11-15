@@ -2,9 +2,8 @@
 $(document).ready(function () {
 
 
-    $('#signin').click(function () {
-        navigator.id.get(gotAssertion);
-        return false;
+    $('.signin').click(function () {
+        navigator.id.request();
     });
 
 });    
@@ -17,6 +16,8 @@ function loggedIn(email) {
     var sign = $("#signin");
     sign.text("Signed in as " + email);
     sign.unbind("click");
+    $("#auth").toggle();
+    $("#upload").toggle();
 }
 
 
@@ -29,6 +30,39 @@ function setSessions(val) {
 function loggedOut() {
     console.log("logged out");
 }
+
+navigator.id.watch({
+  loggedInUser: null,
+  onlogin: function(assertion) {
+    // A user has logged in! Here you need to:
+    // 1. Send the assertion to your backend for verification and to create a session.
+    // 2. Update your UI.
+    $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+      type: 'POST',
+      url: 'signin.php', // This is a URL on your website.
+      data: {assertion: assertion},
+      success: function(res, status, xhr) { 
+        $("#auth").toggle();
+        $("#upload").toggle();
+      },
+      error: function(xhr, status, err) { alert("Login failure: " + err); }
+    });
+  },
+  onlogout: function() {
+    // A user has logged out! Here you need to:
+    // Tear down the user's session by redirecting the user or making a call to your backend.
+    // Also, make sure loggedInUser will get set to null on the next page load.
+    // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
+    $.ajax({
+      type: 'POST',
+      url: '/auth/logout', // This is a URL on your website.
+      success: function(res, status, xhr) { window.location.reload(); },
+      error: function(xhr, status, err) { alert("Logout failure: " + err); }
+    });
+  }
+});
+
+
 
 //browserID assertion
 function gotAssertion(assertion) {
@@ -47,8 +81,8 @@ function gotAssertion(assertion) {
                     loggedIn(res);
                 }
             },
-            error: function (res, status, xhr) {
-                alert("login failure" + res);
+            error: function(xhr, status, err) {
+                alert("login failure" + err);
             }
         });
     } else {

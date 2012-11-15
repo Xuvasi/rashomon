@@ -1,7 +1,8 @@
 <?
 
-$url = 'https://browserid.org/verify';
-$data = http_build_query(array('assertion' => $_POST['assertion'], 'audience' => urlencode('metaviddemo01.ucsc.edu')));
+$url = 'https://verifier.login.persona.org/verify';
+/*
+$data = http_build_query(array('assertion' => $_POST['assertion'], 'audience' => urlencode('rashomonproject.org')));
 
 $params = array(
     'http' => array(
@@ -15,16 +16,23 @@ $params = array(
 $ctx = stream_context_create($params);
 $fp = fopen($url, 'rb', false, $ctx);
 
-if ($fp) {
-  $result = stream_get_contents($fp);
-}
-else {
-  $result = FALSE;
-}
+*/
+$assertion = $_POST['assertion'];
+$body = "assertion=$assertion&audience=rashomonproject.org";
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$result = curl_exec($ch);
+curl_close($ch);
+
+
 
 $json = json_decode($result);
 
 if ($json->status == 'okay') {
+   $_SESSION['email'] = $json->email;
    echo json_encode($json->email, TRUE);
    exit;
 
