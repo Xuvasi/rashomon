@@ -15,99 +15,53 @@
     <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
     <script src="upload/js/vendor/jquery.ui.widget.js"></script>
     <script src="upload/js/jquery.iframe-transport.js"></script>
-    <script src="upload/js/jquery.fileupload.js"></script>
+
+    <script src="jquery.cookie.js"></script>
     <script src="https://login.persona.org/include.js"></script>
     <script src="rashomon.auth.js"></script>
-    <script>
-$(function () {
-    $('#fileupload').fileupload({
-        dataType: 'json',
-        acceptFileTypes: /(\.|\/)(3gp|mpe?g|mkv|mp4|mov)$/i,
-        sequentialUploads: 'true',
-        dropZone: "#drop",
-        
-        progressall: function (e, data) {
-            var progress = data.loaded / data.total * 100;
-            $('#progress .bar').css(
-                'width',
-                progress + '%'
-            );
-        },
-        add: function (e, data) {
-            data.context = $('<p/>').text('Uploading...').appendTo(document.body);
-            data.submit();
-        },
-        failed: function(e, data) {
-            data.context.text('Upload failed.')
-        },
-        done: function (e, data) {
-            if (data.result[0].error === "Filetype not allowed"){
-                data.context.text('This does not appear to be a photo or video.')
-            } else {
-                data.context.text('Upload finished.');
-                $.each(data.result, function (index, file) {
-                    $('<p/>').text(file.name).appendTo(document.body);
-                });
-            }
-            
-        }
+    <script src="js/upload.js"></script>
 
-    });
-
+<script>
+var config = {
+    support : "image/jpg,image/png,image/bmp,image/jpeg,image/gif,video/mpeg,video/mp4,video/ogg,video/quicktime,video/webm,video/x-matroska,video/x-ms-wmv,video/x-flv",     // Valid file formats
+    form: "demoFiler",                  // Form ID
+    dragArea: "dragAndDropFiles",       // Upload Area ID
+    uploadUrl: "http://metaviddemo01.ucsc.edu/rashomonupload/yupload.php",             // Server side upload url
+    email: $.cookie('rashomon_email'),
+    assertion: auth.assertion
+}
+$(document).ready(function(){
+    initMultiUploader(config);
 });
-
 </script>
     
-    <link rel="stylesheet" type="text/css" href="rashomon.css" />
-    <style type="text/css">
-    body {
-      background: #aaa;
-      font-family: sans-serif;
-    }
+<link rel="stylesheet" type="text/css" href="rashomon.css" />
+<style type="text/css">
 
-    .bar {
-    height: 18px;
-    background: green;
-}
 
 #upload{
   display: none;
   margin-top: 20px;
     margin-left: 200px;
-    background: #aaa;
+    background: #666;
     position: relative;
     padding-bottom: 10px;
+    border: 1px solid #111;
 }
 
-#drop { 
-    position: relative;
-    left: 15px;
-    top: 5px;
-    padding: 15px; 
-    border: 3px solid #333; 
-    width: 200px;
-    height: 200px;
-    border-radius: 15px;
-    background: #999;
-
-
-}
-
-#filedialog {
-    position: absolute;
-    left: 280px;
-    top: 5px;
-}
-
-#progress { 
-    position: relative;
-    width: 800px; 
-    border: 1px solid #333;
-    margin-top: 15px;
-}
+body{ background: #aaa;}
 #auth{ margin-left: 300px; margin-top: 75px;}
 
+.uploadArea{ min-height:300px; height:auto; padding:10px; cursor:move; margin-bottom:10px; position:relative; }
 
+.uploadArea h1{ color:#ccc; width:100%; z-index:0; text-align:center; vertical-align:middle; position:absolute; top:25px;}
+.dfiles{ clear:both; border:1px solid #ccc; background-color:#666; position:relative; height:25px;  z-index:1; width:97%; opacity:0.6; cursor:default;}
+h5{ width:95%; line-height:25px;}
+h5, h5 img {  float:left;  }
+.invalid { border:1px solid red !important; }
+.buttonUpload { display:inline-block; padding: 4px 10px 4px; text-align: center; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); background-color: #0074cc; -webkit-border-radius: 4px;-moz-border-radius: 4px; border-radius: 4px; border-color: #e6e6e6 #e6e6e6 #bfbfbf; border: 1px solid #cccccc; color:#fff; }
+.progress { position: absolute; background: #ff9; width: 0%; height: 100%;}
+#demoFiler { padding-left: 15px; padding-top: 5px; border-top: 1px solid #111;}
     </style>
   </head>
   
@@ -126,7 +80,7 @@ $(function () {
         <header id="sub">
         <nav>
           <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
-          <a class="but" href="http://automation.berkeley.edu/rashomon">About Rashomon</a>
+          <a class="but" href="about.html">About Rashomon</a>
         </nav>
       </header>
 
@@ -139,18 +93,18 @@ $(function () {
   <p>Before uploading, please sign in with any valid email address.</p> <img class="signin" src="https://developer.mozilla.org/files/3961/persona_sign_in_black.png">
 </div>
 <div id="upload">
-
-    <div id="drop">Drag video files into this box to upload...</div> 
-    <div id="filedialog">
-        <p>...or select from your HD here.</p>
-        <input id="fileupload" type="file" name="files[]" data-url="http://localhost:8888" multiple>
-    </div>
-
-<div id="progress">
-    <div class="bar" style="width: 0%;"></div>
+<div id="dragAndDropFiles" class="uploadArea">
+<h1>Drop Videos or Images Here</h1>
+</div>
+<form name="demoFiler" id="demoFiler" enctype="multipart/form-data">
+<input type="file" name="multiUpload" id="multiUpload" multiple />
+<input type="submit" name="submitHandler" id="submitHandler" value="Upload" />
+</form>
+<div class="progressBar">
+<div class="status"></div>
 </div>
 </div>
-
-
 
 </section>
+</body>
+</html>

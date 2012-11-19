@@ -17,7 +17,7 @@ $ctx = stream_context_create($params);
 $fp = fopen($url, 'rb', false, $ctx);
 
 */
-$assertion = $_POST['assertion'];
+$assertion = trim($_POST['assertion']);
 $body = "assertion=$assertion&audience=rashomonproject.org";
 
 $ch = curl_init();
@@ -32,13 +32,16 @@ curl_close($ch);
 $json = json_decode($result);
 
 if ($json->status == 'okay') {
-   $_SESSION['email'] = $json->email;
-   echo json_encode($json->email, TRUE);
+   $_SESSION['rashomon_email'] = $json->email;
+   setcookie("rashomon_email", $json->email);
+   $response['status'] = "okay";
+   echo json_encode($response);
    exit;
 
 } else {
-  // log in failed.
+     $response['status'] = $json->status .$assertion;
+     var_dump($response);
 }
 
-echo $result;
+//echo $result;
 ?>

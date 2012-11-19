@@ -1,4 +1,5 @@
 
+var auth = {};
 $(document).ready(function () {
 
 
@@ -31,6 +32,7 @@ function loggedOut() {
     console.log("logged out");
 }
 
+
 navigator.id.watch({
   loggedInUser: null,
   onlogin: function(assertion) {
@@ -42,6 +44,7 @@ navigator.id.watch({
       url: 'signin.php', // This is a URL on your website.
       data: {assertion: assertion},
       success: function(res, status, xhr) { 
+        auth.assertion = assertion;
         $("#auth").toggle();
         $("#upload").toggle();
       },
