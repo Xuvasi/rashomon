@@ -42,11 +42,17 @@ navigator.id.watch({
     $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
       type: 'POST',
       url: 'signin.php', // This is a URL on your website.
+      dataType: 'JSON',
       data: {assertion: assertion},
       success: function(res, status, xhr) { 
-        auth.assertion = assertion;
-        $("#auth").toggle();
-        $("#upload").toggle();
+        console.log(res.status);
+        if (res.status === "okay"){
+          auth.assertion = assertion;
+          $("#upload").toggle();
+        } else {
+          $("#auth").toggle();
+ 
+        }
       },
       error: function(xhr, status, err) { alert("Login failure: " + err); }
     });
