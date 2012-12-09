@@ -21,6 +21,14 @@
     <script src="rashomon.auth.js"></script>
     <script src="js/upload.js"></script>
 
+<script type="text/javascript">
+Rashomon = {};
+Rashomon.loggedIn = function(){
+    $("#upload").toggle();
+    $("#auth").toggle();
+};
+
+</script>
 
     
 <link rel="stylesheet" type="text/css" href="rashomon.css" />
@@ -37,10 +45,8 @@
     margin-left: 25px;
 
 }
-
 #uploadSelect{
     margin-bottom: 10px;
-
 }
 
 body{ background: #aaa;}
@@ -52,14 +58,12 @@ ins {                                text-decoration: none; }
 del {                                text-decoration: line-through; }
 table {                              border-collapse: collapse; border-spacing: 0; }
 
-/*--------- TOOLS ---------*/
 #drop-zone, .uploader, 
 #drop-zone.active:after {            border-radius:5px;}
 
 /*-*/
 .uploader {                    background:#f2f1f1;}
 
-/*--------- LAYOUT ---------*/
 ::selection {                        background:rgba(0, 153, 255, 0.5); color:#fff;}
 
 
@@ -73,7 +77,6 @@ table {                              border-collapse: collapse; border-spacing: 
 #drop-zone.active:after {            content:''; display:block; height:100%; width:100%; position:absolute; top:0; left:0; 
                                      background:rgba(68, 164, 253, 0.58);}
                                      
-/*--------- UPLOADERS ---------*/
 .uploader {                          margin:0 0 15px; padding:10px; border:1px solid #e5e5e5; border-radius:5px; overflow:hidden;}
 .uploader:last-child {               margin:0;}
 .uploader > div {                    float:left;}
@@ -90,25 +93,7 @@ table {                              border-collapse: collapse; border-spacing: 
 .progress-bar > div {                background:#44a4fd; height:5px; }
 .progress-bar, .progress-percent {   float:left; line-height:16px;}
 .progress-percent {                  font-size:11px; color:#2a98ff; }
-/*body { background:#e3e3e3;}
-#drop, #drop-files {       width: 700px; min-height:600px; margin:10px auto; background:#fff; border:7px dashed #f0f0f0; 
-                      -moz-border-radius:10px; -webkit-border-radius:10px;}
-#output {    width:700px; margin:10px auto; min-height:100px; background:#a7a24d;}
-#output ul { margin-bottom:10px;}
-.progress-bar-uploaded {background:red; height:10px;}
-.progress-bar-wrap, .progress-bar { width:200px; height:10px; padding:1px; background:rgba(255, 0, 0, 0.2)}
 
-.uploader { background:#f3f3f3; padding:10px 20px; overflow:hidden; margin-bottom:10px;}
-.uploader .file-preview { float:left; display:inline-block; margin:0 10px 0 0; width:100px; padding:2px; background:#fff; 
-                          -webkit-box-shadow:0 0 10px rgba(0, 0, 0, 0.2); -moz-box-shadow:0 0 10px rgba(0, 0, 0, 0.2);}
-.uploader .file-preview img { display:block; max-width:100px; max-height:100px; margin: 0 auto;}
-.uploader .file-metas { display:inline-block; width:450px;}
-.uploader .file-name {  margin-bottom:10px;}
-.state {                 }
-.state-success {       color:#259f1c;}
-.state-error {       color:#9f1c1c;}
-.file-size {          font-size:11px;}
-#drop-files.active { background:#ffcd77; border-color:#f89a2b;}*/
     </style>
   </head>
   

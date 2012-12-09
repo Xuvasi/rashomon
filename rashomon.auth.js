@@ -2,6 +2,7 @@
 var auth = {};
 $(document).ready(function () {
 
+    $("#auth").toggle();
 
     $('.signin').click(function () {
         navigator.id.request();
@@ -48,7 +49,7 @@ navigator.id.watch({
         console.log(res.status);
         if (res.status === "okay"){
           auth.assertion = assertion;
-          $("#upload").toggle();
+          Rashomon.loggedIn();
         } else {
           $("#auth").toggle();
  
@@ -64,7 +65,7 @@ navigator.id.watch({
     // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
     $.ajax({
       type: 'POST',
-      url: '/auth/logout', // This is a URL on your website.
+      url: 'signin.php', // This is a URL on your website.
       success: function(res, status, xhr) { window.location.reload(); },
       error: function(xhr, status, err) { alert("Logout failure: " + err); }
     });
