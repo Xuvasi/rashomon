@@ -20,6 +20,8 @@ if ($json->status == 'okay') {
    $_SESSION['rashomon_email'] = $json->email;
    setcookie("rashomon_email", $json->email);
    $response['status'] = "okay";
+   $response['expires'] = $json->expires;
+   $response['email'] = $json->email;
    echo json_encode($response);
    exit;
 
