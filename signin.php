@@ -17,7 +17,6 @@ curl_close($ch);
 $json = json_decode($result);
 
 if ($json->status == 'okay') {
-   $_SESSION['rashomon_email'] = $json->email;
    setcookie("rashomon_email", $json->email);
    $response['status'] = "okay";
    $response['expires'] = $json->expires;

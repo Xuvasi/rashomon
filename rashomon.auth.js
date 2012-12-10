@@ -8,6 +8,13 @@ $(document).ready(function () {
         navigator.id.request();
     });
 
+$("#logout").click(function() {
+
+  navigator.id.logout(); 
+});
+
+
+
 });    
 
 
@@ -32,6 +39,7 @@ function setSessions(val) {
 function loggedOut() {
     console.log("logged out");
 }
+
 
 
 navigator.id.watch({

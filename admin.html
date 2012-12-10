@@ -18,6 +18,13 @@
 
 <script type="text/javascript">
 
+$(document).ready(function(){
+  $(".delete").click(function(){
+    alert("yup");
+
+  });
+
+});
 
 Rashomon = {};
 Rashomon.loggedIn = function() {
@@ -27,13 +34,24 @@ Rashomon.loggedIn = function() {
       type: 'POST',
       url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php', // This is a URL on your website.
       dataType: 'JSON',
-      data: {assertion: auth.assertion},
+      xhrFields: {
+       withCredentials: true
+      },
+      crossDomain: true,
+
+      data: {assertion: auth.assertion, "task": "login"},
       success: function(res, status, xhr) {
-        console.log("Authentercatered");
-        //console.log(res[0]);
+
       	$.each(res, function(index, value){
-          var container = $("<div/>", {class: "media"}).appendTo("#media");
+          var container = $("<div/>", {"class": "media"}).appendTo("#media");
           //var containerList = $("<ul/>").appendTo(container);
+
+          var delbutton = $("<div/>", { "class": "delete", "text": "Delete", "title": 'Delete this media' }).appendTo(container);
+          delbutton.click(function(){
+            if (confirm("Are you sure? This will permenently delete associated media.")){
+              deleteMedia(value.name, container);
+            }
+          });
           $("<h1/>", { "text": value.name, "title": value.origname }).appendTo(container);
           var meta = $("<div/>", { "class": "meta", "text": "Time: "}).appendTo(container);
           var c = 0;
@@ -62,12 +80,36 @@ Rashomon.loggedIn = function() {
           }
         })
       },
-      error: function(xhr, status, err) { alert("Login .failure: " + err); }
+      error: function(xhr, status, err) { 
+        alert("Login .failure: " + err + " " + status); 
+        console.dir(xhr); 
+      }
     });
 
 
 };
 
+var deleteMedia = function(name, container){
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php',
+            dataType: 'JSON',
+            xhrFields: {
+              withCredentials: true
+            },
+            data: {
+                "name": name, "task": "delete"
+            },
+            success: function (res, status, xhr) {
+                console.log(res);
+                container.fadeToggle("slow");
+            },
+            error: function(xhr, status, err) {
+                alert("deletion failure" + err);
+            }            
+        });
+};
 
 
 formatDate = function (exifDate) {
@@ -106,9 +148,11 @@ formatDate = function (exifDate) {
 <link rel="stylesheet" type="text/css" href="rashomon.css" />
 <style type="text/css">
 select { font-size: 8pt; }
-.media { background: #666; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 4px;}
+.media { position: relative; background: #333; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 4px;}
 .media h1 { padding: 0; margin: 0; color: orange;}
 .media ul li { display: inline;}
+
+.delete { cursor: pointer; position: absolute; right: 3px; bottom: 0px; padding: 3px; color: #f33;}
 
 #upload{
     display: none;
@@ -127,6 +171,8 @@ select { font-size: 8pt; }
 body{ background: #aaa;}
 #auth { display: none;}
 #auth{ margin-left: 300px; margin-top: 75px;}
+
+#logout { position: relative; background: #333; border-radius: 10px; color: orange; cursor: pointer; margin-top: 15px; padding: 3px; width: 150px; text-align: center; }
 
    </style>
    </head>
@@ -159,6 +205,7 @@ body{ background: #aaa;}
 </div>
 <div id="upload">
   <div id="media"></div>
+  <div id="logout">Log out</div>
 </div>
 
 </section>
