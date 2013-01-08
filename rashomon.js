@@ -47,7 +47,7 @@ var Rashomon = {
     Rashomon.timeline.cue(Rashomon.endLoop, function () {
       Rashomon.timeline.play(Rashomon.startLoop);
     });
-    var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+    var tldur = Rashomon.fulldur;
 
     //add movers to timeline, set up slider
     var leftMover = $("<div/>", { "id": "leftMover", "class": "mover ui-slider-handle", "text": "\u25bc"}).appendTo("#maintimeline");
@@ -165,6 +165,7 @@ var Rashomon = {
   },
   //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function (duration) {
+    console.log("Setting up timeline.")
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
     $("#eventTitle").text(Rashomon.eventName);
@@ -177,12 +178,15 @@ var Rashomon = {
     $(Rashomon.videos).each(function () {
       var id = this.id;
       var vid = this;
+      //console.log("building video player " + this.id);
       this.buildVideoPlayer();
+      //console.log("built");
+
       //lower volume
       this.pp.volume(0.33);
       //once metadata has loaded, read video timing/size metadata and add video to timeline
       this.pp.on('loadeddata', function () {
-        //console.log("Can play " + id);
+        console.log("Can play " + id);
         Rashomon.loaded++;
         var of = vid.offset;
         var duration = vid.pp.duration();
@@ -206,7 +210,7 @@ var Rashomon = {
         });
         //All videos have loaded, finish setting up.
         if (Rashomon.loaded === Rashomon.videos.length) {
-
+          console.log("Finished setting up");
           $("#timeDisplay").fadeIn();
           $("#timeDisplay").css({ "margin-left": "-" + $("#timeDisplay").width() / 2 + "px"});
           var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - $("#vidlines").offset().top;
@@ -266,16 +270,20 @@ var Rashomon = {
         }
       }); //end bind
     }); //end each
+    
+    this.timeline.currentTime(0);  //Start at beginning of timeline, 
+    this.fulldur = duration; // end of final video
 
-    this.timeline.currentTime(0);
-    this.fulldur = duration; // 6 minutes
-
+    //When timeline plays... 
     this.timeline.on("play", function () {
+      //make sure it is within the loop selection
       if (Rashomon.timeline.currentTime() < Rashomon.startLoop || Rashomon.timeline.currentTime() > Rashomon.endLoop){
         Rashomon.timeline.currentTime(Rashomon.startLoop);
       }
+      //toggle buttons
       $("#play").hide();
       $("#stop").show();
+      //each video checks to see if it should play
       $(Rashomon.videos).each(function () {
         var offset = this.offset;
         var duration = this.pp.duration();
@@ -285,16 +293,18 @@ var Rashomon = {
       }); // end videos each
     }); //end play
 
+    //when timeline pauses...
     this.timeline.on("pause", function () {
+      //toggle buttons
       $("#play").show();
       $("#stop").hide();
+      //pause all videos (no need to check if already paused)
       $(Rashomon.videos).each(function () {
         this.pp.pause(Rashomon.timeline.currentTime() - this.offset);
       });
     }); //end pause
 
-    $("#maintimeline").attr("data-duration", Rashomon.fulldur);
-
+    
     this.timeline.cue(Rashomon.fulldur - 0.01, function () {
       Rashomon.timeline.pause();
       console.log("pausing");
@@ -332,10 +342,11 @@ var Rashomon = {
     //on navtl click, adjust video positions appropriately, obeying play conditions and such
   },
   getOffset: function (time) {
-    return $("#maintimeline").width() * time / Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+    return $("#maintimeline").width() * time / Popcorn.util.toSeconds(this.fulldur);
   },
   // reads videos from rashomonManifest object, which is created by another hunk of js linked in the html
   setupVideos: function () {
+    console.log("Setting up videos");
     var l = Rashomon.filenames.length;
     $.each(Rashomon.filenames, function (index) {
       var item = {};
@@ -372,6 +383,7 @@ var Rashomon = {
         }
         l--;
         if (Rashomon.videos.length + Rashomon.photos.length === Rashomon.filenames.length) {
+          //console.log("Finished last file");
           $.each(Rashomon.videos, function () {
             var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
@@ -388,8 +400,6 @@ var Rashomon = {
               Rashomon.fulldur = this.duration + this.offset + 15;
             }
           });
-          //displayEvent(1, Rashomon.earliest, "orange", 1);
-          $('#maintimeline').attr('data-duration', Rashomon.fulldur);
           Rashomon.setupTimeline(Rashomon.fulldur);
           $.each(Rashomon.videos, function () {
             this.displayVideo();
@@ -653,7 +663,7 @@ var video = function (options) {
       $('.vidtl').mousemove(function(e){
           var mouseleft = e.pageX - $('#maintimeline').offset().left;
           var pct = mouseleft / $('#maintimeline').width();
-          var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+          var tldur = Rashomon.fulldur);
           $('#mouseloc').html(Rashomon.sec2hms(tldur * pct));
       });
       */
@@ -693,7 +703,7 @@ var video = function (options) {
     $("#tl" + id).click(function (e) {
       var clickleft = e.pageX - $('#maintimeline').offset().left;
       var pct = clickleft / $('#maintimeline').width();
-      var tldur = Popcorn.util.toSeconds($('#maintimeline').attr('data-duration'));
+      var tldur = Popcorn.util.toSeconds(Rashomon.fulldur);
       Rashomon.timeline.currentTime(tldur * pct);
       if (Rashomon.timeline.media.paused) {
         $(Rashomon.videos).each(function(){
