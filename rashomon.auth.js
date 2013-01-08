@@ -2,10 +2,18 @@
 var auth = {};
 $(document).ready(function () {
 
+    $("#auth").toggle();
 
     $('.signin').click(function () {
         navigator.id.request();
     });
+
+$("#logout").click(function() {
+
+  navigator.id.logout(); 
+});
+
+
 
 });    
 
@@ -33,6 +41,7 @@ function loggedOut() {
 }
 
 
+
 navigator.id.watch({
   loggedInUser: null,
   onlogin: function(assertion) {
@@ -42,11 +51,17 @@ navigator.id.watch({
     $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
       type: 'POST',
       url: 'signin.php', // This is a URL on your website.
+      dataType: 'JSON',
       data: {assertion: assertion},
       success: function(res, status, xhr) { 
-        auth.assertion = assertion;
-        $("#auth").toggle();
-        $("#upload").toggle();
+        console.log(res.status);
+        if (res.status === "okay"){
+          auth.assertion = assertion;
+          Rashomon.loggedIn();
+        } else {
+          $("#auth").toggle();
+ 
+        }
       },
       error: function(xhr, status, err) { alert("Login failure: " + err); }
     });
@@ -58,7 +73,7 @@ navigator.id.watch({
     // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
     $.ajax({
       type: 'POST',
-      url: '/auth/logout', // This is a URL on your website.
+      url: 'signin.php', // This is a URL on your website.
       success: function(res, status, xhr) { window.location.reload(); },
       error: function(xhr, status, err) { alert("Logout failure: " + err); }
     });
