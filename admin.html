@@ -18,13 +18,6 @@
 
 <script type="text/javascript">
 
-$(document).ready(function(){
-  $(".delete").click(function(){
-    alert("yup");
-
-  });
-
-});
 
 Rashomon = {};
 Rashomon.loggedIn = function() {
@@ -103,7 +96,7 @@ var deleteMedia = function(name, container){
             },
             success: function (res, status, xhr) {
                 console.log(res);
-                container.fadeToggle("slow");
+                container.fadeToggle(1500);
             },
             error: function(xhr, status, err) {
                 alert("deletion failure" + err);
