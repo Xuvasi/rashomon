@@ -3,6 +3,8 @@ rashomon
 copyleft 2012
 */
 var Rashomon = {
+  manifestLoc: "manifest.json",
+  manifest: {},
   videos: [],
   photos: [],
   loaded: 0,
@@ -766,7 +768,10 @@ var video = function (options) {
 
 $(document).ready(function () {
   //loads filenames from manifest.json in local folder
-  Rashomon.setupVideos(); // could point to one from a different event or something
+  $.getJSON(Rashomon.manifestLoc, function (data) {
+    Rashomon.manifest = data;
+    Rashomon.setupVideos(); // could point to one from a different event or something  
+  });
   $("#metaX").click(function () {
     $("#meta").css("right", "-210px");
   
