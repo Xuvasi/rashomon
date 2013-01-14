@@ -20,12 +20,43 @@ var Rashomon = {
   eventName: rashomonManifest.event,
   filenames: rashomonManifest.files,
   validDate: function (item) {
-    //makes sure date isn't from 1904 or 1946 or sometime way before videos existed
+    //makes sure date isn't from 1904 or 1946 (ENIAC) or sometime way before videos existed
     if (item.mcDate > 2000) {
       return item.mcDate;
     } else {
       return item.fmDate;
     }
+  },
+  loadFullscreen: function(id){
+    console.log("FS for id " + id);
+    var video = $("#video" + id);
+    var ctime = Popcorn("#video" + id).currentTime();
+    var sources = video.children();
+
+    if (!sources) {
+      alert("Something wrong with sources for this video");
+    }
+    
+    Rashomon.timeline.pause();
+    
+    //$('body').css('overflow', "hidden");
+    $('#fullscreen').fadeIn("slow");
+    $("html, body").scrollTop(0);
+    $("body").css("overflow", "hidden");
+    var videotag = $("<video/>", { 'id': 'fsvid', "controls": true }).appendTo('#fsvidholder');
+    Rashomon.videos[id].webm.appendTo(videotag);
+    Rashomon.videos[id].mp4.appendTo(videotag);
+    $("#fsvid").css("left",  $(window).width() / 2  -  $("#fsvid").width() / 2 );
+    var fspop = Popcorn("#fsvid");
+    fspop.on("loadedmetadata", function() {
+      $("#fsvid").css("left",  $(window).width() / 2  -  $("#fsvid").width() / 2 );
+      fspop.pause(ctime);
+      $("#xbox").css({"top": 5, "left": $("#fsvid").offset().left + $("#fsvid").width() - 20});
+    });
+    fspop.on("canplay", function() {
+      $("#fsvid").css("left",  $(window).width() / 2  -  $("#fsvid").width() / 2 );
+      $("#fsvid").css("opacity", 1);
+    });
   },
   offset2time: function(offset){
     var pct = offset / $('#maintimeline').width();
@@ -37,10 +68,10 @@ var Rashomon = {
   },  
   //initiates loop, times determined by media or media fragment uri
   setupLoop: function(start, finish){
-    startPos = Rashomon.getOffset(start);
-    finishPos = Rashomon.getOffset(finish);
-    startPct = Rashomon.getPct(startPos);
-    finishPct = Rashomon.getPct(finishPos);
+    var startPos = Rashomon.getOffset(start);
+    var finishPos = Rashomon.getOffset(finish);
+    var startPct = Rashomon.getPct(startPos);
+    var finishPct = Rashomon.getPct(finishPos);
     Rashomon.looping = true;
     Rashomon.startLoop = start;
     Rashomon.endLoop = finish;
@@ -55,7 +86,7 @@ var Rashomon = {
     $(".mover").css({ "background": "transparent", "border": "0", "margin-left": "-8px", "margin-top": "-12px", "color": "black", "cursor": "pointer"});
     $(".ui-slider-range").css({"position": "relative", "height": "100%", "border": "0", "border-radius": 0, "background": "url('images/reel.png') top left repeat-x"});
     $("#maintimeline").css({"border-radius": "0"});
-    
+    //make the loop selector
     $("#maintimeline").slider({
       range: true,
       min: 0,
@@ -165,7 +196,7 @@ var Rashomon = {
   },
   //sets up the timeline element and loads each video, determines timescope based on its contents
   setupTimeline: function (duration) {
-    console.log("Setting up timeline.")
+    console.log("Setting up timeline.");
     Popcorn.player("baseplayer");
     this.timeline = Popcorn.baseplayer("#maintimeline");
     $("#eventTitle").text(Rashomon.eventName);
@@ -393,7 +424,6 @@ var Rashomon = {
             }
           });
           $.each(Rashomon.photos, function () {
-            var id = this.id;
             this.offset -= Rashomon.earliest.getTime() / 1000 - 1;
             //console.log(this.offset + "is the new offset");
             if (this.offset > Rashomon.fulldur) {
@@ -691,7 +721,7 @@ var video = function (options) {
     */
     //trigger fullscreen
     $("#fs" + id).click(function () {
-      loadFullscreen(id);
+      Rashomon.loadFullscreen(id);
       return false;
     });
     //toggle metadata
@@ -740,7 +770,13 @@ $(document).ready(function () {
   $("#metaX").click(function () {
     $("#meta").css("right", "-210px");
   
-
+    //When the message box is closed, fade out
+    $("#xbox").click(function(){
+      $("#fsvid").remove();
+      $("#fullscreen").fadeOut();
+      $("body").css("overflow", "visible");
+      return false;
+    });
 
   });
 }); //end docReady
