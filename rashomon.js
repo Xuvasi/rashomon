@@ -17,10 +17,6 @@ var Rashomon = {
   timeline: "",
   videosToDisplay: "",
   colorList: ["#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f"],
-  mpath: rashomonManifest.mediaPath,
-  dataPath: rashomonManifest.dataPath,
-  eventName: rashomonManifest.event,
-  filenames: rashomonManifest.files,
   validDate: function (item) {
     //makes sure date isn't from 1904 or 1946 (ENIAC) or sometime way before videos existed
     if (item.mcDate > 2000) {
@@ -770,6 +766,11 @@ $(document).ready(function () {
   //loads filenames from manifest.json in local folder
   $.getJSON(Rashomon.manifestLoc, function (data) {
     Rashomon.manifest = data;
+    Rashomon.mpath = Rashomon.manifest.mediaPath;
+    Rashomon.dataPath = Rashomon.manifest.dataPath;
+    Rashomon.eventName = Rashomon.manifest.event;
+    Rashomon.filenames = Rashomon.manifest.files;
+
     Rashomon.setupVideos(); // could point to one from a different event or something  
   });
   $("#metaX").click(function () {
