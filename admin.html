@@ -46,6 +46,8 @@ Rashomon.loggedIn = function() {
               deleteMedia(value.name, container);
             }
           });
+
+          $("<input/>", { "class": "use", "type": "checkbox", "name": "use", "value": value.name }).appendTo(container);
           $("<h1/>", { "text": value.name, "title": value.origname }).appendTo(container);
           var meta = $("<div/>", { "class": "meta", "text": "Time: "}).appendTo(container);
           var c = 0;
@@ -141,10 +143,11 @@ formatDate = function (exifDate) {
 
 <style type="text/css">
 select { font-size: 8pt; }
-.media { position: relative; background: #333; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 4px;}
-.media h1 { padding: 0; margin: 0; color: orange;}
+.media { position: relative; background: #333; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 14px;}
+.media h1 { padding: 0; margin: 0; color: orange; float: left;}
 .media ul li { display: inline;}
-
+.use {  float: left; }
+.meta { clear: both; }
 .delete { cursor: pointer; position: absolute; right: 3px; bottom: 0px; padding: 3px; color: #f33;}
 
 #upload{
@@ -164,8 +167,9 @@ select { font-size: 8pt; }
 body{ background: #aaa;}
 #auth { display: none;}
 #auth{ margin-left: 300px; margin-top: 75px;}
-
-#logout { position: relative; background: #333; border-radius: 10px; color: orange; cursor: pointer; margin-top: 15px; padding: 3px; width: 150px; text-align: center; }
+#buttons { position: relative; margin-top: 15px;}
+#build { position: relative; background: #333; border-radius: 10px; color: orange; cursor: pointer; margin-top: 15px; padding: 3px; width: 150px; text-align: center;  }
+#logout { position: relative; background: #333; border-radius: 10px; color: orange; cursor: pointer; margin-top: 15px; padding: 3px; width: 150px; text-align: center;  margin-left: 3px;}
 
    </style>
    </head>
@@ -198,7 +202,10 @@ body{ background: #aaa;}
 </div>
 <div id="upload">
   <div id="media"></div>
-  <div id="logout">Log out</div>
+  <div id="buttons">
+  <span id="build">Build Chronology</span>
+  <span id="logout">Log out</span>
+</div>
 </div>
 
 </section>
