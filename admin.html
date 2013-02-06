@@ -18,124 +18,146 @@
     <script src="rashomon.auth.js"></script>
 
 <script type="text/javascript">
-
-
 Rashomon = {};
-Rashomon.loggedIn = function() {
-   $("#upload").toggle();
-   $("#auth").toggle();
-   $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
-      type: 'POST',
-      url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php', // This is a URL on your website.
-      dataType: 'JSON',
-      xhrFields: {
-       withCredentials: true
-      },
-      crossDomain: true,
+Rashomon.loggedIn = function () {
+  $("#upload").toggle();
+  $("#auth").toggle();
+  $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+    type: 'POST',
+    url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php', // This is a URL on your website.
+    dataType: 'JSON',
+    xhrFields: {
+      withCredentials: true
+    },
+    crossDomain: true,
 
-      data: {assertion: auth.assertion, "task": "login"},
-      success: function(res, status, xhr) {
+    data: {
+      assertion: auth.assertion,
+      "task": "login"
+    },
+    success: function (res, status, xhr) {
 
-      	$.each(res, function(index, value){
-          var container = $("<div/>", {"class": "media"}).appendTo("#media");
-          //var containerList = $("<ul/>").appendTo(container);
+      $.each(res, function (index, value) {
+        var container = $("<div/>", {
+          "class": "media"
+        }).appendTo("#media");
+        //var containerList = $("<ul/>").appendTo(container);
 
-          var delbutton = $("<div/>", { "class": "delete", "text": "Delete", "title": 'Delete this media' }).appendTo(container);
-          delbutton.click(function(){
-            if (confirm("Are you sure? This will permenently delete associated media.")){
-              deleteMedia(value.name, container);
-            }
+        var delbutton = $("<div/>", {
+          "class": "delete",
+          "text": "Delete",
+          "title": 'Delete this media'
+        }).appendTo(container);
+        delbutton.click(function () {
+          if (confirm("Are you sure? This will permenently delete associated media.")) {
+            deleteMedia(value.name, container);
+          }
+        });
+        $("<h1/>", {
+          "text": value.name,
+          "title": value.origname
+        }).appendTo(container);
+        var meta = $("<div/>", {
+          "class": "meta",
+          "text": "Time: "
+        }).appendTo(container);
+        var c = 0;
+        var stime;
+        $.each(value.times, function (i, v) {
+          c++;
+          stime = v;
+        });
+        if (c > 1) {
+
+          var times = $("<select/>", {}).appendTo(meta);
+
+          $.each(value.times, function (i, v) {
+            $("<option/>", {
+              "value": v,
+              "text": i + ": " + formatDate(v)
+            }).appendTo(times);
           });
-          $("<h1/>", { "text": value.name, "title": value.origname }).appendTo(container);
-          var meta = $("<div/>", { "class": "meta", "text": "Time: "}).appendTo(container);
-          var c = 0;
+        } else {
           var stime;
-          $.each(value.times, function(i, v){
-              c++;
-	      stime = v;
-          });
-          if ( c > 1){
+          //not elegant, but oh well
 
-            var times = $("<select/>", { }).appendTo(meta);
+          $("<span/>", {
+            text: formatDate(stime)
+          }).appendTo(meta);
+        }
+        $("<span/>", {
+          text: " • Type: " + value.type
+        }).appendTo(meta);
+        if (value.Duration.length !== -1) {
+          $("<span/>", {
+            "text": " • Duration: " + value.Duration
+          }).appendTo(meta);
 
-            $.each(value.times, function(i, v){
-              $("<option/>", { "value": v, "text": i + ": " + formatDate(v)}).appendTo(times);
-            });
-          } else {
-            var stime;
-            //not elegant, but oh well
-            
-            $("<span/>", { text: formatDate(stime) }).appendTo(meta);
-          }
-	  $("<span/>", { text: " • Type: " + value.type }).appendTo(meta);
-          if (value.Duration.length !== -1) {
-	     $("<span/>", { "text": " • Duration: " + value.Duration }).appendTo(meta);
-
-          }
-        })
-      },
-      error: function(xhr, status, err) { 
-        alert("Login .failure: " + err + " " + status); 
-        console.dir(xhr); 
-      }
-    });
+        }
+      })
+    },
+    error: function (xhr, status, err) {
+      alert("Login .failure: " + err + " " + status);
+      console.dir(xhr);
+    }
+  });
 
 
 };
 
-var deleteMedia = function(name, container){
+var deleteMedia = function (name, container) {
 
-        $.ajax({
-            type: 'POST',
-            url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php',
-            dataType: 'JSON',
-            xhrFields: {
-              withCredentials: true
-            },
-            data: {
-                "name": name, "task": "delete"
-            },
-            success: function (res, status, xhr) {
-                console.log(res);
-                container.fadeToggle(1500);
-            },
-            error: function(xhr, status, err) {
-                alert("deletion failure" + err);
-            }            
-        });
+  $.ajax({
+    type: 'POST',
+    url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php',
+    dataType: 'JSON',
+    xhrFields: {
+      withCredentials: true
+    },
+    data: {
+      "name": name,
+      "task": "delete"
+    },
+    success: function (res, status, xhr) {
+      console.log(res);
+      container.fadeToggle(1500);
+    },
+    error: function (xhr, status, err) {
+      alert("deletion failure" + err);
+    }
+  });
 };
 
 
 formatDate = function (exifDate) {
-    if (!exifDate) {
-      return false;
-    }
-    //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
-    var date = exifDate.toString();
-    var str = date.split(" "); //sep date from time
-    var datesplit = str[0].split(":");
-    var year = datesplit[0];
-    var month = datesplit[1] - 1;
-    var day = datesplit[2];
-    var timesplit = str[1].split(":");
-    var hour = timesplit[0];
-    var minute = timesplit[1];
-    var second = timesplit[2];
-    if (timesplit[2].indexOf("-") !== -1) {
-      //HUGE BUG this does not correct if you're in a time zone with a "+" of gmt. FIX LATER THANKS
-      var zone = timesplit[2].split("-");
-      second = zone[0];
-      zone = zone[1].split(":");
-      zone = zone[0];
-      hour -= zone;
-      hour = hour < 10 ? "0" + hour : hour;
-    } //end if
-    var d = new Date(year, month, day, hour, minute, second, 0);
-    //console.log(d);
-    //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
-    return d;
-  };
-
+  if (!exifDate) {
+    return false;
+  }
+  //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
+  var date = exifDate.toString();
+  var str = date.split(" "); //sep date from time
+  var datesplit = str[0].split(":");
+  var year = datesplit[0];
+  var month = datesplit[1] - 1;
+  var day = datesplit[2];
+  var timesplit = str[1].split(":");
+  var hour = timesplit[0];
+  var minute = timesplit[1];
+  var second = timesplit[2];
+  if (timesplit[2].indexOf("-") !== -1) {
+    //HUGE BUG this does not correct if you're in a time zone with a "+" of gmt. FIX LATER THANKS
+    var zone = timesplit[2].split("-");
+    second = zone[0];
+    zone = zone[1].split(":");
+    zone = zone[0];
+    hour -= zone;
+    hour = hour < 10 ? "0" + hour : hour;
+  } //end if
+  var d = new Date(year, month, day, hour, minute, second, 0);
+  //console.log(d);
+  //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
+  return d;
+};
 
 </script>
 
