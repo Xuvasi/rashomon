@@ -6,6 +6,7 @@
     <title>Rashomon Project</title>
     <link href='http://fonts.googleapis.com/css?family=Wire+One'
     rel='stylesheet' type='text/css' async="async" />
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="87zz1w5578ggmk2"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
@@ -19,7 +20,33 @@
 
 <script type="text/javascript">
 
-  
+$(document).ready(function(){
+   /* document.getElementById("db-chooser").addEventListener("DbxChooserSuccess",
+        function(e) {
+            console.log("Here's the chosen file: " + e.files[0].link);
+        }, false);
+   */
+     $("#db-chooser").click(function(){
+         Dropbox.choose({
+              linktype: "direct",
+              success: function(files){
+                  console.log("woohoo");
+                  $.post("test.php", {"files": files}).done(function(data) {
+console.log("Data Loaded: " + data);
+});		  
+
+ 
+		  $("#dbintro").text("Thank you!");
+              },
+              cancel: function(){
+                  console.log("awww");
+                  //no file selected
+              }
+        });
+     });
+
+});
+
 
 $(function() {
             $('#tabs')
@@ -119,7 +146,7 @@ Rashomon.loggedIn = function(){
 
 #uploadSelect {
   margin-bottom: 10px;
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 body {
@@ -167,19 +194,18 @@ table {
 #wrapper {
   margin-left: 25px;
   padding: 5px 0;
-  width: 700px;
+  width: 400px;
 }
 
 #drop-zone {
   padding: 20px;
   position: relative;
   background: #ccc;
-  min-height: 530px;
+  min-height: 250px;
 }
 
 #drop-text {
-  margin: 160px auto 0;
-  padding: 60px 0 0;
+  margin: 20px auto 0;
   padding: 60px 0 0;
   background: #ececec;
   width: 180px;
@@ -327,7 +353,6 @@ table {
             </li>
         </ul>
         <div id="a">
-            <div id="upload">
     <div id="uploadbrowse">
       <p>Select media here, or drag files into the space below.  Detailed docs <a href="https://github.com/aleatorybug/rashomon/wiki/Upload-Docs">here</a>.</p>
       <input type="file" name="multiUpload" id="uploadSelect" multiple />
@@ -336,8 +361,10 @@ table {
     <input id="multi-upload" type="file" />
         </div>
         <div id="b">
-            Content of B
-        </div>
+    <p>Upload media directly from your DropBox by clicking the button below and selecting it via the DropBox Chooser.</p>
+    <div id="db-chooser">asdf</div>
+    <input type="dropbox-chooser" name="selected-file" id="odb-chooser" data-link-type="direct" style="visibility: hidden;"/>
+    </div>
         <div id="c">
             Content of C
         </div>
