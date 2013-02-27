@@ -31,9 +31,19 @@ $(document).ready(function(){
               linktype: "direct",
               success: function(files){
                   console.log("woohoo");
-                  $.post("test.php", {"files": files}).done(function(data) {
-console.log("Data Loaded: " + data);
-});		  
+                  $.ajax({ 
+                  type: 'POST',
+                  url: 'upload.php', // This is a URL on your website.
+                  dataType: 'JSON',
+                  
+                  data: {"method": "dropbox", "name": files[0].name, "link": files[0].link
+                  },
+                  success: function(res, status){
+
+                  }
+              });
+                  
+
 
  
 		  $("#dbintro").text("Thank you!");
@@ -362,8 +372,8 @@ table {
         </div>
         <div id="b">
     <p>Upload media directly from your DropBox by clicking the button below and selecting it via the DropBox Chooser.</p>
-    <div id="db-chooser">asdf</div>
-    <input type="dropbox-chooser" name="selected-file" id="odb-chooser" data-link-type="direct" style="visibility: hidden;"/>
+    <div id="db-chooser"><a class="but">Dropbox Chooser</a></div>
+    
     </div>
         <div id="c">
             Content of C
