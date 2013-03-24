@@ -310,9 +310,12 @@ FileUpload.prototype.sendDatas = function(fileDatas) {
                {
                   self.endProcess(0);
                }
+               if (status == 415) {
+                  self.endProcess(2);
+               }
             }
         }
-        this.xhr.open("POST", "http://metaviddemo01.ucsc.edu/rashomonupload/upload.php");
+        this.xhr.open("POST", "upload.php");
         this.processUpload(fileDatas);
     }
 }
@@ -368,9 +371,10 @@ FileUpload.prototype.endProcess = function(control) {
             case 1 : cls += ' state-success';
                      textResponse = 'Success';
                      break;
-            case 2 : cls += ' state-error';
-                     textResponse = 'Fichiers trop volumineux';
+            case 2 : cls += ' bad-format';
+                     textResponse = "Unsupported Format"
                      break;
+
         }
         
         successFeedback.setAttribute('class', cls);
