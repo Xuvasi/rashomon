@@ -1,367 +1,110 @@
 <!DOCTYPE HTML>
 <html>
-  
-  <head>
-    <meta charset="UTF-8" />
-    <title>Rashomon Project</title>
-    <link href='http://fonts.googleapis.com/css?family=Wire+One'
-    rel='stylesheet' type='text/css' async="async" />
-    <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="87zz1w5578ggmk2"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-    <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
-    rel='stylesheet' type='text/css' />
-    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/ui-lightness/jquery-ui.css" rel="Stylesheet" />  
-  
-   
-    <script src="../other_js/jquery.cookie.js"></script>
-    <script src="https://login.persona.org/include.js"></script>
-    <script src="upload.js"></script>
-
-
     
-<link rel="stylesheet" type="text/css" href="../css/rashomon.css" />
-<style type="text/css">
-
-.ui-tabs.ui-tabs-vertical {
-  padding: 0;
-  width: 42em;
-  background: #aaa;
-  border: 0;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-widget-header {
-  border: none;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav {
-  float: left;
-  width: 10em;
-  background: transparent;
-  border-radius: 4px 0 0 4px;
-  border-right: 1px solid gray;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav li {
-  clear: left;
-  width: 100%;
-  margin: 0.2em 0;
-  border: 1px solid #333;
-  border-width: 1px 0 1px 1px;
-  border-radius: 4px 0 0 4px;
-  overflow: hidden;
-  position: relative;
-  right: -4px;
-  z-index: 2;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav li a {
-  display: block;
-  width: 100%;
-  padding: 0.6em 1em;
-  background: #ccc;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav li a:hover {
-  cursor: pointer;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
-  margin-bottom: 0.2em;
-  padding-bottom: 0;
-  /* selected thing goes here */
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-nav li:last-child {
-  margin-bottom: 10px;
-}
-
-.ui-tabs.ui-tabs-vertical .ui-tabs-panel {
-  float: left;
-  width: 28em;
-  border-left: 1px solid gray;
-  border-radius: 0;
-  position: relative;
-  left: -1px;
-  background: #aaa;
-  z-index: 15;
-}
-
-#upload {
-  margin-left: 25px;
-  position: relative;
-  padding-bottom: 10px;
-}
-
-#uploadbrowse {
-  margin-left: 25px;
-}
-
-#uploadbrowse p {
-  font-size: 12pt;
-}
-
-#uploadSelect {
-  margin-bottom: 10px;
-  font-size: 1.2em;
-}
-
-body {
-  background: #aaa;
-}
-
-#auth {
-  display: none;
-}
-
-#auth {
-  margin-left: 300px;
-  margin-top: 75px;
-}
-
-#tabs { display: none; }
-
-/* remember to highlight inserts somehow! */
-ins {
-  text-decoration: none;
-}
-
-del {
-  text-decoration: line-through;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-#drop-zone, .uploader, 
-#drop-zone.active:after {
-  border-radius: 5px;
-}
-
-#multi-upload { display: none; }
-
-/*-*/
-.uploader {
-  background: #f2f1f1;
-}
-
-::selection {
-  background: rgba(0, 153, 255, 0.5);
-  color: #fff;
-}
-
-#wrapper {
-  margin-left: 25px;
-  padding: 5px 0;
-  width: 400px;
-}
-
-#drop-zone {
-  padding: 20px;
-  position: relative;
-  background: #ccc;
-  min-height: 250px;
-}
-
-#drop-text {
-  margin: 20px auto 0;
-  padding: 60px 0 0;
-  background: #ececec;
-  width: 180px;
-  min-height: 120px;
-  text-align: center;
-  border-radius: 180px;
-  font: bold 30px/35px Helvetica, Arial, sans-serif;
-  color: #666;
-  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(255, 255, 255, 0.8);
-}
-
-#drop-zone.active:after {
-  content: '';
-  display: block;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(68, 164, 253, 0.58);
-}
-
-.uploader {
-  margin: 0 0 15px;
-  padding: 10px;
-  border: 1px solid #e5e5e5;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.uploader:last-child {
-  margin: 0;
-}
-
-.uploader > div {
-  float: left;
-}
-
-.file-preview {
-  margin: 0 10px 0 0;
-}
-
-.file-preview > img {
-  border: 2px solid #fff;
-  width: 100px;
-  display: block;
-}
-
-.file-name {
-  margin-bottom: 5px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-}
-
-.file-name > span {
-  padding: 0 0 0 5px;
-  font-size: 11px;
-  color: #999;
-  font-weight: normal;
-  text-shadow: 0 1px 1px rgba(255,255,255,1);
-}
-
-.state-success {
-  color: #0c0;
-}
-
-.state-error {
-  color: #c00;
-}
-
-.btn-cancel {
-  color: #666;
-  text-decoration: underline;
-  display: block;
-  float: left;
-  clear: left;
-}
-
-.progress-bar {
-  margin: 5px 5px 10px 0;
-  background: #b8ddff;
-  width: 120px;
-  border: 1px solid #44a4fd;
-  border-radius: 5px;
-}
-
-.progress-bar > div {
-  background: #44a4fd;
-  height: 5px;
-}
-
-.progress-bar, .progress-percent {
-  float: left;
-  line-height: 16px;
-}
-
-.progress-percent {
-  font-size: 11px;
-  color: #2a98ff;
-}
-
-#ask { font-size: .8em; border: 1px solid #333; border-radius: 15px; padding: 10px; margin-top: 20px;}
-#ask h4 { margin: 3px;}
-#ask p { margin: 3px;}
-#ask input[type=text] {width: 400px; background: #333; border: none; color: #aaa; font-size: .8em;}
-
-
-</style>
-  </head>
-  
-  <body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Rashomon Project</title>
+        <link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css' async="async" />
+        <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="87zz1w5578ggmk2"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here' rel='stylesheet' type='text/css' />
+        <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/ui-lightness/jquery-ui.css" rel="Stylesheet" />
+        <script src="../other_js/jquery.cookie.js"></script>
+        <script src="https://login.persona.org/include.js"></script>
+        <script src="upload.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/rashomon.css" />
+        <link rel="stylesheet" type="text/css" href="upload.css" />
+    </head>
     
-    <section id='head'>
-        <div id="signin">Sign in</div>
-
-      <header id="mainL">
-        <div id="project"><div id="proto">Prototype: (Under Construction)</div><div>The Rashomon Project:</div></div>
-        <div class="projectsub">An Online Toolkit for Assembling Multi-Perspective Chronologies</div>
-      </header>
-      <header id="mainR">
-        <div class="projectsub"><a href="http://opinion.berkeley.edu/ddi/">A CITRIS Data &amp; Democracy Project</a>
-        </div>
-        <header id="sub">
-        <nav>
-          <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
-          <a class="but" href="about.html">About Rashomon</a>
-        </nav>
-      </header>
-
-    </section>
-      
-      </header>
-
-<section id="content">
-  <div id="auth">
-  <p>Before uploading, please sign in with any valid email address.</p> <img class="signin" src="https://developer.mozilla.org/files/3961/persona_sign_in_black.png">
-</div>
-<div id="ask">
-                    <p>Please provide some information about the event.</p>
-                    <p>Description: <input type="text" class="ask" name="description" placeholder="A brief description of the event (required)."></p>
-                    <p>Location: <input type="text" class="ask"  name="location" placeholder="Location of the event (required)."></p>
-                    <p>Contact: <input type="text" class="ask" name="email" placeholder="Your email address"></p>
-                    <p>Date: <input type="text" class="ask" name="date" placeholder="Date of the event (optional)." ></p>
-                    <p>Tags (comma separated): <input type="text" class="ask" name="location" placeholder="protest, occupy, example"></p>
-                    <p>Should we anonymize this media (blur faces)?
-  <p><input type="radio" label="yes" name="blur" value="true" checked>Yes
-  <input type="radio"  label="no"  name="blur" value="false" />No </p>
-  <p>Note: After filling about the above, the data will apply to all content uploaded below.</p>
-                  </div>
-     <div id="tabs">
-        <ul>
-            <li>
-                <a href="#a">Direct Upload</a>
-            </li>
-            <li>
-                <a href="#b">Dropbox</a>
-            <!-- </li>
-            <li>
+    <body>
+        <section id='head'>
+            <div id="signin">Sign in</div>
+            <header id="mainL">
+                <div id="project">
+                    <div id="proto">Prototype: (Under Construction)</div>
+                    <div>The Rashomon Project:</div>
+                </div>
+                <div class="projectsub">An Online Toolkit for Assembling Multi-Perspective Chronologies</div>
+            </header>
+            <header id="mainR">
+                <div class="projectsub">
+                    <a href="http://opinion.berkeley.edu/ddi/">A CITRIS Data &amp; Democracy Project</a>
+                </div>
+                <header id="sub">
+                    <nav>
+                        <a class="but" href="https://github.com/aleatorybug/rashomon">Source Code</a>
+                        <a class="but" href="about.html">About Rashomon</a>
+                    </nav>
+                </header>
+            </header>
+        </section>
+        <section id="content">
+            <div id="auth">
+                <p>Before uploading, please sign in with any valid email address.</p>
+                <img class="signin" src="https://developer.mozilla.org/files/3961/persona_sign_in_black.png" />
+            </div>
+            <div id="ask">
+                <p>Please provide some information about the event.</p>
+                <p>Description:
+                    <input type="text" class="ask" name="description" placeholder="A brief description of the event (required)." />
+                </p>
+                <p>Location:
+                    <input type="text" class="ask" name="location" placeholder="Location of the event (required)." />
+                </p>
+                <p>Contact:
+                    <input type="text" class="ask" name="email" placeholder="Your email address" />
+                </p>
+                <p>Date:
+                    <input type="text" class="ask" name="date" placeholder="Date of the event (optional)." />
+                </p>
+                <p>Tags (comma separated):
+                    <input type="text" class="ask" name="location" placeholder="protest, occupy, example" />
+                </p>
+                <p>Should we anonymize this media (blur faces)?</p>
+                <p>
+                    <input type="radio" label="yes" name="blur" value="true" checked/>Yes
+                    <input type="radio" label="no" name="blur" value="false" />No</p>
+                <p>Note: After filling about the above, the data will apply to all content uploaded below.</p>
+            </div>
+            <div id="tabs">
+                <ul>
+                    <li>
+                        <a href="#a">Direct Upload</a>
+                    </li>
+                    <li>
+                        <a href="#b">Dropbox</a>
+                    </li>
+                    <!-- <li>
                 <a href="#c">Google Drive</a>
             </li>
             <li>
                 <a href="#d">Ustream</a>
             </li> -->
-        </ul>
-        <div id="a">
-                <p>Select media using 'browse' button, or drag files into the space below.  Detailed docs <a href="https://github.com/aleatorybug/rashomon/wiki/Upload-Docs">here</a>.</p>
-
-    <div id="uploadbrowse">
-
-      <input type="file" name="multiUpload" id="uploadSelect" multiple />
-  </div>
-<section id="wrapper">
-    <input id="multi-upload" type="file" />
-
-</section>
-        </div>
-        <div id="b">
-    <p>Upload media directly from your DropBox by clicking the button below and selecting it via the DropBox Chooser.</p>
-    <div id="db-chooser"><a class="but">Dropbox Chooser</a></div>
-    
-    </div> <!--
-        <div id="c">
+                </ul>
+                <div id="a">
+                    <p>Select media using 'browse' button, or drag files into the space below. Detailed docs
+                        <a href="https://github.com/aleatorybug/rashomon/wiki/Upload-Docs">here</a>.</p>
+                    <div id="uploadbrowse">
+                        <input type="file" name="multiUpload" id="uploadSelect" multiple />
+                    </div>
+                    <section id="wrapper">
+                        <input id="multi-upload" type="file" />
+                    </section>
+                </div>
+                <div id="b">
+                    <p>Upload media directly from your DropBox by clicking the button below and selecting it via the DropBox Chooser.</p>
+                    <div id="db-chooser">
+                        <a class="but">Dropbox Chooser</a>
+                    </div>
+                </div>
+                <!-- <div id="c">
             Content of C
         </div>
         <div id="d">
             Content of D
-        </div> -->
-    </div>
+        </div> --></div>
+        </section>
+    </body>
 
-
-
-
-</div>
-
-</section>
-</body>
 </html>
