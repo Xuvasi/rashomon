@@ -60,7 +60,6 @@ if($_FILES['file']){
 	$extension = $path_parts['extension'];
 	$origname = $path_parts['filename'];
 
-	echo $origname ." dot $extension";
 	$url = $_POST['link'];
 	if (!filter_var($url, FILTER_VALIDATE_URL)){
 		die("Bad url!");
@@ -77,7 +76,6 @@ if($_FILES['file']){
     CURLOPT_TIMEOUT        => 50,
     CURLOPT_USERAGENT      => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
     ));
-echo "starting curl";
 $results = curl_exec($ch);
 if(curl_exec($ch) === false)
  {
