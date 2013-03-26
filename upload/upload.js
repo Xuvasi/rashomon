@@ -268,11 +268,14 @@ FileUpload.prototype.triggerUpload = function(){
 };
 
 FileUpload.prototype.uploadWithFormData = function() {
-    var datas = new FormData();
-        datas.append('file', this.file);
-        datas.append('email', $.cookie('rashomon_email'));
-        datas.append('assertion', auth.assertion);
-        this.sendDatas(datas);
+    var data = new FormData();
+        data.append('file', this.file);         
+        $(".ask").each(function(key, item){
+            data.append($(item).attr('name'), $(item).val());
+        });
+        //data.append('assertion', auth.assertion);
+        data.append("blur", $('input[name=blur]:checked').val());
+        this.sendDatas(data);
 };
 
 FileUpload.prototype.uploadWithFileReader = function() {

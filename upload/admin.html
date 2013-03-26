@@ -6,16 +6,16 @@
     <link href='http://fonts.googleapis.com/css?family=Wire+One'
     rel='stylesheet' type='text/css' async="async" />
 
-<link rel="stylesheet" type="text/css" href="css/rashomon.css" />
+<link rel="stylesheet" type="text/css" href="../css/rashomon.css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here'
     rel='stylesheet' type='text/css' />
     <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/ui-lightness/jquery-ui.css" rel="Stylesheet" />  
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 
-    <script src="other_js/jquery.cookie.js"></script>
+    <script src="../other_js/jquery.cookie.js"></script>
     <script src="https://login.persona.org/include.js"></script>
-    <script src="rashomon.auth.js"></script>
+    <script src="../rashomon.auth.js"></script>
 
 <script type="text/javascript">
 
@@ -24,15 +24,10 @@ Rashomon = {};
 Rashomon.loggedIn = function() {
    $("#upload").toggle();
    $("#auth").toggle();
-   $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+   $.ajax({ 
       type: 'POST',
-      url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php', // This is a URL on your website.
+      url: 'admin.php', // This is a URL on your website.
       dataType: 'JSON',
-      xhrFields: {
-       withCredentials: true
-      },
-      crossDomain: true,
-
       data: {assertion: auth.assertion, "task": "login"},
       success: function(res, status, xhr) {
 
@@ -89,7 +84,7 @@ var deleteMedia = function(name, container){
 
         $.ajax({
             type: 'POST',
-            url: 'http://metaviddemo01.ucsc.edu/rashomonupload/admin.php',
+            url: 'admin.php',
             dataType: 'JSON',
             xhrFields: {
               withCredentials: true
