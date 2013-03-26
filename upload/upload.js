@@ -1,3 +1,63 @@
+$(document).ready(function(){
+   /* document.getElementById("db-chooser").addEventListener("DbxChooserSuccess",
+        function(e) {
+            console.log("Here's the chosen file: " + e.files[0].link);
+        }, false);
+   */
+     $("#db-chooser").click(function(){
+
+         Dropbox.choose({
+              linktype: "direct",
+              success: function(files){
+                  //console.log("woohoo");
+                  var values = {};      
+                  $(".ask").each(function(key, item){
+                      values[($(item).attr('name'))] = $(item).val();
+                  });
+                  values.blur = $('input[name=blur]:checked').val();
+                  values.method = "dropbox";
+                  values.name = files[0].name;
+                  values.link = files[0].link;
+                  $.ajax({ 
+                    type: 'POST',
+                    url: 'upload.php', // This is a URL on your website.
+                    dataType: 'JSON',
+                    
+                    data: values,
+                    success: function(res, status){
+
+                    }
+                  });
+                  
+
+
+ 
+          $("#dbintro").text("Thank you!");
+              },
+              cancel: function(){
+                  console.log("awww");
+                  //no file selected
+              }
+        });
+     });
+
+$(function() {
+            $('#tabs').tabs().addClass('ui-tabs-vertical ui-helper-clearfix').toggle();
+        });
+});
+
+
+/* persona block
+Rashomon = {};
+Rashomon.loggedIn = function(){
+    $("#upload").toggle();
+    $("#auth").toggle();
+};
+*/
+
+
+
+
 var DndUpload = function (inputElem) {
     this.input = inputElem;
     this.dropZone = null;
@@ -362,7 +422,7 @@ FileUpload.prototype.updateProgress = function (e) {
 };
 
 FileUpload.prototype.endUpload = function () {
-    this.progressPercentData.innerHTML = '100 %'
+    this.progressPercentData.innerHTML = '100 %';
     this.progressBarPercent.style.width = '100%';
 };
 
@@ -404,7 +464,7 @@ FileUpload.prototype.endProcess = function (control) {
 
 FileUpload.prototype.closeXhr = function () {
     this.xhr = null;
-}
+};
 
 var dnd = {
     init: function () {
