@@ -345,17 +345,22 @@ a.but:hover {
 }
 
 .vidtime {
-    -webkit-transition: all 555ms linear;
-    -moz-transition: all 555ms linear;
-    -ms-transition: all 555ms linear;
-    -o-transition: all 555ms linear;
-    transition: all 555ms linear;
+
     position: relative;
     left: 450px;
     width: 30px;
     height: 100%;
     background: #ececec;
     z-index: 99;
+}
+
+.moveTransition{
+    -webkit-transition: all 555ms linear;
+    -moz-transition: all 555ms linear;
+    -ms-transition: all 555ms linear;
+    -o-transition: all 555ms linear;
+    transition: all 555ms linear;
+
 }
 
 #vselector {
