@@ -42,8 +42,7 @@ var Rashomon = {
         this.fulldur += sec;
         this.preoffset += sec;
         $(this.videos).each(function () {
-                this.offset += sec;
-                this.drawVidtimes();
+                this.changeStuff(this.offset + sec);
             });
 
 
