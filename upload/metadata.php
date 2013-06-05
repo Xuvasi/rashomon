@@ -70,8 +70,8 @@ $item = $collection->findOne(array('name' => $randomName));
 $res['meta'] = $item;
 
 $redactedfile = $redacteddir .$randomName ."." .$ext;
-$wave = $redacteddir .$randomname .".wav";
-$image = $redacteddir .$andomname ."_wave.png";
+$wave = $redacteddir .$randomName .".wav";
+$image = $redacteddir .$randomName ."_wave.png";
 $type = explode('/', $data['MIMEType']);
 $type = $type[0];
 trigger_error($type + "\r\n");
