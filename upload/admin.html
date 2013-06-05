@@ -14,6 +14,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 
     <script src="../other_js/jquery.cookie.js"></script>
+    <script src="../other_js/moment.min.js"></script>
     <script src="https://login.persona.org/include.js"></script>
     <script src="../rashomon.auth.js"></script>
 
@@ -47,14 +48,15 @@ Rashomon.loggedIn = function() {
           var meta = $("<div/>", { "class": "meta", "text": "Time: "}).appendTo(container);
           var c = 0;
           var stime;
+	  if (value.times){
           $.each(value.times, function(i, v){
               c++;
-        stime = v;
+              stime = v;
           });
           if ( c > 1){
 
             var times = $("<select/>", { }).appendTo(meta);
-
+		
             $.each(value.times, function(i, v){
               $("<option/>", { "value": v, "text": i + ": " + formatDate(v)}).appendTo(times);
             });
@@ -64,12 +66,14 @@ Rashomon.loggedIn = function() {
             
             $("<span/>", { text: formatDate(stime) }).appendTo(meta);
           }
+	}
+    if (value.Duration){
     $("<span/>", { text: " • Type: " + value.type }).appendTo(meta);
           if (value.Duration.length !== -1) {
        $("<span/>", { "text": " • Duration: " + value.Duration }).appendTo(meta);
 
           }
-        })
+       } })
       },
       error: function(xhr, status, err) { 
         alert("Login .failure: " + err + " " + status); 
@@ -108,6 +112,8 @@ formatDate = function (exifDate) {
       return false;
     }
     //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
+    var momentDate = moment(exifDate, "YYYY:MM:DD HH:MM:SS:mm Z");
+    return momentDate.toDate();
     var date = exifDate.toString();
     var str = date.split(" "); //sep date from time
     var datesplit = str[0].split(":");
@@ -127,9 +133,10 @@ formatDate = function (exifDate) {
       hour -= zone;
       hour = hour < 10 ? "0" + hour : hour;
     } //end if
+
     var d = new Date(year, month, day, hour, minute, second, 0);
     //console.log(d);
-    //console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
+    console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
     return d;
   };
 
