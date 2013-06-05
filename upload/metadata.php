@@ -78,7 +78,7 @@ trigger_error($type + "\r\n");
 if ($type == "video"){
 	exec("ffmpeg -i $file -vcodec copy -acodec copy $redactedfile");
 	exec("ffmpeg -i $redactedfile -vn $wave");
-	exec("wav2png --foreground-color=000000ff --background-color=00000000 -o $image $wave")
+	exec("wav2png --foreground-color=000000ff --background-color=00000000 -o $image $wave");
 	if ($data['blur'] == true){
 		include("youtubes.php");
 	}
