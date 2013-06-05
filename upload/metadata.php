@@ -70,14 +70,15 @@ $item = $collection->findOne(array('name' => $randomName));
 $res['meta'] = $item;
 
 $redactedfile = $redacteddir .$randomName ."." .$ext;
-$wave = $redacteddir .$randomname .".wav"
+$wave = $redacteddir .$randomname .".wav";
+$image = $redacteddir .$andomname ."_wave.png";
 $type = explode('/', $data['MIMEType']);
 $type = $type[0];
 trigger_error($type + "\r\n");
 if ($type == "video"){
 	exec("ffmpeg -i $file -vcodec copy -acodec copy $redactedfile");
-	exec("ffmpeg -i $file -vn " .$wave);
-	exec("wav2png --foreground-color=000000ff --background-color=00000000 -o " .$redacteddir .$randomName. "_wave.png"  $wave)
+	exec("ffmpeg -i $redactedfile -vn $wave");
+	exec("wav2png --foreground-color=000000ff --background-color=00000000 -o $image $wave")
 	if ($data['blur'] == true){
 		include("youtubes.php");
 	}
