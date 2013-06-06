@@ -1,6 +1,6 @@
 <?
 require('config.php');
-error_reporting(E_ALL); ini_set('display_errors', '1');
+//error_reporting(E_ALL); ini_set('display_errors', '1');
 
 session_start();
 session_name("Rashomon");
@@ -24,8 +24,7 @@ if ($_POST['task'] == "login"){
     }
     $_SESSION['email'] = $assert->email;
     session_write_close();
-    //$_SESSION['rashomon_email'];
-    //check db, list clips 
+
 
     $m = new MongoClient("$monguri");
     $db = $m->rashomon;
@@ -40,7 +39,7 @@ if ($_POST['task'] == "login"){
     
 } else if ($_POST['task'] == 'delete'){
 
-    if ($_SESSION['email'] === "aphid@ucsc.edu"){
+    if (in_array($assert->email, $admin_email)){
         $fileid = $_POST['name'];
         if ($fileid != strtolower(preg_replace('/[^a-z0-9-]+/i', '-', $fileid)))
             {
@@ -69,9 +68,62 @@ if ($_POST['task'] == "login"){
         $response['status'] = "successfully deleted " .$fileid;
         echo json_encode($response);
     } else {
-        die(json_encode($_SESSION));
+        die("Nope!");
     }
     
+} else if ($_POST['task'] == 'create'){
+
+    if (!in_array($assert->email, $admin_email)){
+        die("NOPE!");
+    }
+    $clips = $_POST['use'];
+    $m = new MongoClient("$monguri");
+    $db = $m->rashomon;
+    $collection = $db->media;
+    $query = $collection->find();
+    $media = array();
+    foreach ($clips as $clip){
+        $name = $clip['name'];
+        $time = $clip['time'];
+        $article = $collection->findOne(array('name' => "$name"));
+        if ($article['name'] == $clip['name']){
+            writeMeta($clip['name'], $clip['time']);
+        }
+    }
+
+        
+    
+
+
+} else if ($_POST['task'] == 'resync'){
+
+    
+    if (!in_array($assert->email, $admin_email)){
+        die("NOPE!");
+    }
+    $earliest = $_POST['data']['earliest'];
+    $file = $metaDir ."istanbul.json";
+    $json = json_decode(file_get_contents($file));
+    $json->earliest = $earliest;
+    foreach($json->videos as $video){
+        foreach($_POST['data']['vids'] as $vid){
+            if ($video->name == $vid['name']){
+                $video->offset = $vid['offset'];
+                if ($vid['duration']){
+                    $video->duration = $vid['duration'];
+                }
+            }
+        }
+    }
+    $fp = fopen($file, 'w');
+    fwrite($fp, format_json(json_encode($json)));
+    fclose($fp);
+}
+
+function writeMeta($name, $clip){
+
+
+
 }
 
 //this is kludgey because we were originally checking this from a separate server
@@ -95,5 +147,55 @@ function checkAssertion($assertion, $persona_audience){
              return $result;
             }
     }
+
+function format_json($json, $html = false) {
+$tabcount = 0;
+$result = '';
+$inquote = false;
+$ignorenext = false;
+ 
+if ($html) {
+$tab = "&nbsp;&nbsp;&nbsp;";
+$newline = "<br/>";
+} else {
+$tab = "\t";
+$newline = "\n";
+}
+ 
+for($i = 0; $i < strlen($json); $i++) {
+$char = $json[$i];
+ 
+if ($ignorenext) {
+$result .= $char;
+$ignorenext = false;
+} else {
+switch($char) {
+case '{':
+$tabcount++;
+$result .= $char . $newline . str_repeat($tab, $tabcount);
+break;
+case '}':
+$tabcount--;
+$result = trim($result) . $newline . str_repeat($tab, $tabcount) . $char;
+break;
+case ',':
+$result .= $char . $newline . str_repeat($tab, $tabcount);
+break;
+case '"':
+$inquote = !$inquote;
+$result .= $char;
+break;
+case '\\':
+if ($inquote) $ignorenext = true;
+$result .= $char;
+break;
+default:
+$result .= $char;
+}
+}
+}
+ 
+return $result;
+}
 
 ?>

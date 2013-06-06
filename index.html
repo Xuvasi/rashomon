@@ -9,6 +9,7 @@
     <link href='http://fonts.googleapis.com/css?family=Fredoka+One|Just+Me+Again+Down+Here' rel='stylesheet' type='text/css' />
     <link type="text/css" href="css/jquery-ui-1.8.23.custom.modified.css" rel="Stylesheet" />  
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script src="other_js/moment.min.js"></script>
     <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
     <script src="popcorn.rashomonphoto.js"></script>
     <script src="popcorn.rashomonvideo.js"></script>
@@ -18,6 +19,49 @@
     
     
     <link rel="stylesheet" type="text/css" href="css/rashomon.css" />
+<script>
+
+$(document).ready(function(){
+
+  $("#unlock").click(function(){
+    Rashomon.makeDraggable();
+    $(".vidtime").hover(function(){ $(this).css("cursor", "-moz-grab pointer")})
+
+  });
+/*
+  $("#save").click(function(){
+    var tldata = {}
+    tldata.earliest = Rashomon.earliest;
+    tldata.vids = [];
+    $(Rashomon.videos).each(function(){
+      var viddata = {};
+      viddata.name = this.name;
+      viddata.offset = this.offset;
+      viddata.duration = this.pp.duration();
+      tldata.vids.push(viddata);
+    });
+    $.ajax({
+          type: 'POST',
+          url: 'upload/admin.php',
+          dataType: 'JSON',
+          data: {
+              "data": tldata,
+              "task": "resync"
+          },
+          success: function (res, status, xhr) {
+              console.log(res);
+          },
+          error: function(xhr, status, err) {
+              alert("Chronology creation failure" + err);
+          }            
+      });
+  });
+
+
+*/
+});
+
+</script>
   </head>
   
   <body>
@@ -50,6 +94,7 @@
       </div>
       <div id="eventTitle">&nbsp;</div>
         
+      
 
     </section>
 
@@ -79,7 +124,12 @@
 
      </div>
     </section>
-    <section id="videos"></section>
+   
+    <section id="videos"><div id="timeRange">
+      <a class="but" id="unlock">Unlock bars</a>
+  <!--  
+        <a class="but" id="save">Save Offsets</a> -->
+      </div>  </section>
     <section id="meta">
       <div id="metadata">
         <div id="metaX">x</div>

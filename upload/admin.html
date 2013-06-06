@@ -53,27 +53,30 @@ Rashomon.loggedIn = function() {
               c++;
               stime = v;
           });
-          if ( c > 1){
-
-            var times = $("<select/>", { }).appendTo(meta);
-		
-            $.each(value.times, function(i, v){
-              $("<option/>", { "value": v, "text": i + ": " + formatDate(v)}).appendTo(times);
-            });
-          } else {
-            var stime;
-            //not elegant, but oh well
-            
-            $("<span/>", { text: formatDate(stime) }).appendTo(meta);
-          }
+          
+          var times = $("<select/>", { "class": value.name }).appendTo(meta);
+	
+          $.each(value.times, function(i, v){
+            $("<option/>", { "value": v, "text": i + ": " + formatDate(v)}).appendTo(times);
+          });
+         
 	}
+
+  
     if (value.Duration){
     $("<span/>", { text: " • Type: " + value.type }).appendTo(meta);
           if (value.Duration.length !== -1) {
        $("<span/>", { "text": " • Duration: " + value.Duration }).appendTo(meta);
 
           }
-       } })
+       } 
+    if (value.uploadDate){
+    var uploadTime = moment.unix(value.uploadDate.sec).toDate();
+    $("<div/>", { text: "Uploaded: " + uploadTime }).appendTo(meta);
+
+  }
+
+     })
       },
       error: function(xhr, status, err) { 
         alert("Login .failure: " + err + " " + status); 
@@ -106,7 +109,37 @@ var deleteMedia = function(name, container){
         });
 };
 
+$(document).ready(function(){
+  $("#build").click(function(){
+    console.log("cuh-lick");
+    var items = [];
+    $('input:checked').each(function() {
+      var nom = $(this).val();
+      var it = { "name": nom, "time": $('select.' + nom).val()};
+      items.push(it);
+    });
 
+    $.ajax({
+          type: 'POST',
+          url: 'admin.php',
+          dataType: 'JSON',
+          xhrFields: {
+            withCredentials: true
+          },
+          data: {
+              "use": items,
+              "task": "create"
+          },
+          success: function (res, status, xhr) {
+              console.log(res);
+          },
+          error: function(xhr, status, err) {
+              alert("Chronology creation failure" + err);
+          }            
+      });
+
+  });
+});
 formatDate = function (exifDate) {
     if (!exifDate) {
       return false;

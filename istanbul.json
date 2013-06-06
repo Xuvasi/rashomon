@@ -1,0 +1,41 @@
+{
+	"mediaPath":"http:\/\/rashomonproject.org\/redacted\/",
+	"event":"Istanbul footage",
+	"earliest":"Fri May 31 2013 16:31:11 GMT-0700 (PDT)",
+	"videos":[{
+		"name":"3005b9186141_small",
+		"offset":"2.677035681610247",
+		"duration":"53.572"
+	},
+	{
+		"name":"e7da2f40d6b1_small",
+		"offset":"12",
+		"duration":"42.449"
+	},
+	{
+		"name":"c999507fd588_small",
+		"offset":"16.62580054894785",
+		"duration":"39.477"
+	},
+	{
+		"name":"375519d6f72d_small",
+		"offset":"8",
+		"duration":"24.067"
+	},
+	
+	{
+		"name":"61b00b848652_small",
+		"offset":"23.741079597438244",
+		"duration":"43.736"
+	},
+	{
+		"name":"a453f538fe5a_small",
+		"offset":"17",
+		"duration":"8.174"
+	},
+	{
+		"name":"fbaa2ce22d53_small",
+		"offset":"8",
+		"duration":"59.864"
+	}]
+}
