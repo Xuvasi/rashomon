@@ -97,10 +97,11 @@ if ($_POST['task'] == "login"){
 
 } else if ($_POST['task'] == 'resync'){
 
-    
+     
     if (!in_array($assert->email, $admin_email)){
-        die("NOPE!");
-    }
+        echo json_encode("NOPE!");
+	die();
+    } 
     $earliest = $_POST['data']['earliest'];
     $file = $metaDir ."istanbul.json";
     $json = json_decode(file_get_contents($file));

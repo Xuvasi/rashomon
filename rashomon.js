@@ -17,7 +17,7 @@ var Rashomon = {
     earliest: new Date(),
     timeline: "",
     videosToDisplay: "",
-    colorList: ["#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f", "papayaWhip", "magenta", "Khaki"],
+    colorList: ["red", "#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f", "magenta", "Khaki"],
     validDate: function (item) {
         //makes sure date isn't from 1904 or 1946 (ENIAC) or sometime way before videos existed
         if (item.mcDate > 2000) {
@@ -732,6 +732,7 @@ video.prototype = {
         var meta = this.meta;
         var offset = this.offset;
         var position = Rashomon.getOffset(offset);
+        var wavimg = '../redacted/' + this.name.replace("_small", "_wave.png");
         //console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
         //console.log(offset);
         //todo duration->space, match meta to real meta
@@ -761,7 +762,7 @@ video.prototype = {
                 "width": "1px",
                 "background-color": Rashomon.colorList[id],
                 "background-size": "100% 100%",
-                "background-image": "url('../redacted/" + this.name.replace("_small", "_wave.png"),
+                "background-image": "url('" + wavimg + "')"
 
             }).appendTo(vidtl);
         //console.log("Offset for duration " + duration + " is " + Rashomon.getOffset(duration));
