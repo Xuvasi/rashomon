@@ -1,6 +1,6 @@
 {
 	"mediaPath":"http:\/\/rashomonproject.org\/redacted\/",
-	"event":"Istanbul footage",
+	"event":"Istanbul Protests, May 31 2013",
 	"earliest":"Fri May 31 2013 16:31:11 GMT-0700 (PDT)",
 	"videos":[{
 		"name":"3005b9186141_small",
@@ -13,28 +13,23 @@
 		"duration":"42.449"
 	},
 	{
-		"name":"c999507fd588_small",
-		"offset":"13.204025617566332",
-		"duration":"39.477"
-	},
-	{
 		"name":"375519d6f72d_small",
-		"offset":"16.430009149130832",
+		"offset":"56.430009149130832",
 		"duration":"24.067"
 	},
 	{
 		"name":"61b00b848652_small",
-		"offset":"12.07868252516011",
+		"offset":"56.07868252516011",
 		"duration":"43.736"
 	},
 	{
 		"name":"a453f538fe5a_small",
-		"offset":"17",
+		"offset":"68",
 		"duration":"8.174"
 	},
 	{
 		"name":"fbaa2ce22d53_small",
-		"offset":"8",
+		"offset":"81",
 		"duration":"59.864"
 	}]
 }
