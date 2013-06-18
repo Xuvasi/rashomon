@@ -3,7 +3,7 @@ rashomon
 copyleft 2012
 */
 var Rashomon = {
-    manifestLoc: "istanbul.json",
+    manifestLoc: "davis.json",
     manifest: {},
     videos: [],
     photos: [],
@@ -17,7 +17,7 @@ var Rashomon = {
     earliest: new Date(),
     timeline: "",
     videosToDisplay: "",
-    colorList: ["red", "#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f", "magenta", "Khaki"],
+    colorList: ["red", "#E88C03", "#CAEB47", "#1C9928", "#4789EB", "#60f", "magenta", "Khaki", "turquoise"],
     validDate: function (item) {
         //makes sure date isn't from 1904 or 1946 (ENIAC) or sometime way before videos existed
         if (item.mcDate > 2000) {
@@ -181,6 +181,13 @@ var Rashomon = {
                     var value = ui.values;
                     Rashomon.startLoop = ui.values[0];
                     Rashomon.endLoop = ui.values[1];
+                    var t = $.url().attr("query", "t=18,19");
+                    var url = $.url().attr('source').replace(t,"");
+                    console.log(url);
+                
+                    var url = "?t=" + ui.values[0] + "," + (ui.values[1] - ui.values[0]);
+                    history.pushState(null, null, url);
+                    console.log(url);
 
                     Rashomon.timeline.cue("loop", value[1], function () {
                         console.log("reached end of loop");
@@ -266,6 +273,7 @@ var Rashomon = {
         $("#loading").hide();
         $(this.videos).each(function(){
             this.pp.off("canplaythrough");
+	    this.pp.off("suspend");
             this.setupVid();
 
         });
@@ -274,6 +282,10 @@ var Rashomon = {
                 Rashomon.resume = true;
             }
             Rashomon.timeline.pause();
+
+        });
+        $(Rashomon.videos).each(function(){
+            this.seekPaused();
 
         });
         console.log("Finished setting up");
@@ -327,8 +339,9 @@ var Rashomon = {
             $(".vidnum").addClass("vidactive");
             var url = $.url();
             //detects for Media Fragment uri (?t=15,5 returns a 5 second loop starting at 15 seconds)
-            if (url.attr("fragment")) {
-                var frag = url.attr("fragment");
+            if (url.attr("query")) {
+                var frag = url.attr("query");
+                frag.replace("t=","");
                 var fragtemp = frag.split("=");
                 fragtemp = fragtemp[1].split(",");
                 var loopStart = parseInt(fragtemp[0], 10);
@@ -381,12 +394,16 @@ var Rashomon = {
         var readies = 0;
         $(this.videos).each(function(){
             var thevid = this;
+	    this.pp.on('suspend', function(){
+                console.log("Vid " + thevid.id + " has suspended.");
+                this.currentTime(0.00);
+            }); 
             this.pp.on('canplaythrough', function () {
-                thevid.cpt = 1;
+                console.log(thevid.id + " is ready.");
+	        thevid.cpt = 1;
                 readies = 0;
                 $(Rashomon.videos).each(function () {
                     if (this.cpt){
-                        console.log(this.id + " is " + this.cpt);
                         $("#vidtime" + this.id).css("opacity", 1);
                         readies++;
                     }
