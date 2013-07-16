@@ -1,13 +1,9 @@
 <?
 require('config.php');
-//error_reporting(E_ALL); ini_set('display_errors', '1');
 
 session_start();
 session_name("Rashomon");
 
-
-$uploaddir = '/home/aphid/rashomonuploads/incoming/';
-$redacteddir = '/home/aphid/rashomonuploads/redacted/';
 
 if ($_POST['task'] == "login"){
 
@@ -73,8 +69,8 @@ if ($_POST['task'] == "login"){
     
 } else if ($_POST['task'] == 'create'){
 
-    if (!in_array($assert->email, $admin_email)){
-        die("NOPE!");
+    if (!in_array($_SESSION['email'], $admin_email)){
+        die("NOPE!" .$assert->email);
     }
     $clips = $_POST['use'];
     $m = new MongoClient("$monguri");
@@ -82,15 +78,20 @@ if ($_POST['task'] == "login"){
     $collection = $db->media;
     $query = $collection->find();
     $media = array();
+
     foreach ($clips as $clip){
         $name = $clip['name'];
         $time = $clip['time'];
+
         $article = $collection->findOne(array('name' => "$name"));
+        $type = split("/", $article['type']);
+        $clip['type'] = $type[0];
         if ($article['name'] == $clip['name']){
-            writeMeta($clip['name'], $clip['time']);
+            array_push($media, $clip);
         }
     }
 
+    writeMeta($media, $redacteddir);
         
     
 
@@ -103,16 +104,17 @@ if ($_POST['task'] == "login"){
 	die();
     } 
     $earliest = $_POST['data']['earliest'];
-    $file = $metaDir ."istanbul.json";
+    $file = $metaDir ."davis.json";
     $json = json_decode(file_get_contents($file));
     $json->earliest = $earliest;
     foreach($json->videos as $video){
         foreach($_POST['data']['vids'] as $vid){
-            if ($video->name == $vid['name']){
-                $video->offset = $vid['offset'];
+	   if ($video->name == $vid['name']){
+                
+	        $video->offset = $vid['offset'];
                 if ($vid['duration']){
                     $video->duration = $vid['duration'];
-                }
+		}
             }
         }
     }
@@ -121,9 +123,32 @@ if ($_POST['task'] == "login"){
     fclose($fp);
 }
 
-function writeMeta($name, $clip){
+function writeMeta($media, $reqpath){
+    $smallest = time();
+    foreach ($media as $med){
+        if ($med['time'] < $smallest){
+            $smallest = $med['time'];
+        }
+    }
+    $data = array();
+    $data['mediaPath'] = $reqpath;
+    $data['event'] = "";
+    $data['earliest'] = date('D M d Y H:i:s O', $smallest);
 
+    foreach ($media as $med){
 
+        $asset = array();
+        
+        $asset['name'] = $med['name'];
+        $asset['offset'] = $med['time'] - $smallest;
+        if ($med['type'] == 'video'){
+            $data['videos'][]= $asset;
+        } else if ($med['type'] == 'image'){
+            $data['photos'][]= $asset;
+        }    
+        
+    }
+    echo format_json(json_encode($data));
 
 }
 

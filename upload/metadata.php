@@ -24,6 +24,7 @@ $time[]= 'TrackModifyDate';
 $time[]= 'FileModifyDate';
 $time[]= 'MediaCreateDate';
 $time[]= 'MediaModifyDate';
+$time[]= 'DateTimeOriginal';
 $fields[]= 'MediaDuration';
 $fields[]= 'Duration';
 $fields[]= 'MIMEType';

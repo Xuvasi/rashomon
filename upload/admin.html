@@ -15,174 +15,19 @@
 
     <script src="../other_js/jquery.cookie.js"></script>
     <script src="../other_js/moment.min.js"></script>
+    <script src="../other_js/purl.js"></script>
     <script src="https://login.persona.org/include.js"></script>
     <script src="../rashomon.auth.js"></script>
-
-<script type="text/javascript">
-
-
-Rashomon = {};
-Rashomon.loggedIn = function() {
-   $("#upload").toggle();
-   $("#auth").toggle();
-   $.ajax({ 
-      type: 'POST',
-      url: 'admin.php', // This is a URL on your website.
-      dataType: 'JSON',
-      data: {assertion: auth.assertion, "task": "login"},
-      success: function(res, status, xhr) {
-
-        $.each(res, function(index, value){
-          var container = $("<div/>", {"class": "media"}).appendTo("#media");
-          //var containerList = $("<ul/>").appendTo(container);
-
-          var delbutton = $("<div/>", { "class": "delete", "text": "Delete", "title": 'Delete this media' }).appendTo(container);
-          delbutton.click(function(){
-            if (confirm("Are you sure? This will permenently delete associated media.")){
-              deleteMedia(value.name, container);
-            }
-          });
-
-          $("<input/>", { "class": "use", "type": "checkbox", "name": "use", "value": value.name }).appendTo(container);
-          $("<h1/>", { "text": value.name, "title": value.origname }).appendTo(container);
-          var meta = $("<div/>", { "class": "meta", "text": "Time: "}).appendTo(container);
-          var c = 0;
-          var stime;
-	  if (value.times){
-          $.each(value.times, function(i, v){
-              c++;
-              stime = v;
-          });
-          
-          var times = $("<select/>", { "class": value.name }).appendTo(meta);
-	
-          $.each(value.times, function(i, v){
-            $("<option/>", { "value": v, "text": i + ": " + formatDate(v)}).appendTo(times);
-          });
-         
-	}
-
-  
-    if (value.Duration){
-    $("<span/>", { text: " • Type: " + value.type }).appendTo(meta);
-          if (value.Duration.length !== -1) {
-       $("<span/>", { "text": " • Duration: " + value.Duration }).appendTo(meta);
-
-          }
-       } 
-    if (value.uploadDate){
-    var uploadTime = moment.unix(value.uploadDate.sec).toDate();
-    $("<div/>", { text: "Uploaded: " + uploadTime }).appendTo(meta);
-
-  }
-
-     })
-      },
-      error: function(xhr, status, err) { 
-        alert("Login .failure: " + err + " " + status); 
-        console.dir(xhr); 
-      }
-    });
-
-
-};
-
-var deleteMedia = function(name, container){
-
-        $.ajax({
-            type: 'POST',
-            url: 'admin.php',
-            dataType: 'JSON',
-            xhrFields: {
-              withCredentials: true
-            },
-            data: {
-                "name": name, "task": "delete"
-            },
-            success: function (res, status, xhr) {
-                console.log(res);
-                container.fadeToggle(1500);
-            },
-            error: function(xhr, status, err) {
-                alert("deletion failure" + err);
-            }            
-        });
-};
-
-$(document).ready(function(){
-  $("#build").click(function(){
-    console.log("cuh-lick");
-    var items = [];
-    $('input:checked').each(function() {
-      var nom = $(this).val();
-      var it = { "name": nom, "time": $('select.' + nom).val()};
-      items.push(it);
-    });
-
-    $.ajax({
-          type: 'POST',
-          url: 'admin.php',
-          dataType: 'JSON',
-          xhrFields: {
-            withCredentials: true
-          },
-          data: {
-              "use": items,
-              "task": "create"
-          },
-          success: function (res, status, xhr) {
-              console.log(res);
-          },
-          error: function(xhr, status, err) {
-              alert("Chronology creation failure" + err);
-          }            
-      });
-
-  });
-});
-formatDate = function (exifDate) {
-    if (!exifDate) {
-      return false;
-    }
-    //input format looks like "YYYY:MM:DD HH:MM:SS:mm-05:00" (-05:00 is timezone)
-    var momentDate = moment(exifDate, "YYYY:MM:DD HH:MM:SS:mm Z");
-    return momentDate.toDate();
-    var date = exifDate.toString();
-    var str = date.split(" "); //sep date from time
-    var datesplit = str[0].split(":");
-    var year = datesplit[0];
-    var month = datesplit[1] - 1;
-    var day = datesplit[2];
-    var timesplit = str[1].split(":");
-    var hour = timesplit[0];
-    var minute = timesplit[1];
-    var second = timesplit[2];
-    if (timesplit[2].indexOf("-") !== -1) {
-      //HUGE BUG this does not correct if you're in a time zone with a "+" of gmt. FIX LATER THANKS
-      var zone = timesplit[2].split("-");
-      second = zone[0];
-      zone = zone[1].split(":");
-      zone = zone[0];
-      hour -= zone;
-      hour = hour < 10 ? "0" + hour : hour;
-    } //end if
-
-    var d = new Date(year, month, day, hour, minute, second, 0);
-    //console.log(d);
-    console.log("At the tone, the time will be: " + year + " " + month + " " + day + " " + hour + " " + minute + " " + second);
-    return d;
-  };
-
-
-</script>
+    <script src="admin.js"></script>
 
 <style type="text/css">
 select { font-size: 8pt; }
-.media { position: relative; background: #333; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 14px;}
+.media { position: relative; background: #333; border-radius: 10px;  padding: 2px; color: white; margin-top: 8px; font-size: 8pt; padding-left: 14px; overflow: hidden;}
 .media h1 { padding: 0; margin: 0; color: orange; float: left;}
 .media ul li { display: inline;}
-.use {  float: left; }
-.meta { clear: both; }
+.check { position: relative; width: 100%; clear: both;}
+.use { float: left;}
+.content { float: left;}
 .delete { cursor: pointer; position: absolute; right: 3px; bottom: 0px; padding: 3px; color: #f33;}
 
 #upload{
@@ -198,6 +43,8 @@ select { font-size: 8pt; }
 #uploadSelect{
     margin-bottom: 10px;
 }
+
+.vid { height: 120px; display: block;}
 
 body{ background: #aaa;}
 #auth { display: none;}
