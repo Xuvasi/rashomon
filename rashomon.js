@@ -8,6 +8,7 @@ var Rashomon = {
     videos: [],
     photos: [],
     phometa: [],
+    photoDuration: 10,
     loaded: 0,
     looping: false,
     startLoop: 0,
@@ -528,7 +529,11 @@ var Rashomon = {
                     if (extend > Rashomon.fulldur) {
 
                         Rashomon.fulldur = extend;
-                    }
+			Rashomon.photoDuration = extend / 60;
+                        if (Rashomon.photoDuration < 5){
+			    Rashomon.photoDuration = 5;
+			}
+		    }
 
                 });
 
@@ -589,7 +594,7 @@ photo.prototype = {
             "id": this.id,
             "timeline": Rashomon.timeline,
             "start": of,
-            "end": of + 5
+            "end": of + Rashomon.photoDuration
         });
 
         this.eventId = Rashomon.timeline.getLastTrackEventId();

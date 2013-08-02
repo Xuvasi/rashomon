@@ -490,8 +490,8 @@ a.but:hover {
     bottom: 0;
     position: absolute;
     height: 1px;
-    width: 8px;
-    margin-left: -4px;
+    width: 4px;
+    margin-left: -2px;
     background: rgba(235,71,71,.5);
     z-index: 999;
 }
