@@ -3,10 +3,11 @@ rashomon
 copyleft 2012
 */
 var Rashomon = {
-    manifestLoc: "davis.json",
+    manifestLoc: "restorephoto.json",
     manifest: {},
     videos: [],
     photos: [],
+    phometa: [],
     loaded: 0,
     looping: false,
     startLoop: 0,
@@ -60,7 +61,6 @@ var Rashomon = {
                 var test = parseInt($(this).attr('data-id'), 10);
 
                 var aVid = Rashomon.getVidById(test);
-                console.dir(aVid);
                 var left = $(this).position().left;
                 aVid.changeStuff(Rashomon.offset2time(left));
             },
@@ -380,7 +380,6 @@ var Rashomon = {
         Rashomon.timeline.cue("loop");
         //setup photos
         $(Rashomon.photos).each(function () {
-            console.log(this);
             this.buildPhotoViewer();
         });
         //setup videos
@@ -511,6 +510,7 @@ var Rashomon = {
             }));
             /*
                     var aphoto = Rashomon.photos.push(new photo({
+	{
                                 "offset": item.vDate.getTime() / 1000,
                                 "id": index,
                                 "file": item.filename,
@@ -575,9 +575,8 @@ var photo = function (options) {
     this.id = options.id;
     this.color = Rashomon.colorList[this.id];
     this.meta = options.meta;
-    this.url = Rashomon.mpath + this.file + ".jpg";
+    this.url = Rashomon.mpath + this.file + "_small.jpg";
     var photo = this;
-    console.log(this);
 };
 
 photo.prototype = {
@@ -825,11 +824,11 @@ video.prototype = {
             "data-id": this.id
         });
         this.webm = $("<source/>", {
-            src: Rashomon.mpath + this.file + ".webm",
+            src: Rashomon.mpath + this.file + "_small.webm",
             type: 'video/webm'
         });
         this.mp4 = $("<source/>", {
-            src: Rashomon.mpath + this.file + ".mp4",
+            src: Rashomon.mpath + this.file + "_small.mp4",
             type: 'video/mp4'
         });
         this.mp4.appendTo(vid);
@@ -905,10 +904,7 @@ video.prototype = {
             $("#vid" + this.id).removeClass("vidinactive");
             $("#vidtime" + this.id).css("opacity", "1");
 
-            console.log("on " + this.id);
-            console.log(Rashomon.timeline.currentTime() + " between points " + this.offset + " " + (this.offset + this.duration) + "?");
             if (Rashomon.timeline.currentTime() > this.offset && Rashomon.timeline.currentTime() < (this.offset + this.duration)) {
-                console.log("truth");
                 $("#vcontain" + this.id).show("fast", "linear");
                 if (Rashomon.timeline.media.paused === false) {
                     this.pp.play();
@@ -958,7 +954,7 @@ video.prototype = {
             "opacity": 0.2
 
         }).appendTo(vidtl);
-        //console.log("Offset for duration " + duration + " is " + Rashomon.getOffset(duration));
+        console.log("Offset for duration " + duration + " is " + Rashomon.getOffset(duration));
         vidline.appendTo("#vidlines .lines");
         $('.vidline').tsort({
             attr: 'id'
@@ -1012,16 +1008,20 @@ $(document).ready(function () {
         Rashomon.manifest = data;
         Rashomon.mpath = Rashomon.manifest.mediaPath;
         Rashomon.eventName = Rashomon.manifest.event;
-        Rashomon.vidmeta = Rashomon.manifest.videos;
-        Rashomon.phometa = Rashomon.manifest.photos;
+        if (Rashomon.manifest.videos){
+            Rashomon.vidmeta = Rashomon.manifest.videos;
+        }
+        if (Rashomon.manifest.photos){
+            Rashomon.phometa = Rashomon.manifest.photos;
+        }
 
         Rashomon.earliest = moment(Rashomon.manifest.earliest).toDate();
-
         Rashomon.setupVideos();
         Rashomon.setupPhotos();
         Rashomon.setupTimeline(Rashomon.fulldur);
         $.each(Rashomon.videos, function () {
             this.displayVideo();
+	    console.log("displayin");
         });
     });
     $("#xbox").click(function () {
@@ -1035,7 +1035,6 @@ $(document).ready(function () {
         $(this).next(".lines").slideToggle(function () {
 
             var first = $(".lines:visible").first();
-            console.log(first);
             var newheight = $("#maintimeline").offset().top + $("#maintimeline").height() - first.offset().top;
             $("#timepos").css("height", newheight);
 
