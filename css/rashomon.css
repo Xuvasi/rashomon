@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    background: #000;
+    background: #060c10;
     overflow-x: hidden;
 }
 
@@ -208,6 +208,15 @@ a.but:hover {
     width: 100%;
 }
 
+.mediaSection h1 {
+    background: #333;
+    color: #eee;
+    cursor: pointer;
+    margin: 0;
+}
+
+#pholines { display: none;}
+
 .event {
     position: absolute;
     top: 0;
@@ -233,7 +242,7 @@ a.but:hover {
     width: 100%;
     padding-top: 15px;
     background: #aaa;
-    min-height: 100px;
+    min-height: 60px;
 }
 
 .pager {
@@ -265,7 +274,7 @@ a.but:hover {
     visibility: hidden;
 }
 
-.vidline {
+.vidline, .pholine {
     position: relative;
     margin-bottom: 1px;
     height: 20px;
@@ -279,7 +288,7 @@ a.but:hover {
 .even {;
 }
 
-.vidnum {
+.vidnum, .phonum {
     position: absolute;
     background: #c8c8c8;
     color: black;
@@ -295,7 +304,7 @@ a.but:hover {
     text-align: center;
 }
 
-.vidmeta {
+.vidmeta, .phometa {
     z-index: 99;
     position: absolute;
     left: 43px;
@@ -344,7 +353,7 @@ a.but:hover {
     background: rgba(230,0,0,0.5);
 }
 
-.vidtime {
+.vidtime, .photime {
 
     position: relative;
     left: 450px;

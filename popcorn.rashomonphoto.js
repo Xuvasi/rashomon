@@ -2,7 +2,7 @@
 
 (function (Popcorn) {
   
-  Popcorn.plugin( "rphoto", {
+  Popcorn.plugin( "rashomonPhoto", {
 
       manifest: {
         about:{
@@ -31,6 +31,7 @@
        * options variable
        */
       start: function( event, options ) {
+        console.log("starting " + "#pContainer" + options.id);
         $("#pContainer" + options.id).show("fast", "linear");
       },
       /**
@@ -40,6 +41,7 @@
        * options variable
        */
       end: function( event, options ) {
+        console.log("ending");
         $("#pContainer" + options.id).hide("fast", "linear");
       }
           
