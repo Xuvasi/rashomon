@@ -242,7 +242,6 @@ a.but:hover {
     width: 100%;
     padding-top: 15px;
     background: #aaa;
-    min-height: 60px;
 }
 
 .pager {
@@ -276,7 +275,7 @@ a.but:hover {
 
 .vidline, .pholine {
     position: relative;
-    margin-bottom: 1px;
+    border-bottom: 1px solid #aaa;
     height: 20px;
     width: 100%;
     background: #bbb;
@@ -436,7 +435,7 @@ a.but:hover {
 }
 
 #tlcontainer {
-    padding-top: 10px;
+    padding-top: 15px;
     position: relative;
     width: 100%;
     background: #aaa;
