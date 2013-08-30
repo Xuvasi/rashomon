@@ -3,7 +3,7 @@ rashomon
 copyleft 2012
 */
 var Rashomon = {
-    manifestLoc: "restorephoto.json",
+    manifestLoc: "mapcam2.json",
     manifest: {},
     videos: [],
     photos: [],
@@ -373,7 +373,7 @@ var Rashomon = {
             "margin-left": "300px",
             "background": 'rgba("255,255,255,0.73")',
             "text-shadow": "3px 5px 5px #666"
-        }).appendTo("#videoswrapper");
+        }).appendTo("#vidlines");
         console.log("Setting up timeline.");
         Popcorn.player("baseplayer");
         this.timeline = Popcorn.baseplayer("#maintimeline");
@@ -925,7 +925,7 @@ video.prototype = {
         var meta = this.meta;
         var offset = this.offset;
         var position = Rashomon.getOffset(offset);
-        var wavimg = '../redacted/' + this.name.replace("_small", "_wave.png");
+        var wavimg = '../redacted/' + this.name + "_wave.png";
         //console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
         //console.log(offset);
         //todo duration->space, match meta to real meta
