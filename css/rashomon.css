@@ -69,7 +69,7 @@ header nav {
 #titlebar {
     width: 100%;
     position: relative;
-    background: #333;
+    background: #999;
     height: 25px;
 }
 
@@ -242,7 +242,6 @@ a.but:hover {
 #videoswrapper {
     position: relative;
     width: 100%;
-    padding-top: 15px;
     background: #aaa;
 }
 
@@ -398,7 +397,7 @@ a.but:hover {
 }
 
 .container {
-    width: 320px;
+    height: 280px;
     float: left;
     display: none;
     border: 4px solid #333;
@@ -519,9 +518,9 @@ a.but:hover {
     position: relative;
     left: 160px;
     bottom: 0;
-    background: #333;
+    background: transparent;
     width: 100%;
-    color: #eee;
+    color: #333;
     padding-top: 3px;
     font-size: 12pt;
 }

@@ -39,12 +39,19 @@ $(document).ready(function(){
     var tldata = {}
     tldata.earliest = Rashomon.earliest;
     tldata.vids = [];
+    tldata.photos = [];
     $(Rashomon.videos).each(function(){
       var viddata = {};
       viddata.name = this.name;
       viddata.offset = this.offset;
       viddata.duration = this.pp.duration();
       tldata.vids.push(viddata);
+    });
+    $(Rashomon.photos).each(function(){
+      var phodata = {};
+      phodata.name = this.name;
+      phodata.offset = this.offset;
+      tldata.photos.push(phodata);
     });
     $.ajax({
           type: 'POST',
@@ -130,7 +137,11 @@ $(document).ready(function(){
      </div>
     </section>
    
-    <section id="videos">
+    <section id="videos"><!--
+      <div id="buttons">
+<a class="but" id="unlock">Unlock Positions</a>
+<a class="but" id="save">Save Positioning</a>
+</div> -->
     </section>
     <section id="meta">
       <div id="metadata">
