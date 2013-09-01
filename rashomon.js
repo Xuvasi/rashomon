@@ -73,13 +73,17 @@ var Rashomon = {
             stop: function () {
                 $(this).addClass('moveTransition');
                 var test = $(this).attr('data-id');
-                
-                $(this).css("width", widthpct);
-                var aVid = Rashomon.getVidById(test);
-                var left = $(this).position().left;
-                var widthpct = $(this).css("width");
-                aVid.changeStuff(Rashomon.offset2time(left));
-                
+                if ($(this).hasClass(".vidtime")){
+                    $(this).css("width", widthpct);
+                    var aVid = Rashomon.getVidById(test);
+                    var left = $(this).position().left;
+                    var widthpct = $(this).css("width");
+                    aVid.changeStuff(Rashomon.offset2time(left));
+                } else {
+                    var aPhoto = Rashomon.getPhoById(test);
+                    var left = $(this).position().left;
+                    aPhoto.changeStuff(Rashomon.offset2time(left));   
+                }
             },
             drag: function (event, ui) {
                 
@@ -625,9 +629,7 @@ var photo = function (options) {
 
 photo.prototype = {
     setupPho: function () {
-
         var of = this.offset;
-        this.drawPhotimes();
         //console.log(pid + ": " + height + " x " + width);
         Rashomon.timeline.rashomonPhoto({
             "id": this.id,
