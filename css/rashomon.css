@@ -458,6 +458,7 @@ a.but:hover {
     padding: 0;
     padding-top: 3px;
     letter-spacing: 2.5px;
+    overflow: hidden;
 }
 
 .timeline {
@@ -523,6 +524,7 @@ a.but:hover {
     color: #333;
     padding-top: 3px;
     font-size: 12pt;
+    overflow: hidden;
 }
 
 #controls {
