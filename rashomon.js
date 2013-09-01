@@ -590,10 +590,11 @@ var Rashomon = {
     setupEvents: function (){
        
         //console.log("setting events");
-        $(".tl").click(function (e) {
+        $(".vidtl").click(function (e) {
+            console.log("click!")
             var clickleft = e.pageX - $('#maintimeline').offset().left;
             var pct = clickleft / $('#maintimeline').width();
-            Rashomon.timeline.currentTime(tldur * pct);
+            Rashomon.timeline.currentTime(Rashomon.fulldur * pct);
             if (Rashomon.timeline.media.paused) {
                 $(Rashomon.videos).each(function () {
                     this.seekPaused();
