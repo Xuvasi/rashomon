@@ -7,7 +7,7 @@ body {
     overflow-x: hidden;
 }
 
-img { display: block; }
+img, video { display: block; }
 
 #head {
     position: relative;
@@ -389,7 +389,7 @@ a.but:hover {
     width: 100%;
     background: black;
     font-size: 9pt;
-    color: #aaa;
+    color: black;
     min-height: 380px;
     margin-top: 60px;
     height: 100%;
@@ -400,7 +400,12 @@ a.but:hover {
     height: 280px;
     float: left;
     display: none;
-    border: 4px solid #333;
+}
+
+.innervid{
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .hor {
@@ -419,9 +424,14 @@ a.but:hover {
 }
 
 .tools {
-    position: relative;
+    display: none;
+    position: absolute;
     height: 30px;
+    width: 100%;
     text-align: center;
+    background: rgba(0,0,0,0.5);
+    bottom: 0;
+    color: black;
 }
 
 .vidDelay {

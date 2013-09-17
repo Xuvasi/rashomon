@@ -15,6 +15,7 @@ var Rashomon = {
     endLoop: 0,
     delayFixed: 0,
     fulldur: 0,
+    tallest: 0,
     preoffset: 0,
     earliest: new Date(),
     timeline: "",
@@ -292,6 +293,9 @@ var Rashomon = {
         return (someNumber % 2 === 0) ? "even" : "odd";
     },
     finalize: function () {
+	$(".container").each(function(){
+             $(this).css("height", Rashomon.tallest + 8);
+        });
         $("#loading").hide();
         $(this.videos).each(function () {
             this.pp.off("canplaythrough");
@@ -431,6 +435,9 @@ var Rashomon = {
                 //console.log(thevid.id + " is ready.");
                 thevid.cpt = 1;
                 readies = 0;
+                if (this.media.videoHeight > Rashomon.tallest){
+                    Rashomon.tallest = this.media.videoHeight;
+                }
                 $(Rashomon.videos).each(function () {
                     if (this.cpt) {
                         $("#vidtime" + this.id).css("opacity", 1);
@@ -613,7 +620,14 @@ var Rashomon = {
             var phoId = $(this).attr("data-id");
             Rashomon.getPhoById(phoId).toggleStatus();
         }); // end vidnum click
-        
+        $(".container").hover(function(){
+            $(this).find(".tools").fadeIn("fast"); 
+            console.log("enter");
+        }, function(){
+            $(this).find(".tools").fadeOut("fast"); 
+            console.log("leave");
+
+        });
     }
         
 };
@@ -827,10 +841,11 @@ video.prototype = {
         var container = $("<div/>", {
             id: "vcontain" + this.id,
             'class': 'container'
-        }).css("border-color", Rashomon.colorList[this.id]);
+        });
+        var innerdiv = $("<div/>", { 'class': 'innervid'}).appendTo(container).css("border", "4px solid " + Rashomon.colorList[this.id]);
         var tools = $("<div/>", {
             'class': 'tools'
-        });
+        }).css("background", Rashomon.colorList[this.id]);
         var vid = $("<video/>", {
             id: "video" + this.id,
             "class": 'rashomon',
@@ -848,15 +863,19 @@ video.prototype = {
         this.mp4.appendTo(vid);
         this.webm.appendTo(vid);
         container.appendTo($("#videos"));
-        vid.appendTo(container);
+        vid.appendTo(innerdiv);
         //this one has meta button
         //tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
         //this one doesn't
-        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/>").appendTo(container);
-
+        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/>").appendTo(innerdiv);
+                
         $("<div/>", {
-            "id": "vidDelay" + this.id,
-            "class": "vidDelay"
+            "class": "solo",
+            "text":  "\uDFA7"
+        }).appendTo(tools);
+        $("<div/>", {
+            "class": "mute",
+            "text":  "\ud83d\udd07"
         }).appendTo(tools);
         this.pp = Popcorn("#video" + this.id);
     },
