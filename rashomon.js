@@ -17,6 +17,7 @@ var Rashomon = {
     fulldur: 0,
     tallest: 0,
     preoffset: 0,
+    solomode: false,
     earliest: new Date(),
     timeline: "",
     videosToDisplay: "",
@@ -622,10 +623,48 @@ var Rashomon = {
         }); // end vidnum click
         $(".container").hover(function(){
             $(this).find(".tools").fadeIn("fast"); 
-            console.log("enter");
+
         }, function(){
             $(this).find(".tools").fadeOut("fast"); 
-            console.log("leave");
+
+
+        });
+        $(".audbutton").click(function(){
+            var action = $(this).attr('id');
+            console.log(action);
+            var id = $(this).attr('data-id');
+            $(this).addClass("audactive");
+            $(this).siblings("img").removeClass("audactive");
+            if (action === "mute"){
+                if (Rashomon.solomode){
+                    $(Rashomon.videos).each(function(){
+                        if (this.id !== id){
+                            this.pp.unmute();
+                        }
+                    });
+                }
+                Rashomon.getVidById(id).pp.mute();
+                Rashomon.solomode = false;
+            
+            } else if (action === "speaker") {
+                Rashomon.getVidById(id).pp.unmute();
+                if (Rashomon.solomode){
+                    $(Rashomon.videos).each(function(){
+                        this.pp.unmute();
+                    });
+                    Rashomon.solomode = false;
+                }
+            } else if (action === "solo"){
+                Rashomon.solomode = true;
+                    $(Rashomon.videos).each(function(){
+                        if (this.id !== id){
+                            this.pp.mute();
+                        }
+                    });
+                    Rashomon.getVidById(id).pp.unmute();
+                
+
+            }
 
         });
     }
@@ -704,7 +743,7 @@ photo.prototype = {
         });
         pContainer.appendTo("#videos");
         image.appendTo(pContainer);
-        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'").appendTo(pContainer);
+        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><div><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'" + "/></div>").appendTo(pContainer);
         // <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>")
         //make display function for timeline thing
         //call popcorn plugin
@@ -867,17 +906,34 @@ video.prototype = {
         //this one has meta button
         //tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
         //this one doesn't
-        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/>").appendTo(innerdiv);
+        tools.html("<span class='vidplid'>" + (this.id + 1) + "</span> <div class='tbuttons'></div>").appendTo(innerdiv);
                 
-        $("<div/>", {
-            "class": "solo",
-            "text":  "\uDFA7"
-        }).appendTo(tools);
-        $("<div/>", {
-            "class": "mute",
-            "text":  "\ud83d\udd07"
-        }).appendTo(tools);
-        this.pp = Popcorn("#video" + this.id);
+        $("<img/>", {
+            "id": "mute",
+            "data-id": this.id,
+            "class": "audbutton",
+            "src": "images/mute.png",
+        }).appendTo(tools.find(".tbuttons"));
+        $("<img/>", {
+            "id": "speaker",
+            "data-id": this.id,
+            "class": "audbutton",
+            "src": "images/speaker.png",
+        }).addClass("audactive").appendTo(tools.find(".tbuttons"));
+        $("<img/>", {
+            "id": "solo",
+            "data-id": this.id,
+            "class": "audbutton",
+            "src": "images/solo.png",
+        }).appendTo(tools.find(".tbuttons"));
+         $("<img/>", {
+            "class": "fsbutton",
+            "id": "fs" + this.id,
+            "src": "images/full-screen-icon.png",
+        }).appendTo(tools.find(".tbuttons"));
+
+
+       this.pp = Popcorn("#video" + this.id);
     },
     //in cases where you seek when main timeline is paused, popcorn does not run 'start' event if seeking from within another in-band event
     seekPaused: function () {

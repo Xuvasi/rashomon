@@ -415,25 +415,30 @@ a.but:hover {
 .vert {
     height: 320px;
 }
-
+.audbutton { height: 20px; display: inline-block; vertical-align: top;}
+.audactive { border-bottom: 5px solid black; }
 .tbuttons {
     position: absolute;
-    bottom: 3px;
+    top: 0;
     right: 3px;
     cursor: pointer;
+    width: auto;
 }
+
+.fsbutton { padding-top: 4px; display: inline-block; vertical-align: top; height: 18px;}
 
 .tools {
     display: none;
     position: absolute;
-    height: 30px;
+    height: 22px;
     width: 100%;
-    text-align: center;
     background: rgba(0,0,0,0.5);
     bottom: 0;
     color: black;
 }
-
+.vidplid { 
+   font-size: 16pt;
+}
 .vidDelay {
     position: absolute;
     bottom: 2px;
