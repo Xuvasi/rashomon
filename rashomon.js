@@ -61,37 +61,42 @@ var Rashomon = {
         this.earliest = moment(this.earliest).add('s', sec).toDate();
         Rashomon.setupLoop(Rashomon.startLoop, Rashomon.endLoop);
         $(this.videos).each(function () {
-            this.changeStuff(this.offset + sec);
+            if (this.id != Rashomon.dragId){
+              this.offset += sec;
+              this.drawVidtimes();
+            }
         });
 
 
     },
     makeDraggable: function () {
-
         $(".vidtime, .photime").draggable({
             start: function () {
+		Rashomon.dragId = $(this).attr('data-id');
                 $(this).removeClass('moveTransition');
             },
             stop: function () {
+		Rashomon.dragId = -1;
+                Rashomon.getVidById($(this).attr('data-id')).offset = Rashomon.offset2time($(this).position().left);
                 $(this).addClass('moveTransition');
-                var test = $(this).attr('data-id');
-                if ($(this).hasClass(".vidtime")){
-                    $(this).css("width", widthpct);
-                    var aVid = Rashomon.getVidById(test);
-                    var left = $(this).position().left;
-                    var widthpct = $(this).css("width");
-                    aVid.changeStuff(Rashomon.offset2time(left));
+                if ($(this).hasClass("vidtime")){
+                        $(Rashomon.videos).each(function(){
+			  this.changeStuff();
+                    });
+                    //aVid.changeStuff(Rashomon.offset2time(left));
                 } else {
+                    console.log($(this).attr('class'));
                     var aPhoto = Rashomon.getPhoById(test);
                     var left = $(this).position().left;
                     aPhoto.changeStuff(Rashomon.offset2time(left));   
                 }
+                console.log("end of stop");
             },
             drag: function (event, ui) {
                 
              
                 if (ui.position.left <= 0) {
-                    Rashomon.extendBefore(1);
+                    Rashomon.extendBefore(5);
                 } else if ($(this).parent().width() - (ui.position.left + $(this).width()) < 5) {
                     Rashomon.extendAfter(5);
                 }
@@ -105,8 +110,12 @@ var Rashomon = {
     extendAfter: function (sec) {
         this.fulldur += sec;
         $(this.videos).each(function () {
-            this.drawVidtimes();
+            if (this.id != Rashomon.dragId){
+              this.drawVidtimes();
+            }
         });
+        Rashomon.setupLoop(Rashomon.startLoop, Rashomon.endLoop);
+
     },
     loadFullscreen: function (id) {
         //console.log("FS for id " + id);
@@ -206,6 +215,7 @@ var Rashomon = {
                 var value = ui.values;
                 Rashomon.startLoop = ui.values[0];
                 Rashomon.endLoop = ui.values[1];
+                //abstract this into a function that can deal with whether change was manual (using sliders) or via drag event.
                 var t = $.url().attr("query", "t=18,19");
                 var url = $.url().attr('source').replace(t, "");
                 //console.log(url);
@@ -630,16 +640,21 @@ var Rashomon = {
 
         });
         $(".audbutton").click(function(){
-            var action = $(this).attr('id');
-            console.log(action);
+            var action = $(this).attr('data-audio');
             var id = $(this).attr('data-id');
+            if (action !== "solo"){
+                $(".solo").removeClass("audactive");
+	        console.log("setting " + id + " to " + action);
+                Rashomon.getVidById(id).audStatus = action;
+            }
             $(this).addClass("audactive");
             $(this).siblings("img").removeClass("audactive");
             if (action === "mute"){
                 if (Rashomon.solomode){
+                   $(".solo").removeClass("audactive");
                     $(Rashomon.videos).each(function(){
                         if (this.id !== id){
-                            this.pp.unmute();
+                            this.revertAudio();
                         }
                     });
                 }
@@ -649,17 +664,21 @@ var Rashomon = {
             } else if (action === "speaker") {
                 Rashomon.getVidById(id).pp.unmute();
                 if (Rashomon.solomode){
+                    $(".solo").removeClass("audactive");
                     $(Rashomon.videos).each(function(){
-                        this.pp.unmute();
+                        if (this.id !== id){
+                          this.revertAudio();
+                        }
                     });
                     Rashomon.solomode = false;
                 }
             } else if (action === "solo"){
+                Rashomon.getVidById(id).audStatus = "speaker";
                 Rashomon.solomode = true;
                     $(Rashomon.videos).each(function(){
-                        if (this.id !== id){
-                            this.pp.mute();
-                        }
+                        if (this.id != id){
+                            this.soloMute();
+                        } 
                     });
                     Rashomon.getVidById(id).pp.unmute();
                 
@@ -835,6 +854,7 @@ var video = function (options) {
     this.meta = options.meta;
     this.eventId = "";
     this.cpt = 0;
+    this.audStatus = "speaker";
 };
 
 video.prototype = {
@@ -865,16 +885,19 @@ video.prototype = {
 
     },
     changeStuff: function (offset) {
-        this.offset = offset;
+        if (offset){
+          this.offset = offset;
+        }
         Rashomon.timeline.removeTrackEvent(this.eventId);
         Rashomon.timeline.rashomonVideo({
             "vid": this,
             "timeline": Rashomon.timeline,
-            "start": offset,
-            "end": offset + this.duration
+            "start": this.offset,
+            "end": this.offset + this.duration
         });
         this.eventId = Rashomon.timeline.getLastTrackEventId();
         this.drawVidtimes();
+
     },
     buildVideoPlayer: function () {
         var container = $("<div/>", {
@@ -909,21 +932,21 @@ video.prototype = {
         tools.html("<span class='vidplid'>" + (this.id + 1) + "</span> <div class='tbuttons'></div>").appendTo(innerdiv);
                 
         $("<img/>", {
-            "id": "mute",
+            "data-audio": "mute",
             "data-id": this.id,
-            "class": "audbutton",
+            "class": "audbutton mute",
             "src": "images/mute.png",
         }).appendTo(tools.find(".tbuttons"));
         $("<img/>", {
-            "id": "speaker",
+            "data-audio": "speaker",
             "data-id": this.id,
-            "class": "audbutton",
+            "class": "audbutton speaker",
             "src": "images/speaker.png",
         }).addClass("audactive").appendTo(tools.find(".tbuttons"));
         $("<img/>", {
-            "id": "solo",
+            "data-audio": "solo",
             "data-id": this.id,
-            "class": "audbutton",
+            "class": "audbutton solo",
             "src": "images/solo.png",
         }).appendTo(tools.find(".tbuttons"));
          $("<img/>", {
@@ -1007,7 +1030,7 @@ video.prototype = {
         var id = this.id;
         var offset = this.offset;
         var position = Rashomon.getOffset(offset);
-        var wavimg = 'http://rashomonproject.org/redacted/' + this.name + "_wave.png";
+        var wavimg = '../redacted/' + this.name + "_wave.png";
         //console.log("Offset" + this.offset + "data " + $("#video" + id).attr("data-offset"));
         //console.log(offset);
         //todo duration->space, match meta to real meta
@@ -1071,7 +1094,24 @@ video.prototype = {
             //syncmsg = "<p>Video Drift: " + delay + "ms</p>";
             //$("#vidDelay" + id).html(syncmsg);
         }); //end on
-    } //end display
+    }, //end display
+    revertAudio: function(){
+    $(".audsolomute").removeClass("audsolomute");
+    $("#vcontain" + this.id).find("." + this.audStatus).addClass("audactive");
+    },
+    speaker: function(){
+       this.pp.unmute();
+       $("#vcontain" + this.id).find(".audactive").removeClass("audactive");   
+       $("#vcontain" + this.id).find(".speaker").addClass("audactive");
+    
+    },
+    soloMute: function(){
+       this.pp.mute();
+       var button = $("#vcontain" + this.id).find(".mute").addClass("audsolomute");
+       console.log(button.html());
+       button.addClass("audsolomute");
+    }
+
 }; // end video
 
 

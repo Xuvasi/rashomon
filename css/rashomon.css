@@ -217,6 +217,8 @@ a.but:hover {
     margin: 0;
 }
 
+.ui-draggable { cursor: pointer; }
+
 #pholines { display: none;}
 
 .event {
@@ -417,6 +419,7 @@ a.but:hover {
 }
 .audbutton { height: 20px; display: inline-block; vertical-align: top;}
 .audactive { border-bottom: 5px solid black; }
+.audsolomute { border-bottom: 5px solid rgba(0,0,0,0.3); }
 .tbuttons {
     position: absolute;
     top: 0;
