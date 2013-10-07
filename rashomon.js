@@ -4,6 +4,7 @@ copyleft 2012
 */
 var Rashomon = {
     manifestLoc: "davis.json",
+    adjustable: true,
     manifest: {},
     videos: [],
     photos: [],
@@ -644,11 +645,11 @@ var Rashomon = {
             var id = $(this).attr('data-id');
             if (action !== "solo"){
                 $(".solo").removeClass("audactive");
-	        console.log("setting " + id + " to " + action);
+	               console.log("setting " + id + " to " + action);
                 Rashomon.getVidById(id).audStatus = action;
             }
             $(this).addClass("audactive");
-            $(this).siblings("img").removeClass("audactive");
+            $(this).siblings("i").removeClass("audactive");
             if (action === "mute"){
                 if (Rashomon.solomode){
                    $(".solo").removeClass("audactive");
@@ -673,10 +674,11 @@ var Rashomon = {
                     Rashomon.solomode = false;
                 }
             } else if (action === "solo"){
-                Rashomon.getVidById(id).audStatus = "speaker";
+                Rashomon.getVidById(id).audStatus = "solo";
                 Rashomon.solomode = true;
                     $(Rashomon.videos).each(function(){
                         if (this.id != id){
+                            console.log("muting " + this.id)
                             this.soloMute();
                         } 
                     });
@@ -685,6 +687,18 @@ var Rashomon = {
 
             }
 
+        }); // end audButton
+
+        $(".locker").click(function(){
+            var id = $(this).attr("data-id");
+            if ($(this).hasClass("icon-lock")){
+                Rashomon.getVidById(id).makeDraggable();
+                $(this).removeClass("icon-lock").addClass("icon-unlock");
+            } else {
+                Rashomon.getVidById(id).makeUndraggable();
+                $(this).removeClass("icon-unlock").addClass("icon-lock");
+
+            }
         });
     }
         
@@ -753,6 +767,7 @@ photo.prototype = {
         var tools = $("<div/>", {
             'class': 'tools'
         });
+
         var image = $("<img/>", {
             id: "photo" + this.id,
             "class": 'rashomon',
@@ -762,7 +777,7 @@ photo.prototype = {
         });
         pContainer.appendTo("#videos");
         image.appendTo(pContainer);
-        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><div><img src='images/full-screen-icon.png' class='fsbutton' id='fs" + this.id + "'" + "/></div>").appendTo(pContainer);
+        tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><div><i class='fsbutton icon-fullscreen' id='fs" + this.id + "'" + "></i></div>").appendTo(pContainer);
         // <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>")
         //make display function for timeline thing
         //call popcorn plugin
@@ -884,6 +899,47 @@ video.prototype = {
 
 
     },
+    makeDraggable: function(){
+        $("#vidtime" + this.id).draggable({
+            start: function () {
+                Rashomon.dragId = $(this).attr('data-id');
+                $(this).removeClass('moveTransition');
+            },
+            stop: function () {
+                Rashomon.dragId = -1;
+                Rashomon.getVidById($(this).attr('data-id')).offset = Rashomon.offset2time($(this).position().left);
+                $(this).addClass('moveTransition');
+                if ($(this).hasClass("vidtime")){
+                    $(Rashomon.videos).each(function(){
+                        this.changeStuff();
+                    });
+                    //aVid.changeStuff(Rashomon.offset2time(left));
+                } else {
+                    console.log($(this).attr('class'));
+                    var aPhoto = Rashomon.getPhoById(test);
+                    var left = $(this).position().left;
+                    aPhoto.changeStuff(Rashomon.offset2time(left));   
+                }
+                console.log("end of stop");
+            },
+            drag: function (event, ui) {
+                if (ui.position.left <= 0) {
+                    Rashomon.extendBefore(5);
+                } else if ($(this).parent().width() - (ui.position.left + $(this).width()) < 5) {
+                    Rashomon.extendAfter(5);
+                }
+            },
+            containment: "parent"
+        });
+        
+
+
+
+    },
+    makeUndraggable: function(){
+        $("#vidtime" + this.id).draggable("destroy").css("cursor", "crosshair");
+    },
+
     changeStuff: function (offset) {
         if (offset){
           this.offset = offset;
@@ -930,30 +986,12 @@ video.prototype = {
         //tools.html("<em>" + (this.id + 1) + "</em> <div class='tbuttons'><img src='images/full-screen-icon.png' + class='fsbutton' id='fs" + this.id + "'/> <img src='images/info.png' class='showmeta' id='meta" + this.id + "'>").appendTo(container);
         //this one doesn't
         tools.html("<span class='vidplid'>" + (this.id + 1) + "</span> <div class='tbuttons'></div>").appendTo(innerdiv);
-                
-        $("<img/>", {
-            "data-audio": "mute",
-            "data-id": this.id,
-            "class": "audbutton mute",
-            "src": "images/mute.png",
+        $("<i/>", {
+            "class": "fsbutton icon-fullscreen",
+            "id": "fs" + this.id
         }).appendTo(tools.find(".tbuttons"));
-        $("<img/>", {
-            "data-audio": "speaker",
-            "data-id": this.id,
-            "class": "audbutton speaker",
-            "src": "images/speaker.png",
-        }).addClass("audactive").appendTo(tools.find(".tbuttons"));
-        $("<img/>", {
-            "data-audio": "solo",
-            "data-id": this.id,
-            "class": "audbutton solo",
-            "src": "images/solo.png",
-        }).appendTo(tools.find(".tbuttons"));
-         $("<img/>", {
-            "class": "fsbutton",
-            "id": "fs" + this.id,
-            "src": "images/full-screen-icon.png",
-        }).appendTo(tools.find(".tbuttons"));
+
+       
 
 
        this.pp = Popcorn("#video" + this.id);
@@ -1039,12 +1077,22 @@ video.prototype = {
             "class": "vidline " + Rashomon.isEven(id),
             "id": "vidline" + id
         });
-        $("<div/>", {
+        var panel = $("<div/>", {
             "class": "vidnum",
             "id": "vid" + id,
             "text": + id + 1,
             "data-id": id,
             title: "Click to toggle video"
+        }).appendTo(vidline);
+        if (Rashomon.adjustable){
+            var lockBox = $("<div/>", {
+            "class": "lockBox"
+            }).appendTo(vidline);
+            $("<i/>", { "class": "icon-lock locker", "data-id": id}).appendTo(lockBox);
+        }
+        var aButtons = $("<div/>", {
+            "class": "audbuttons",
+            "id": "abuts" + id
         }).appendTo(vidline);
         var vidtl = $("<div/>", {
             "class": "vidtl",
@@ -1065,6 +1113,28 @@ video.prototype = {
             "opacity": 0.2
 
         }).appendTo(vidtl);
+
+        $("<i/>", {
+            "data-audio": "mute",
+            "data-id": id,
+            "title": "Mute Audio",
+            "class": "audbutton mute icon-volume-off"
+            
+        }).appendTo(aButtons);
+        $("<i/>", {
+            "data-audio": "speaker",
+            "data-id": id,
+            "title": "Play Audio",
+            "class": "audbutton speaker icon-volume-up"
+        }).addClass("audactive").appendTo(aButtons);
+        $("<i/>", {
+            "data-audio": "solo",
+            "data-id": id,
+            "title": "Solo Audio",
+            "class": "audbutton solo icon-headphones"
+        }).appendTo(aButtons);
+        
+
         //console.log("Offset for duration " + duration + " is " + Rashomon.getOffset(duration));
         vidline.appendTo("#vidlines .lines");
         $('.vidline').tsort({
@@ -1096,20 +1166,33 @@ video.prototype = {
         }); //end on
     }, //end display
     revertAudio: function(){
+    if (this.audStatus == "solo"){
+        console.log(this.id + " was solo")
+        this.audStatus = "speaker";
+        this.pp.unmute();
+    }
+
     $(".audsolomute").removeClass("audsolomute");
-    $("#vcontain" + this.id).find("." + this.audStatus).addClass("audactive");
+    console.log("returning " + this.id + " to " + this.audStatus);
+    $("#abuts" + this.id).find("." + this.audStatus).addClass("audactive");
+
     },
     speaker: function(){
        this.pp.unmute();
-       $("#vcontain" + this.id).find(".audactive").removeClass("audactive");   
-       $("#vcontain" + this.id).find(".speaker").addClass("audactive");
+       $("#abuts" + this.id).find(".audactive").removeClass("audactive");   
+       $("#abuts" + this.id).find(".speaker").addClass("audactive");
     
     },
     soloMute: function(){
+       console.log(this.id + ": " + this.audStatus);
        this.pp.mute();
-       var button = $("#vcontain" + this.id).find(".mute").addClass("audsolomute");
-       console.log(button.html());
-       button.addClass("audsolomute");
+       if (this.audStatus == "solo"){
+        console.log(this.id + " was solo");
+        this.audStatus = "speaker";
+        $("#abuts" + this.id).find(".audactive").removeClass("audactive");
+        $("#abuts" + this.id).find(".speaker").addClass("audactive");
+       }
+       $("#abuts" + this.id).find(".mute").addClass("audsolomute").addClass("audsolomute");
     }
 
 }; // end video
