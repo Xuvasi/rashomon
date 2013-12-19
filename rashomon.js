@@ -308,6 +308,10 @@ var Rashomon = {
         return (someNumber % 2 === 0) ? "even" : "odd";
     },
     finalize: function () {
+        var rate = $('#rateControl').val();
+        Rashomon.timeline.playbackRate(rate);
+        $("#theRate").text("Playback rate: " + Math.round(rate * 100)  + "%");
+
 	$(".container").each(function(){
              $(this).css("height", Rashomon.tallest + 8);
         });
@@ -1232,6 +1236,7 @@ $(document).ready(function () {
     });
     $("#rateControl").change(function(){
         var val = $(this).val();
+        $("#theRate").text("Playback rate: " + Math.round(val * 100)  + "%");
         Rashomon.timeline.playbackRate(val);
         $(Rashomon.videos).each(function(){
            this.pp.playbackRate(val);

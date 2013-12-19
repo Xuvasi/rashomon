@@ -576,14 +576,18 @@ a.but:hover {
     position: relative;
     padding: 0;
     margin: 0;
-    top: 30px;
-    left: 5px;
+    top: 25px;
+    left: 0;
+    width: 116px;
+    background: #333;
+    border-bottom-right-radius: 5px;
 }
 
 #playRate input {
     width: 90px;
 }
 
+#theRate { padding-left: 5px; color: #aaa; font-size: 9pt; }
 
 #controls {
     position: absolute;
