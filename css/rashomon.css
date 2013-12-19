@@ -572,6 +572,19 @@ a.but:hover {
     overflow: hidden;
 }
 
+#playRate {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    top: 30px;
+    left: 5px;
+}
+
+#playRate input {
+    width: 90px;
+}
+
+
 #controls {
     position: absolute;
     background: #aaa;

@@ -11,8 +11,8 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
     <script src="other_js/moment.min.js"></script>
-    <script src="http://cdn.popcornjs.org/code/dist/popcorn-complete.js"></script>
-    <script src="popcorn.rashomonphoto.js"></script>
+<script src="popcorn-complete.js"></script>
+<script src="popcorn.rashomonphoto.js"></script>
     <script src="popcorn.rashomonvideo.js"></script>
     <script src="other_js/purl.js"></script>
     <script src="other_js/jquery.tinysort.min.js"></script>
@@ -137,12 +137,15 @@ $(document).ready(function(){
 
      </div>
     </section>
-   
+<section id="playRate">
+  <input id="rateControl" type="range" min="0.1" max="1" value="1" step="0.025"></input>
+</section>   
     <section id="videos"><!--
       <div id="buttons">
 <a class="but" id="unlock">Unlock Positions</a>
 <a class="but" id="save">Save Positioning</a>
 </div> -->
+
     </section>
     <section id="meta">
       <div id="metadata">

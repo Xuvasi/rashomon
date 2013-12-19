@@ -15,6 +15,7 @@ var Rashomon = {
     startLoop: 0,
     endLoop: 0,
     delayFixed: 0,
+    nullp: 0,
     fulldur: 0,
     tallest: 0,
     preoffset: 0,
@@ -57,6 +58,7 @@ var Rashomon = {
 
     extendBefore: function (sec) {
         this.fulldur += sec;
+        this.nullp.src = "#t=," + this.fulldur;
         this.preoffset += sec;
         this.startLoop += sec;
         this.earliest = moment(this.earliest).add('s', sec).toDate();
@@ -110,6 +112,7 @@ var Rashomon = {
     },
     extendAfter: function (sec) {
         this.fulldur += sec;
+        this.nullp.src = "#t=," + this.fulldur;
         $(this.videos).each(function () {
             if (this.id != Rashomon.dragId){
               this.drawVidtimes();
@@ -158,6 +161,7 @@ var Rashomon = {
     offset2time: function (offset) {
         var pct = offset / $('#maintimeline').width();
         var tldur = Rashomon.fulldur;
+        this.nullp.src = "#t=," + tldur;
         return (tldur * pct);
     },
     getPct: function (offset) {
@@ -176,7 +180,6 @@ var Rashomon = {
             Rashomon.timeline.play(Rashomon.startLoop);
         });
         var tldur = Rashomon.fulldur;
-
         //add movers to timeline, set up slider
         var leftMover = $("<div/>", {
             "id": "leftMover",
@@ -415,8 +418,10 @@ var Rashomon = {
             "text-shadow": "3px 5px 5px #666"
         }).appendTo("#vidlines");
         console.log("Setting up timeline.");
-        Popcorn.player("baseplayer");
-        this.timeline = Popcorn.baseplayer("#maintimeline");
+        this.nullp = Popcorn.HTMLNullVideoElement("#maintimeline");
+        this.nullp.src = "#t=,123.12";
+
+        this.timeline = Popcorn(this.nullp);
         $("#eventTitle").text(Rashomon.eventName);
         Rashomon.timeline.cue("loop");
         //setup photos
@@ -465,7 +470,7 @@ var Rashomon = {
         }); //end bind
         this.timeline.currentTime(0); //Start at beginning of timeline, 
         this.fulldur = duration; // end of final video
-
+        this.nullp.src = "#t=," + this.fulldur;
         //When timeline plays... 
         this.timeline.on("play", function () {
             //make sure it is within the loop selection
@@ -496,11 +501,11 @@ var Rashomon = {
             });
         }); //end pause
 
-
+        /*
         this.timeline.cue(Rashomon.fulldur - 0.01, function () {
             Rashomon.timeline.pause();
             console.log("pausing");
-        }); //end cue
+        }); //end cue */
         //play button behavior
         $("#play").click(function () {
             //console.log(Rashomon.timeline.currentTime() + "of " + Rashomon.fulldur);
@@ -1224,6 +1229,14 @@ $(document).ready(function () {
             this.displayPhoto(); 
         });
         
+    });
+    $("#rateControl").change(function(){
+        var val = $(this).val();
+        Rashomon.timeline.playbackRate(val);
+        $(Rashomon.videos).each(function(){
+           this.pp.playbackRate(val);
+        });
+
     });
     $("#xbox").click(function () {
         $("#fsvid").remove();
