@@ -18,6 +18,7 @@ var Rashomon = {
     nullp: 0,
     fulldur: 0,
     tallest: 0,
+    fs: 0,
     preoffset: 0,
     solomode: false,
     earliest: new Date(),
@@ -122,11 +123,16 @@ var Rashomon = {
 
     },
     loadFullscreen: function (id) {
+        var vid = this.getVidById(id);
         //console.log("FS for id " + id);
         var video = $("#video" + id);
         var ctime = Popcorn("#video" + id).currentTime();
-        var sources = video.children();
-
+        var sources = [ vid.mp4, vid.webm ];
+        
+        $(sources).each(function(){
+           var src = $(this).attr("src");
+           $(this).attr("src", src.replace("small", "large"));
+        });
         if (!sources) {
             alert("Something wrong with sources for this video");
         }
@@ -134,28 +140,19 @@ var Rashomon = {
         Rashomon.timeline.pause();
 
         //$('body').css('overflow', "hidden");
-        $('#fullscreen').fadeIn("slow");
-        $("html, body").scrollTop(0);
-        $("body").css("overflow", "hidden");
-        var videotag = $("<video/>", {
+        Rashomon.fs = $("<video/>", {
             'id': 'fsvid',
             "controls": true
-        }).appendTo('#fsvidholder');
-        Rashomon.videos[id].webm.appendTo(videotag);
-        Rashomon.videos[id].mp4.appendTo(videotag);
-        $("#fsvid").css("left", $(window).width() / 2 - $("#fsvid").width() / 2);
-        var fspop = Popcorn("#fsvid");
-        fspop.on("loadedmetadata", function () {
-            $("#fsvid").css("left", $(window).width() / 2 - $("#fsvid").width() / 2);
-            fspop.pause(ctime);
-            $("#xbox").css({
-                "top": 5,
-                "left": $("#fsvid").offset().left + $("#fsvid").width() - 20
-            });
+        }).css("opacity", "1").appendTo("#videos");
+        $(sources).each(function(){
+           $(this).appendTo(Rashomon.fs);
         });
-        fspop.on("canplay", function () {
-            $("#fsvid").css("left", $(window).width() / 2 - $("#fsvid").width() / 2);
-            $("#fsvid").css("opacity", 1);
+        Rashomon.fs.css("opacity", 1).fullScreen(true);
+    
+        Rashomon.fspop = Popcorn("#fsvid");
+        Rashomon.fspop.playbackRate(Rashomon.timeline.playbackRate());
+        Rashomon.fspop.on("loadedmetadata", function () {
+            Rashomon.fspop.pause(ctime);
         });
     },
     offset2time: function (offset) {
@@ -1249,6 +1246,14 @@ $(document).ready(function () {
         $("body").css("overflow", "visible");
         return false;
     });
+
+    $(document).bind("fullscreenchange", function() {
+       if ( $(document).fullScreen() === false ){
+         Rashomon.fspop.destroy();
+         Rashomon.fs.remove();
+       }
+    });
+
     $(".mediaSection h1").click(function () {
         $("#timepos").css("height", "100%");
         $(this).next(".lines").slideToggle(function () {
